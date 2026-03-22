@@ -115,8 +115,8 @@
 
 .campaigns-grid {
   display: grid;
-  grid-template-columns: minmax(340px, 1.2fr) minmax(520px, 2.5fr);
-  gap: 56px;
+  grid-template-columns: minmax(340px, 1.1fr) minmax(700px, 2.9fr);
+  gap: 18px;
   align-items: flex-start;
   margin-top: 18px;
 }
