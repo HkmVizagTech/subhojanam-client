@@ -1,7 +1,13 @@
 
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://subhojanam-server-main-882278565284.asia-south1.run.app';
 
 class AdminAPI {
+  async deleteCampaign(id) {
+    return this.request(`/api/admin/campaigns/${id}`, {
+      method: 'DELETE',
+    });
+  }
   async getCampaigns() {
     return this.request('/api/admin/campaigns');
   }

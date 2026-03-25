@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
+import { Copy, PlusCircle, CheckCircle, Search, Trash2 } from "lucide-react";
 import adminAPI from "../../services/adminApi";
-import { Copy, PlusCircle, CheckCircle, Search } from "lucide-react";
 import "../styles/Campaigns.css";
+
 
 
 function Campaigns() {
@@ -24,12 +25,8 @@ function Campaigns() {
 
   useEffect(() => {
     fetchCampaigns();
+    // eslint-disable-next-line
   }, []);
-
-  
-  const totalCampaigns = campaigns.length;
-  const activeCampaigns = campaigns.filter(c => c.isActive).length;
-  const inactiveCampaigns = totalCampaigns - activeCampaigns;
 
   const fetchCampaigns = async () => {
     setLoading(true);
@@ -47,7 +44,6 @@ function Campaigns() {
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
 
   const handleCreate = async e => {
     e.preventDefault();
@@ -74,7 +70,18 @@ function Campaigns() {
     setTimeout(() => setToast(""), 1500);
   };
 
- 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this campaign?")) return;
+    try {
+      await adminAPI.deleteCampaign(id);
+      setToast("Campaign deleted!");
+      fetchCampaigns();
+      setTimeout(() => setToast(""), 1500);
+    } catch (err) {
+      setError(err.message || "Failed to delete campaign");
+    }
+  };
+
   const filteredCampaigns = campaigns.filter(c =>
     search.trim()
       ? c.name.toLowerCase().includes(search.trim().toLowerCase()) ||
@@ -84,105 +91,80 @@ function Campaigns() {
 
   return (
     <div className="campaigns-page">
-      {toast && (
-        <div className="campaign-toast">
-          <CheckCircle size={18} style={{ marginRight: 8, color: '#10b981' }} />
-          {toast}
-        </div>
-      )}
-      <div className="page-header">
-        <div>
-          <h1>Campaign Link Generator</h1>
-          <p>Create and manage UTM-tagged campaign links for marketing and tracking.</p>
-        </div>
-      </div>
-      <div className="campaigns-stats-cards">
-        <div className="campaigns-stat-card">
-          <span className="stat-label">Total Campaigns</span>
-          <span className="stat-value">{totalCampaigns}</span>
-        </div>
-        <div className="campaigns-stat-card">
-          <span className="stat-label">Active</span>
-          <span className="stat-value stat-active">{activeCampaigns}</span>
-        </div>
-        <div className="campaigns-stat-card">
-          <span className="stat-label">Inactive</span>
-          <span className="stat-value stat-inactive">{inactiveCampaigns}</span>
-        </div>
-      </div>
-      <div className="campaigns-grid">
-        <div className="campaign-card">
-          <h2 className="card-title">Create New Campaign</h2>
-          <form className="campaign-form" onSubmit={handleCreate}>
-            <div className="form-row">
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Campaign Name (e.g. Sankranthi 2026)" required title="A friendly name for your campaign" />
-              <input name="source" value={form.source} onChange={handleChange} placeholder="Source (e.g. facebook)" required title="Where the traffic comes from (e.g. facebook, google)" />
-              <input name="medium" value={form.medium} onChange={handleChange} placeholder="Medium (e.g. social)" title="Marketing medium (e.g. social, email)" />
-              <input name="campaign" value={form.campaign} onChange={handleChange} placeholder="Campaign Slug (e.g. sankranthi_2026)" required title="Unique slug for this campaign" />
-              <input name="content" value={form.content} onChange={handleChange} placeholder="Content (optional)" title="Ad content (optional)" />
-              <input name="term" value={form.term} onChange={handleChange} placeholder="Term (optional)" title="Paid keywords (optional)" />
-              <button type="submit" className="create-btn" disabled={creating}>
-                <PlusCircle size={18} /> Create
-              </button>
-            </div>
-            {success && <div className="success-msg">{success}</div>}
-            {error && <div className="error-msg">{error}</div>}
-          </form>
-        </div>
-        <div className="campaigns-list-card">
-          <div className="campaigns-list-header">
-            <h2 className="card-title">All Campaigns</h2>
-            <div className="campaigns-search-bar">
-              <Search size={18} />
-              <input
-                type="text"
-                placeholder="Search campaigns..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
+      {toast && <div className="toast-msg">{toast}</div>}
+      <form className="campaigns-form" onSubmit={handleCreate} autoComplete="off">
+        <h2 className="card-title">Create Campaign</h2>
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Campaign Name (e.g. Sankranthi 2026)" required title="A friendly name for your campaign" />
+        <input name="source" value={form.source} onChange={handleChange} placeholder="Source (e.g. facebook)" required title="Where the traffic comes from (e.g. facebook, google)" />
+        <input name="medium" value={form.medium} onChange={handleChange} placeholder="Medium (e.g. social)" title="Marketing medium (e.g. social, email)" />
+        <input name="campaign" value={form.campaign} onChange={handleChange} placeholder="Campaign Slug (e.g. sankranthi_2026)" required title="Unique slug for this campaign" />
+        <input name="content" value={form.content} onChange={handleChange} placeholder="Content (optional)" title="Ad content (optional)" />
+        <input name="term" value={form.term} onChange={handleChange} placeholder="Term (optional)" title="Paid keywords (optional)" />
+        <button type="submit" className="create-btn" disabled={creating}>
+          <PlusCircle size={18} /> Create
+        </button>
+        {success && <div className="success-msg">{success}</div>}
+        {error && <div className="error-msg">{error}</div>}
+      </form>
+      <div className="campaigns-list-card">
+        <div className="campaigns-list-header">
+          <h2 className="card-title">All Campaigns</h2>
+          <div className="campaigns-search-bar">
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Search campaigns..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
-          {loading ? (
-            <div className="loading">Loading...</div>
-          ) : filteredCampaigns.length === 0 ? (
-            <div className="no-data">No campaigns found</div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="campaigns-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>UTM Campaign</th>
-                    <th>URL</th>
-                    <th>Status</th>
-                    <th>Copy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCampaigns.map(c => (
-                    <tr key={c._id}>
-                      <td>{c.name}</td>
-                      <td>{c.utm?.campaign}</td>
-                      <td className="url-cell">
-                        <a href={c.generatedUrl} target="_blank" rel="noopener noreferrer">{c.generatedUrl}</a>
-                      </td>
-                      <td>
-                        <span className={c.isActive ? "status-active-badge" : "status-inactive-badge"} title={c.isActive ? "Active" : "Inactive"}>
-                          {c.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td>
-                        <button className="copy-btn" onClick={() => handleCopy(c.generatedUrl)} title="Copy URL">
-                          <Copy size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
+        {loading ? (
+          <div className="loading">Loading...</div>
+        ) : filteredCampaigns.length === 0 ? (
+          <div className="no-data">No campaigns found</div>
+        ) : (
+          <div className="table-wrapper">
+            <table className="campaigns-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>UTM Campaign</th>
+                  <th>URL</th>
+                  <th>Status</th>
+                  <th>Copy</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCampaigns.map(c => (
+                  <tr key={c._id}>
+                    <td>{c.name}</td>
+                    <td>{c.utm?.campaign}</td>
+                    <td className="url-cell">
+                      <a href={c.generatedUrl} target="_blank" rel="noopener noreferrer">{c.generatedUrl}</a>
+                    </td>
+                    <td>
+                      <span className={c.isActive ? "status-active-badge" : "status-inactive-badge"} title={c.isActive ? "Active" : "Inactive"}>
+                        {c.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="copy-btn" onClick={() => handleCopy(c.generatedUrl)} title="Copy URL">
+                        <Copy size={16} />
+                      </button>
+                    </td>
+                    <td>
+                      <button className="copy-btn" style={{color:'#ef4444'}} onClick={() => handleDelete(c._id)} title="Delete Campaign">
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
