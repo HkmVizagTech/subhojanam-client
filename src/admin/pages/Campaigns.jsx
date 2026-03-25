@@ -92,20 +92,28 @@ function Campaigns() {
   return (
     <div className="campaigns-page">
       {toast && <div className="toast-msg">{toast}</div>}
-      <form className="campaigns-form" onSubmit={handleCreate} autoComplete="off">
-        <h2 className="card-title">Create Campaign</h2>
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Campaign Name (e.g. Sankranthi 2026)" required title="A friendly name for your campaign" />
-        <input name="source" value={form.source} onChange={handleChange} placeholder="Source (e.g. facebook)" required title="Where the traffic comes from (e.g. facebook, google)" />
-        <input name="medium" value={form.medium} onChange={handleChange} placeholder="Medium (e.g. social)" title="Marketing medium (e.g. social, email)" />
-        <input name="campaign" value={form.campaign} onChange={handleChange} placeholder="Campaign Slug (e.g. sankranthi_2026)" required title="Unique slug for this campaign" />
-        <input name="content" value={form.content} onChange={handleChange} placeholder="Content (optional)" title="Ad content (optional)" />
-        <input name="term" value={form.term} onChange={handleChange} placeholder="Term (optional)" title="Paid keywords (optional)" />
-        <button type="submit" className="create-btn" disabled={creating}>
-          <PlusCircle size={18} /> Create
-        </button>
-        {success && <div className="success-msg">{success}</div>}
-        {error && <div className="error-msg">{error}</div>}
-      </form>
+      <div className="campaign-card">
+        <form className="campaign-form" onSubmit={handleCreate} autoComplete="off">
+          <h2 className="card-title">Create Campaign</h2>
+          <div className="form-row">
+            <input name="name" value={form.name} onChange={handleChange} placeholder="Campaign Name (e.g. Sankranthi 2026)" required title="A friendly name for your campaign" />
+            <input name="source" value={form.source} onChange={handleChange} placeholder="Source (e.g. facebook)" required title="Where the traffic comes from (e.g. facebook, google)" />
+          </div>
+          <div className="form-row">
+            <input name="medium" value={form.medium} onChange={handleChange} placeholder="Medium (e.g. social)" title="Marketing medium (e.g. social, email)" />
+            <input name="campaign" value={form.campaign} onChange={handleChange} placeholder="Campaign Slug (e.g. sankranthi_2026)" required title="Unique slug for this campaign" />
+          </div>
+          <div className="form-row">
+            <input name="content" value={form.content} onChange={handleChange} placeholder="Content (optional)" title="Ad content (optional)" />
+            <input name="term" value={form.term} onChange={handleChange} placeholder="Term (optional)" title="Paid keywords (optional)" />
+          </div>
+          <button type="submit" className="create-btn" disabled={creating}>
+            <PlusCircle size={18} /> Create
+          </button>
+          {success && <div className="success-msg">{success}</div>}
+          {error && <div className="error-msg">{error}</div>}
+        </form>
+      </div>
       <div className="campaigns-list-card">
         <div className="campaigns-list-header">
           <h2 className="card-title">All Campaigns</h2>
