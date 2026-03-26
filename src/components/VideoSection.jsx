@@ -9,7 +9,7 @@ function VideoSection() {
 
       <div className="video-box">
         <iframe
-         src="https://www.youtube.com/embed/vHGpe-lfYqM"        
+         src="https://youtu.be/cJoNqu4YqTk?si=WWjPbn9JF3c7dn7j"        
           title="Subhojanam Video"
           allowFullScreen
         ></iframe>
