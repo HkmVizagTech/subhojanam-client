@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { BarChart3, TrendingUp, Users, IndianRupee, Search, Tag, PlusCircle, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -46,16 +45,14 @@ function UtmStats() {
     setLoading(true);
     setError("");
     try {
-      const [statsRes, campaignsRes, campaignStatsRes] = await Promise.all([
-        adminAPI.getUtmStats(),
-        adminAPI.getCampaigns(),
-        adminAPI.getCampaignStats(),
-      ]);
+      const statsRes = await adminAPI.getUtmStats();
       setStats(statsRes.stats || []);
-      setCampaigns(campaignsRes.data || []);
-      setCampaignStats(campaignStatsRes.data || []);
+      
+      const campaignsRes = await adminAPI.getCampaigns();
+      setCampaigns(campaignsRes.campaigns || []);
     } catch (err) {
       setError("Failed to load analytics data");
+      console.error('[DEBUG] Analytics fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -65,6 +62,9 @@ function UtmStats() {
     fetchAll();
     
   }, []);
+
+
+  const sourceBreakdownStats = selectedCampaign ? filteredStats : stats;
 
   return (
     <div className="utm-stats-root">
@@ -162,31 +162,35 @@ function UtmStats() {
                 </tr>
               </thead>
               <tbody>
-                {campaignStats.length === 0 ? (
+                {campaigns.length === 0 ? (
                   <tr><td colSpan={6} className="utm-empty-row">No campaigns found</td></tr>
                 ) : (
-                  campaignStats.map(camp => (
-                    <tr key={camp._id}>
-                      <td className="utm-camp-name-cell">
-                        <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
-                        {camp.name}
-                      </td>
-                      <td>{camp.utm?.campaign}</td>
-                      <td>
-                        <span className={camp.isActive ? "status-active-badge" : "status-inactive-badge"} title={camp.isActive ? "Active" : "Inactive"}>
-                          {camp.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td>{camp.totalDon}</td>
-                      <td>{String.fromCharCode(8377)}{camp.totalAmt.toLocaleString()}</td>
-                      <td>
-                        <button className="utm-analytics-link-btn" title="View analytics for this campaign" onClick={() => setSelectedCampaign(camp.utm?.campaign)}>
-                          <ExternalLink size={15} style={{ marginRight: 4 }} />
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  campaigns.map(camp => {
+                   
+                    const stat = stats.find(s => s._id?.campaign === camp.utm?.campaign);
+                    return (
+                      <tr key={camp._id}>
+                        <td className="utm-camp-name-cell">
+                          <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
+                          {camp.name}
+                        </td>
+                        <td>{camp.utm?.campaign}</td>
+                        <td>
+                          <span className={camp.isActive ? "status-active-badge" : "status-inactive-badge"} title={camp.isActive ? "Active" : "Inactive"}>
+                            {camp.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td>{stat ? stat.count : 0}</td>
+                        <td>{String.fromCharCode(8377)}{stat ? stat.totalAmount.toLocaleString() : '0'}</td>
+                        <td>
+                          <button className="utm-analytics-link-btn" title="View analytics for this campaign" onClick={() => setSelectedCampaign(camp.utm?.campaign)}>
+                            <ExternalLink size={15} style={{ marginRight: 4 }} />
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -238,27 +242,31 @@ function UtmStats() {
                 </tr>
               </thead>
               <tbody>
-                {filteredStats.length === 0 ? (
+                {sourceBreakdownStats.filter(row =>
+                  search.trim()
+                    ? (row._id?.source || "(none)")
+                        .toLowerCase()
+                        .includes(search.trim().toLowerCase())
+                    : true
+                ).length === 0 ? (
                   <tr><td colSpan={3} className="utm-empty-row">No data</td></tr>
                 ) : (
-                  filteredStats
-                    .filter(row =>
-                      search.trim()
-                        ? (row._id?.source || "(none)")
-                            .toLowerCase()
-                            .includes(search.trim().toLowerCase())
-                        : true
-                    )
-                    .map(row => (
-                      <tr key={row._id ? row._id.campaign + row._id.source : "unknown"}>
-                        <td className="utm-source-cell">
-                          <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
-                          {row._id?.source || "(none)"}
-                        </td>
-                        <td>{row.count}</td>
-                        <td>{String.fromCharCode(8377)}{row.totalAmount.toLocaleString()}</td>
-                      </tr>
-                    ))
+                  sourceBreakdownStats.filter(row =>
+                    search.trim()
+                      ? (row._id?.source || "(none)")
+                          .toLowerCase()
+                          .includes(search.trim().toLowerCase())
+                      : true
+                  ).map(row => (
+                    <tr key={row._id ? row._id.campaign + row._id.source : "unknown"}>
+                      <td className="utm-source-cell">
+                        <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
+                        {row._id?.source || "(none)"}
+                      </td>
+                      <td>{row.count}</td>
+                      <td>{String.fromCharCode(8377)}{row.totalAmount.toLocaleString()}</td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
