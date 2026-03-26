@@ -341,7 +341,7 @@ const data = await response.json();
 
   return (
     <>
-      <section className="main-section" id="donation-section">
+  <section className="main-section" id="donate">
         <div className="box">
 
           <h2>Support Subhojanam Seva</h2>
