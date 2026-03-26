@@ -51,7 +51,7 @@ function UtmStats() {
         adminAPI.getCampaigns(),
         adminAPI.getCampaignStats(),
       ]);
-      setStats(statsRes.data || []);
+      setStats(statsRes.stats || []);
       setCampaigns(campaignsRes.data || []);
       setCampaignStats(campaignStatsRes.data || []);
     } catch (err) {
