@@ -9,6 +9,8 @@ function Transactions() {
   const [pagination, setPagination] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [prasadamFilter, setPrasadamFilter] = useState("all") // all | yes | no
+  const [certificateFilter, setCertificateFilter] = useState("all") // all | yes | no
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -17,7 +19,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions()
-  }, [currentPage, filterStatus])
+  }, [currentPage, filterStatus, prasadamFilter, certificateFilter])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -33,18 +35,22 @@ function Transactions() {
 
   useEffect(() => {
     fetchStats()
-  }, [filterStatus])
+  }, [filterStatus, prasadamFilter, certificateFilter])
 
   const fetchTransactions = async () => {
     try {
       setLoading(true)
       // Map 'completed' to 'paid' for backend compatibility
       const statusForBackend = filterStatus === 'completed' ? 'paid' : filterStatus;
+      const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
+      const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
       const response = await adminAPI.getAllTransactions({
         page: currentPage,
         limit: 10,
         search: searchTerm,
-        status: statusForBackend
+        status: statusForBackend,
+        mahaprasadam: prasadamForBackend,
+        certificate: certificateForBackend
       })
 
       setTransactions(response.transactions)
@@ -192,6 +198,36 @@ function Transactions() {
                   <option value="completed">Paid</option>
                   <option value="pending">Pending</option>
                   <option value="failed">Failed</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label style={{ marginRight: 6 }}>Prasadam Required</label>
+                <select
+                  value={prasadamFilter}
+                  onChange={e => {
+                    setPrasadamFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                >
+                  <option value="all">All</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label style={{ marginRight: 6 }}>80G Certificate</label>
+                <select
+                  value={certificateFilter}
+                  onChange={e => {
+                    setCertificateFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                >
+                  <option value="all">All</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
                 </select>
               </div>
 
