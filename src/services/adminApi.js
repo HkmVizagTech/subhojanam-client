@@ -71,15 +71,17 @@ class AdminAPI {
   }
 
   async getAllTransactions(params = {}) {
-    const queryParams = new URLSearchParams({
+    const query = {
       page: params.page || 1,
       limit: params.limit || 10,
       search: params.search || '',
       status: params.status || 'all',
-      ...(params.startDate && { startDate: params.startDate }),
-      ...(params.endDate && { endDate: params.endDate }),
-    }).toString();
-
+    };
+    if (params.startDate) query.startDate = params.startDate;
+    if (params.endDate) query.endDate = params.endDate;
+    if (typeof params.mahaprasadam === 'boolean') query.mahaprasadam = params.mahaprasadam;
+    if (typeof params.certificate === 'boolean') query.certificate = params.certificate;
+    const queryParams = new URLSearchParams(query).toString();
     return this.request(`/api/admin/transactions?${queryParams}`);
   }
 
