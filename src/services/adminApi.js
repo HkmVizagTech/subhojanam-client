@@ -3,6 +3,30 @@
  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://subhojanam-server-main-882278565284.asia-south1.run.app';
 // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 class AdminAPI {
+  async exportTransactionsCSV(params = {}) {
+    const query = {
+      status: params.status || 'all',
+    };
+    if (typeof params.mahaprasadam === 'boolean') query.mahaprasadam = params.mahaprasadam;
+    if (typeof params.certificate === 'boolean') query.certificate = params.certificate;
+    if (params.startDate) query.startDate = params.startDate;
+    if (params.endDate) query.endDate = params.endDate;
+    const queryParams = new URLSearchParams(query).toString();
+
+    const url = `${API_BASE_URL}/api/admin/transactions/export?${queryParams}`;
+    const token = localStorage.getItem('adminToken');
+    const config = {
+      headers: {
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      credentials: 'include',
+    };
+    const response = await fetch(url, config);
+    if (!response.ok) {
+      throw new Error('Failed to export CSV');
+    }
+    return response.blob();
+  }
   async deleteCampaign(id) {
     return this.request(`/api/admin/campaigns/${id}`, {
       method: 'DELETE',

@@ -40,7 +40,7 @@ function Transactions() {
   const fetchTransactions = async () => {
     try {
       setLoading(true)
-      // Map 'completed' to 'paid' for backend compatibility
+     
       const statusForBackend = filterStatus === 'completed' ? 'paid' : filterStatus;
       const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
       const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
@@ -79,37 +79,24 @@ function Transactions() {
 
   const handleExport = async () => {
     try {
-      const response = await adminAPI.exportTransactions({
-        status: filterStatus
-      })
-
-      if (response.data && response.data.length > 0) {
-        const headers = Object.keys(response.data[0])
-        const csvContent = [
-          headers.join(","),
-          ...response.data.map(row => 
-            headers.map(header => {
-              const value = row[header]
-              return typeof value === 'string' && value.includes(',') 
-                ? `"${value.replace(/"/g, '""')}"` 
-                : value
-            }).join(",")
-          )
-        ].join("\n")
-
-        const blob = new Blob([csvContent], { type: "text/csv" })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        window.URL.revokeObjectURL(url)
-      }
+      const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
+      const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
+      const blob = await adminAPI.exportTransactionsCSV({
+        status: filterStatus,
+        mahaprasadam: prasadamForBackend,
+        certificate: certificateForBackend
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Error exporting transactions:", err)
-      alert("Failed to export transactions")
+      console.error("Error exporting transactions:", err);
+      alert("Failed to export transactions");
     }
   }
 
@@ -124,9 +111,16 @@ function Transactions() {
     })
   }
 
-  const handleViewDetails = (txn) => {
-    setSelectedTransaction(txn)
-    setShowModal(true)
+  const handleViewDetails = async (txn) => {
+    try {
+     
+      
+      const details = await adminAPI.getTransactionById(txn._id);
+      setSelectedTransaction(details.transaction || txn); 
+      setShowModal(true);
+    } catch (err) {
+      setError('Failed to fetch transaction details');
+    }
   }
 
   const closeModal = () => {
