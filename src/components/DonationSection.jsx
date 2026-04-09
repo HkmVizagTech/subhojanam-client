@@ -79,12 +79,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
-          {isCustomAmountInvalid && (
-            <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
-              Minimum amount for donation is 100
-            </div>
-          )}
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 1;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -255,6 +250,7 @@ function DonationSection() {
 
       const response = await fetch(
         `https://subhojanam-server-main-882278565284.asia-south1.run.app/api/payment/${endpoint}`,
+          // `http://localhost:8080/api/payment/${endpoint}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -412,18 +408,18 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-              min="100"
-              placeholder="Enter custom amount"
+                min="100"
+                placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
               onChange={handleCustomChange}
               style={{ paddingLeft: '32px', width: '100%' }}
             />
-            {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
-              <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
-                Minimum amount for donation is 100
-              </div>
-            )}
+              {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
+                <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
+                  Minimum amount for donation is 100
+                </div>
+              )}
           </div>
 
           {finalAmount > 0 && (
