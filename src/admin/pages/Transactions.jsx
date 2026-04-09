@@ -40,7 +40,7 @@ function Transactions() {
   const fetchTransactions = async () => {
     try {
       setLoading(true)
-     
+      // Map 'completed' to 'paid' for backend compatibility
       const statusForBackend = filterStatus === 'completed' ? 'paid' : filterStatus;
       const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
       const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
@@ -79,12 +79,8 @@ function Transactions() {
 
   const handleExport = async () => {
     try {
-      const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
-      const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
       const blob = await adminAPI.exportTransactionsCSV({
-        status: filterStatus,
-        mahaprasadam: prasadamForBackend,
-        certificate: certificateForBackend
+        status: filterStatus
       });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -111,16 +107,9 @@ function Transactions() {
     })
   }
 
-  const handleViewDetails = async (txn) => {
-    try {
-     
-      
-      const details = await adminAPI.getTransactionById(txn._id);
-      setSelectedTransaction(details.transaction || txn); 
-      setShowModal(true);
-    } catch (err) {
-      setError('Failed to fetch transaction details');
-    }
+  const handleViewDetails = (txn) => {
+    setSelectedTransaction(txn)
+    setShowModal(true)
   }
 
   const closeModal = () => {

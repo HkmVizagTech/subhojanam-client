@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
@@ -46,6 +47,18 @@ function ProtectedRoute({ children }) {
 }
 
 function Home() {
+  useEffect(() => {
+    // Delay slightly to ensure sections have mounted and layout is complete
+    const t = setTimeout(() => {
+      const donationSection = document.getElementById("donate") || document.getElementById("donation-section") || document.querySelector('.main-section');
+      if (donationSection) {
+        donationSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }, 60);
+
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <>
       <Top />

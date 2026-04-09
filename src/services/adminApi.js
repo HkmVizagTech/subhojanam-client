@@ -3,15 +3,13 @@
  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://subhojanam-server-main-882278565284.asia-south1.run.app';
 // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 class AdminAPI {
+  // Special CSV export fetcher
   async exportTransactionsCSV(params = {}) {
-    const query = {
+    const queryParams = new URLSearchParams({
       status: params.status || 'all',
-    };
-    if (typeof params.mahaprasadam === 'boolean') query.mahaprasadam = params.mahaprasadam;
-    if (typeof params.certificate === 'boolean') query.certificate = params.certificate;
-    if (params.startDate) query.startDate = params.startDate;
-    if (params.endDate) query.endDate = params.endDate;
-    const queryParams = new URLSearchParams(query).toString();
+      ...(params.startDate && { startDate: params.startDate }),
+      ...(params.endDate && { endDate: params.endDate }),
+    }).toString();
 
     const url = `${API_BASE_URL}/api/admin/transactions/export?${queryParams}`;
     const token = localStorage.getItem('adminToken');
