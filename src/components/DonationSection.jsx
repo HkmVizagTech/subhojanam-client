@@ -114,7 +114,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 1;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -448,7 +448,7 @@ const data = await response.json();
               className="input-box"
               value={customAmount}
               onChange={handleCustomChange}
-              style={{ paddingLeft: '32px', width: '100%' }}
+              style={{ paddingLeft: '32px', width: '100%' , fontWeight:"bold" }}
             />
               {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
                 <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>

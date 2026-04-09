@@ -15,10 +15,10 @@ const cards = [
 
 export default function DonationCards() {
   const handleDonate = (amount) => {
-    // Emit a CustomEvent so DonationSection can listen and open the modal without navigating
+   
     const evt = new CustomEvent('donationPreset', { detail: { amount } });
     window.dispatchEvent(evt);
-    // provide visual context by scrolling to donation section
+    
     const el = document.getElementById('donate') || document.getElementById('donation-section');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
