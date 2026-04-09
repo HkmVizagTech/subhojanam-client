@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
+import DonationCards from "./components/DonationCards";
 import SpecialSeva from "./components/SpecialSeva";
 import Moments from "./components/Moments";
 import QuoteSection from "./components/QuoteSection";
@@ -64,8 +65,9 @@ function Home() {
       <Top />
       <Navbar />
       <Hero />
-      <DonationSection />
-      {/* <SpecialSeva /> */}
+  <DonationSection />
+  <DonationCards />
+  {/* <SpecialSeva /> */}
       <Moments />
       <WhySwasthya />
       <Impact />

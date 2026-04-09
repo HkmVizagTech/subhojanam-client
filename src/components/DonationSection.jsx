@@ -19,6 +19,41 @@ function DonationSection() {
     if (Object.values(utmData).some(Boolean)) {
       localStorage.setItem("utm", JSON.stringify(utmData));
     }
+    
+    const amountParam = params.get('amount');
+    if (amountParam && !isNaN(Number(amountParam))) {
+      
+      setSelectedAmount(null);
+      setCustomAmount(String(Number(amountParam)));
+      setShowForm(true);
+    
+      try {
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState(null, '', cleanUrl);
+      } catch (e) {
+       
+      }
+    }
+
+    
+    const onDonationPreset = (e) => {
+      const amt = e && e.detail && e.detail.amount;
+      if (amt && !isNaN(Number(amt))) {
+        setSelectedAmount(null);
+        setCustomAmount(String(Number(amt)));
+        setShowForm(true);
+      } else {
+       
+        setSelectedAmount(null);
+        setCustomAmount('');
+        setShowForm(true);
+      }
+    };
+    window.addEventListener('donationPreset', onDonationPreset);
+
+    return () => {
+      window.removeEventListener('donationPreset', onDonationPreset);
+    };
   }, []);
 
   const [type, setType] = useState("one");
