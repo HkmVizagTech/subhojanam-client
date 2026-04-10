@@ -18,7 +18,7 @@ function Navbar() {
         </div>
 
         <div className="navbar__buttons">
-          <button className="donate-btn" onClick={scrollToDonation}>
+             <button className="donate-btn navbar-donate-btn" onClick={scrollToDonation}>
             <Heart className="donate-btn-icon" />
             Donate Now
           </button>

@@ -2,14 +2,14 @@ import React from 'react';
 import '../styles/donationCards.css';
 
 const cards = [
-  { title: 'Annadana Seva', label: 'DONATE ₹ 1000', amount: 1 },
-  { title: 'Annadana Seva', label: 'DONATE ₹ 1500', amount: 1500 },
-  { title: 'Feed 100 People', label: 'DONATE ₹ 2700', amount: 2700 },
-  { title: 'Feed 200 People', label: 'DONATE ₹ 5400', amount: 5400 },
-  { title: 'Feed 300 People', label: 'DONATE ₹ 8100', amount: 8100 },
-  { title: 'Feed 500 People', label: 'DONATE ₹ 13,500', amount: 13500 },
-  { title: 'Feed 1,000 People', label: 'DONATE ₹ 27,000', amount: 27000 },
-  { title: 'Feed 1,500 People', label: 'DONATE ₹ 40,500', amount: 40500 },
+  { title: 'Feed 100 People', label: 'DONATE ₹ 2500', amount: 2500 },
+  { title: 'Feed 200 People', label: 'DONATE ₹ 5000', amount: 5000 },
+  { title: 'Feed 300 People', label: 'DONATE ₹ 7400', amount: 7500 },
+  { title: 'Feed 400 People', label: 'DONATE ₹ 10,000', amount: 10000 },
+  { title: 'Feed 500 People', label: 'DONATE ₹ 12,500', amount: 12500 },
+  { title: 'Feed 1000 People', label: 'DONATE ₹ 25,000', amount: 25000 },
+  { title: 'Feed 1500 People', label: 'DONATE ₹ 37,500', amount: 37500 },
+  { title: 'Feed 2000 People', label: 'DONATE ₹ 50,000', amount: 50000 },
 
 ];
 

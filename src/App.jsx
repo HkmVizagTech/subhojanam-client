@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/NavbarNew";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
@@ -49,15 +49,31 @@ function ProtectedRoute({ children }) {
 
 function Home() {
   useEffect(() => {
-    // Delay slightly to ensure sections have mounted and layout is complete
-    const t = setTimeout(() => {
+    let t1 = null;
+    let t2 = null;
+    const scrollToDonation = () => {
       const donationSection = document.getElementById("donate") || document.getElementById("donation-section") || document.querySelector('.main-section');
       if (donationSection) {
-        donationSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+        try {
+          donationSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+        } catch (e) {
+          window.scrollTo(0, donationSection.offsetTop || 0);
+        }
       }
-    }, 60);
+    };
 
-    return () => clearTimeout(t);
+    
+    t1 = setTimeout(scrollToDonation, 60);
+    t2 = setTimeout(scrollToDonation, 500);
+
+    
+    window.addEventListener('load', scrollToDonation);
+
+    return () => {
+      if (t1) clearTimeout(t1);
+      if (t2) clearTimeout(t2);
+      window.removeEventListener('load', scrollToDonation);
+    };
   }, []);
 
   return (
