@@ -24,9 +24,7 @@ button:active {
   align-items: center;
 }
 
-/* =========================
-   LOGO
-========================= */
+
 
 .navbar__logo img {
   height: 60px;
@@ -50,11 +48,11 @@ button:active {
 
 
 .donate-btn {
-  background: #FBA630;
+  background-color: #FBA630 !important;
   color: white;
   border: none;
-  padding: 10px 24px;
-  border-radius: 30px;
+  padding: 10px 20px !important;
+  border-radius: 30px !important;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
