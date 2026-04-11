@@ -36,6 +36,7 @@ import WhySwasthya from "./components/WhySwasthya.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import ReceiptPreview from "./pages/ReceiptPreview.js";
 import Campaigns from "./admin/pages/Campaigns.jsx";
+import SeoManager from "./components/SeoManager.jsx";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("adminToken");
@@ -106,32 +107,35 @@ function Home() {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/receipt-preview" element={<ReceiptPreview />} />
-      <Route path="/thankyou" element={<ThankYouPage />} />
-      <Route path="/admin/login" element={<Login />} />
-      <Route path="/x7k9m2p5q8w3" element={<Register />} />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="transactions" element={<Transactions />} />
-        <Route path="subscriptions" element={<Subscriptions />} />
-        <Route path="donors" element={<Donors />} />
-        <Route path="receipts" element={<Receipts />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="utm-stats" element={<UtmStats />} />
-        <Route path="settings" element={<Settings />} />
-  <Route path="campaigns" element={<Campaigns />} />
-      </Route>
-    </Routes>
+    <>
+      <SeoManager />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/receipt-preview" element={<ReceiptPreview />} />
+        <Route path="/thankyou" element={<ThankYouPage />} />
+        <Route path="/admin/login" element={<Login />} />
+        <Route path="/x7k9m2p5q8w3" element={<Register />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="donors" element={<Donors />} />
+          <Route path="receipts" element={<Receipts />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="utm-stats" element={<UtmStats />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="campaigns" element={<Campaigns />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 
