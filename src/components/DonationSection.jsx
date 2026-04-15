@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, FileText, Check } from "lucide-react";
 import "../styles/donation.css";
+import { fbEvent } from "../lib/fbPixel";
 
 function DonationSection() {
 
@@ -328,6 +329,12 @@ const data = await response.json();
             }),
 
         handler: function (response) {
+          // 🔥 Fire Purchase on successful payment
+          fbEvent.purchase(
+            finalAmount,
+            response.razorpay_payment_id || response.razorpay_subscription_id
+          );
+
           setShowForm(false);
 
           const params = new URLSearchParams({
@@ -355,11 +362,21 @@ const data = await response.json();
 
         theme: {
           color: "#0A97EF"
+        },
+
+        modal: {
+          ondismiss: function () {
+            // 🔥 Fire PaymentAbandoned when user closes Razorpay without paying
+            fbEvent.paymentAbandoned(finalAmount);
+          }
         }
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
+
+      // 🔥 Fire InitiateCheckout when Razorpay popup opens
+      fbEvent.initiateCheckout(finalAmount);
 
       setLoading(false);
 
@@ -478,6 +495,7 @@ const data = await response.json();
               } else {
                 setErrorMessage("");
               }
+              fbEvent.viewContent(finalAmount);
               setShowForm(true);
             }}
           >
