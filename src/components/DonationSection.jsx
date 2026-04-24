@@ -86,10 +86,10 @@ function DonationSection() {
   });
 
   const donationOptions = [
-    { amount: 750, meals: 30 },
-    { amount: 1000, meals: 40 },
-    { amount: 2500, meals: 100, popular: true },
-    { amount: 5000, meals: 200 }
+    { amount: 251, meals: 10 },
+    { amount: 500, meals: 20 },
+    { amount: 1000, meals: 40, popular: true },
+    { amount: 2500, meals: 100 }
   ];
 
   const monthlyDonationOptions = [
@@ -139,6 +139,18 @@ function DonationSection() {
 
   const finalAmount = selectedAmount || Number(customAmount);
   const meals = finalAmount ? Math.floor(finalAmount / 25) : 0;
+
+  // Load Razorpay script lazily only when needed
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
   const handlePayment = async () => {
     setErrorMessage("");
@@ -199,27 +211,6 @@ function DonationSection() {
     }
 
 
-    if (!formData.sevaDate || !formData.dob) {
-      setErrorMessage("Please fill Seva Date and Date of Birth");
-      
-      if (!formData.sevaDate) {
-        const field = document.querySelector('input[name="sevaDate"]');
-        if (field) {
-          field.style.border = '2px solid #ff4444';
-          field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          field.focus();
-        }
-      } else if (!formData.dob) {
-        const field = document.querySelector('input[name="dob"]');
-        if (field) {
-          field.style.border = '2px solid #ff4444';
-          field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          field.focus();
-        }
-      }
-      return;
-    }
-
     if (formData.certificate) {
       if (!formData.panNumber || !formData.address || !formData.city || !formData.state || !formData.pincode) {
         setErrorMessage("Please fill all certificate details (PAN Number, Address, City, State, Pincode) to receive 80G Certificate");
@@ -273,6 +264,14 @@ function DonationSection() {
     try {
       setLoading(true);
 
+      // Load Razorpay lazily if not already loaded
+      const razorpayLoaded = await loadRazorpay();
+      if (!razorpayLoaded) {
+        alert("Payment gateway failed to load. Please check your connection.");
+        setLoading(false);
+        return;
+      }
+
       const endpoint =
         type === "one"
           ? "create-order"
@@ -312,12 +311,12 @@ const data = await response.json();
       const options = {
         key: data.key,
         currency: "INR",
-        name: "Subhojanam",
+        name: "ISKCON Visakhapatnam",
         image: "https://annadan.harekrishnavizag.org/assets/logo-D-uVL5iO.png",
         description:
           type === "one"
-            ? "One-time Donation"
-            : "Monthly Donation",
+            ? "Annadana Seva - One-time Donation"
+            : "Annadana Seva - Monthly Donation",
 
         ...(type === "one"
           ? {
@@ -392,8 +391,8 @@ const data = await response.json();
   <section className="main-section" id="donate">
         <div className="box">
 
-          <h2>Support Subhojanam Seva</h2>
-          <p>Every meal brings comfort to caregivers watching over their loved ones</p>
+          <h2>Support Annadana Seva</h2>
+          <p>Every ₹25 feeds one soul — serve hot prasadam to the needy today</p>
 
           <div className="toggle">
             <button
@@ -552,11 +551,11 @@ const data = await response.json();
 
               <div className="date-row">
                 <div className="date-field-wrapper">
-                  <label className="date-label">Seva Date *</label>
+                  <label className="date-label">Seva Date (Optional)</label>
                   <input type="date" name="sevaDate" className="form-field" onChange={handleChange} />
                 </div>
                 <div className="date-field-wrapper">
-                  <label className="date-label">Date of Birth *</label>
+                  <label className="date-label">Date of Birth (Optional)</label>
                   <input type="date" name="dob" className="form-field" onChange={handleChange} />
                 </div>
               </div>
@@ -570,7 +569,7 @@ const data = await response.json();
               />
               
               <div className="meal-message">
-                ❤️ Your donation will feed {meals} caregivers today
+                ❤️ Your donation will serve {meals} hot meals today 🙏
               </div>
 
               {finalAmount >= 1000 && (
@@ -711,7 +710,7 @@ const data = await response.json();
 
               <label className="checkbox-row">
                 <input type="checkbox" name="updates" defaultChecked onChange={handleChange} />
-                <span>I wish to receive updates from Subhojanam</span>
+                <span>I wish to receive updates from ISKCON Visakhapatnam</span>
               </label>
 
             </div>

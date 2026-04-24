@@ -36,7 +36,6 @@ import WhySwasthya from "./components/WhySwasthya.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import ReceiptPreview from "./pages/ReceiptPreview.js";
 import Campaigns from "./admin/pages/Campaigns.jsx";
-import SeoManager from "./components/SeoManager.jsx";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("adminToken");
@@ -49,34 +48,6 @@ function ProtectedRoute({ children }) {
 }
 
 function Home() {
-  useEffect(() => {
-    let t1 = null;
-    let t2 = null;
-    const scrollToDonation = () => {
-      const donationSection = document.getElementById("donate") || document.getElementById("donation-section") || document.querySelector('.main-section');
-      if (donationSection) {
-        try {
-          donationSection.scrollIntoView({ behavior: 'auto', block: 'start' });
-        } catch (e) {
-          window.scrollTo(0, donationSection.offsetTop || 0);
-        }
-      }
-    };
-
-    
-    t1 = setTimeout(scrollToDonation, 60);
-    t2 = setTimeout(scrollToDonation, 500);
-
-    
-    window.addEventListener('load', scrollToDonation);
-
-    return () => {
-      if (t1) clearTimeout(t1);
-      if (t2) clearTimeout(t2);
-      window.removeEventListener('load', scrollToDonation);
-    };
-  }, []);
-
   return (
     <>
       <Top />
@@ -107,35 +78,32 @@ function Home() {
 
 function App() {
   return (
-    <>
-      <SeoManager />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/receipt-preview" element={<ReceiptPreview />} />
-        <Route path="/thankyou" element={<ThankYouPage />} />
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/x7k9m2p5q8w3" element={<Register />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="subscriptions" element={<Subscriptions />} />
-          <Route path="donors" element={<Donors />} />
-          <Route path="receipts" element={<Receipts />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="utm-stats" element={<UtmStats />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="campaigns" element={<Campaigns />} />
-        </Route>
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/receipt-preview" element={<ReceiptPreview />} />
+      <Route path="/thankyou" element={<ThankYouPage />} />
+      <Route path="/admin/login" element={<Login />} />
+      <Route path="/x7k9m2p5q8w3" element={<Register />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="transactions" element={<Transactions />} />
+        <Route path="subscriptions" element={<Subscriptions />} />
+        <Route path="donors" element={<Donors />} />
+        <Route path="receipts" element={<Receipts />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="utm-stats" element={<UtmStats />} />
+        <Route path="settings" element={<Settings />} />
+  <Route path="campaigns" element={<Campaigns />} />
+      </Route>
+    </Routes>
   );
 }
 
