@@ -43,24 +43,27 @@ function StickyDonateBar() {
   const [onForm, setOnForm] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const heroHeight = window.innerHeight * 0.6;
+    // Use IntersectionObserver instead of scroll events - no main thread blocking
+    const heroObserver = new IntersectionObserver(
+      ([entry]) => setVisible(!entry.isIntersecting),
+      { threshold: 0 }
+    );
 
-      // Show after scrolling past 60% of viewport
-      setVisible(scrollY > heroHeight);
+    const formObserver = new IntersectionObserver(
+      ([entry]) => setOnForm(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
 
-      // Hide when user is on the donation form section
-      const form = document.querySelector('.main-section');
-      if (form) {
-        const formTop = form.getBoundingClientRect().top;
-        const formBottom = form.getBoundingClientRect().bottom;
-        setOnForm(formTop < window.innerHeight && formBottom > 0);
-      }
+    const hero = document.querySelector('.hero');
+    const form = document.querySelector('.main-section');
+
+    if (hero) heroObserver.observe(hero);
+    if (form) formObserver.observe(form);
+
+    return () => {
+      heroObserver.disconnect();
+      formObserver.disconnect();
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToForm = () => {
