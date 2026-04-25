@@ -14,7 +14,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'icons': ['lucide-react', 'react-icons'],
           'admin': [
             './src/admin/pages/Login.jsx',
             './src/admin/pages/Register.jsx',
@@ -30,19 +29,7 @@ export default defineConfig({
           ],
         },
       },
-      treeshake: {
-        moduleSideEffects: false,
-        propertyReadSideEffects: false,
-      },
     },
     chunkSizeWarningLimit: 600,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info'],
-      },
-    },
   },
 })
