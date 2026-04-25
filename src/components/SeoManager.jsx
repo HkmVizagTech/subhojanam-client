@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const SITE_URL = "https://annadan.harekrishnavizag.org";
-const DEFAULT_IMAGE = "https://storage.googleapis.com/subhojanam/hero.webp";
+const DEFAULT_IMAGE = "/images/hero.webp";
 const DEFAULT_TITLE =
   "Annadana Seva | Donate Meals for Needy People in Visakhapatnam";
 const DEFAULT_DESCRIPTION =

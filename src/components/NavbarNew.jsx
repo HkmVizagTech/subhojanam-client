@@ -12,7 +12,7 @@ export default function NavbarNew() {
     <header className="navbar2">
       <div className="navbar2__container">
         <div className="navbar2__logo">
-          <img src={'https://storage.googleapis.com/subhojanam/logo.png'} alt="Hare Krishna Logo" />
+          <img src={'/images/logo.webp'} alt="Hare Krishna Movement Visakhapatnam" width="222" height="120" fetchPriority="high" />
         </div>
 
         <div className="navbar2__buttons">
