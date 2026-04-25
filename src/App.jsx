@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate, useEffect, useState } from "react";
-import { lazy, Suspense } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Navbar from "./components/NavbarNew";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
