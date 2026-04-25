@@ -14,7 +14,7 @@ function Navbar() {
       <div className="navbar__container">
 
         <div className="navbar__logo">
-          <img src={"/images/logo.webp"} alt="Hare Krishna Movement Visakhapatnam" width="222" height="120" fetchPriority="high" />
+          <img src={"https://storage.googleapis.com/subhojanam/logo.png"} alt="Hare Krishna Movement Visakhapatnam" fetchPriority="high" />
         </div>
 
         <div className="navbar__buttons">
