@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react({
@@ -14,9 +13,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Core React - loads first
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Admin bundle - only loads on /admin routes
+          'icons': ['lucide-react', 'react-icons'],
           'admin': [
             './src/admin/pages/Login.jsx',
             './src/admin/pages/Register.jsx',
@@ -32,8 +30,19 @@ export default defineConfig({
           ],
         },
       },
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+      },
     },
-    // Reduce chunk size warnings
     chunkSizeWarningLimit: 600,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info'],
+      },
+    },
   },
 })
