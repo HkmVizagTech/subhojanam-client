@@ -685,3 +685,58 @@
     font-size: 8px;
   }
 }
+
+/* =============================
+   STICKY MOBILE DONATE BUTTON
+   ============================= */
+.sticky-donate-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sticky-donate-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #FBA630 0%, #f59a1a 100%);
+    padding: 12px 20px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(251, 166, 48, 0.4);
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .sticky-donate-bar.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sticky-donate-bar__btn {
+    background: white;
+    color: #e67e00;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  .sticky-donate-bar__text {
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 2px;
+  }
+}

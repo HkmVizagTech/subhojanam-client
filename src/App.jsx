@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useEffect, useState } from "react";
 import { lazy, Suspense } from "react";
 import Navbar from "./components/NavbarNew";
 import Hero from "./components/Hero";
@@ -38,6 +38,47 @@ const Receipts = lazy(() => import("./admin/pages/Receipts.jsx"));
 const Campaigns = lazy(() => import("./admin/pages/Campaigns.jsx"));
 const ReceiptPreview = lazy(() => import("./pages/ReceiptPreview.js"));
 
+function StickyDonateBar() {
+  const [visible, setVisible] = useState(false);
+  const [onForm, setOnForm] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const heroHeight = window.innerHeight * 0.6;
+
+      // Show after scrolling past 60% of viewport
+      setVisible(scrollY > heroHeight);
+
+      // Hide when user is on the donation form section
+      const form = document.querySelector('.main-section');
+      if (form) {
+        const formTop = form.getBoundingClientRect().top;
+        const formBottom = form.getBoundingClientRect().bottom;
+        setOnForm(formTop < window.innerHeight && formBottom > 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToForm = () => {
+    const form = document.querySelector('.main-section');
+    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const isHidden = !visible || onForm;
+
+  return (
+    <div className={`sticky-donate-bar${isHidden ? ' hidden' : ''}`}>
+      <button className="sticky-donate-bar__btn" onClick={scrollToForm}>
+        🙏 Donate Now — ₹25 feeds one soul
+      </button>
+    </div>
+  );
+}
+
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("adminToken");
   if (!token) {
@@ -70,6 +111,7 @@ function Home() {
         <Footer />
       </Suspense>
       <ScrollToTop />
+      <StickyDonateBar />
     </>
   );
 }
