@@ -115,7 +115,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 1;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 25;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -459,7 +459,7 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-                min="1"
+                min="25"
                 placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
@@ -468,7 +468,7 @@ const data = await response.json();
             />
               {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
                 <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
-                  Minimum amount for donation is 1
+                  Minimum amount for donation is 25
                 </div>
               )}
           </div>
@@ -489,7 +489,7 @@ const data = await response.json();
                 setErrorMessage("");
                 await new Promise((resolve) => setTimeout(resolve, 1500));
                 setMinAmountLoading(false);
-                setErrorMessage("Minimum amount for donation is 1");
+                setErrorMessage("Minimum amount for donation is 25");
                 return;
               } else {
                 setErrorMessage("");
