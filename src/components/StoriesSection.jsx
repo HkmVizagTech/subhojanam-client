@@ -32,7 +32,7 @@ function StoriesSection() {
 
           <div className="story-user">
             <div className="avatar">
-              <img src={"https://storage.googleapis.com/subhojanam/savitriamma.png"} loading="lazy" alt="Savitri Amma" />
+              <img src={"/images/savitriamma.webp"} loading="lazy" alt="Savitri Amma" />
             </div>
             <div>
               <strong>Savitri Amma</strong>
@@ -59,7 +59,7 @@ function StoriesSection() {
 
           <div className="story-user">
             <div className="avatar">
-              <img src={"https://storage.googleapis.com/subhojanam/rajesh.png"} loading="lazy" alt="Rajesh" />
+              <img src={"/images/rajesh.webp"} loading="lazy" alt="Rajesh" />
             </div>
             <div>
               <strong>Rajesh</strong>
@@ -86,7 +86,7 @@ function StoriesSection() {
 
           <div className="story-user">
             <div className="avatar">
-              <img src={"https://storage.googleapis.com/subhojanam/gouri.png"} loading="lazy" alt="Gouri" />
+              <img src={"/images/gouri.webp"} loading="lazy" alt="Gouri" />
             </div>
             <div>
               <strong>Gouri</strong>

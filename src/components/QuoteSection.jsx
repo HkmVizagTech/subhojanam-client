@@ -8,7 +8,7 @@ function QuoteSection() {
       <div className="quote-box">
 
         <div className="left">
-          <img src={"https://storage.googleapis.com/subhojanam/prabhu.jpg"} loading="lazy" alt="Srila Prabhupada" />
+          <img src={"/images/prabhu.webp"} loading="lazy" alt="Srila Prabhupada" />
         </div>
 
         <div className="right">

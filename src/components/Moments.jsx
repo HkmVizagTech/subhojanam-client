@@ -20,13 +20,13 @@ function Moments() {
       <div className="slider">
         <div className="slide-track">
 
-          <img src={"https://storage.googleapis.com/subhojanam/img1.png"} loading="lazy" alt="" />
-          <img src={"https://storage.googleapis.com/subhojanam/img2.png"} loading="lazy" alt="" />
-          <img src={"https://storage.googleapis.com/subhojanam/img3.png"} loading="lazy" alt="" />
+          <img src={"/images/img1.webp"} loading="lazy" alt="" />
+          <img src={"/images/img2.webp"} loading="lazy" alt="" />
+          <img src={"/images/img3.webp"} loading="lazy" alt="" />
 
-            <img src={"https://storage.googleapis.com/subhojanam/img1.png"} loading="lazy" alt="" />
-          <img src={"https://storage.googleapis.com/subhojanam/img2.png"} loading="lazy" alt="" />
-          <img src={"https://storage.googleapis.com/subhojanam/img3.png"} loading="lazy" alt="" />
+            <img src={"/images/img1.webp"} loading="lazy" alt="" />
+          <img src={"/images/img2.webp"} loading="lazy" alt="" />
+          <img src={"/images/img3.webp"} loading="lazy" alt="" />
 
         </div>
       </div>

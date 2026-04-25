@@ -17,7 +17,7 @@ function MealSection() {
 
       <div className="meal-box">
 
-        <img src={"https://storage.googleapis.com/subhojanam/meal.png"} loading="lazy" alt="Meal Plate" className="meal-img" />
+        <img src={"/images/meal.webp"} loading="lazy" alt="Meal Plate" className="meal-img" />
 
         <div className="meal-items">
 
