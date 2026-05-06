@@ -64,31 +64,3 @@
   content-visibility: auto;
   contain-intrinsic-size: 0 500px;
 }
-
-/* Urgency text — fades out after 4s */
-.hero__urgency {
-  position: absolute;
-  bottom: 40px;
-  left: 48px;
-  z-index: 2;
-  opacity: 1;
-  transition: opacity 1s ease;
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  line-height: 1.5;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-}
-
-@media (max-width: 768px) {
-  .hero__urgency {
-    left: 0;
-    right: 0;
-    bottom: 48px;
-    text-align: center;
-    padding: 0 24px;
-    font-size: 14px;
-  }
-}
