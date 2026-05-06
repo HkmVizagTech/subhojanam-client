@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, FileText, Check } from "lucide-react";
 import "../styles/donation.css";
 import { fbEvent } from "../lib/fbPixel";
+import { getMetaBrowserIds } from "../utils/tracking.js";
 
 function DonationSection() {
 
@@ -282,6 +283,7 @@ function DonationSection() {
       try {
         utm = JSON.parse(localStorage.getItem("utm"));
       } catch {}
+      const tracking = getMetaBrowserIds();
 
       const response = await fetch(
         `https://subhojanam-server-main-882278565284.asia-south1.run.app/api/payment/${endpoint}`,
@@ -292,6 +294,7 @@ function DonationSection() {
           body: JSON.stringify({
             ...formData,
             amount: finalAmount,
+            tracking,
             ...(utm ? { utm } : {})
           })
         }
@@ -346,6 +349,7 @@ const data = await response.json();
             email: formData.email,
             method: "Razorpay",
             type: type === "one" ? "One-Time" : "Monthly",
+            currency: "INR",
             donationId: data.donationId,
             certificate: formData.certificate
           });

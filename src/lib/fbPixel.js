@@ -38,7 +38,7 @@ export const fbEvent = {
       value: amount,
       num_items: Math.floor(amount / 25),
       content_ids: [paymentId],
-    });
+    }, paymentId ? { eventID: paymentId } : undefined);
   },
 
   /**
