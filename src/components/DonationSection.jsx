@@ -59,7 +59,7 @@ function DonationSection() {
   }, []);
 
   const [type, setType] = useState("one");
-  const [selectedAmount, setSelectedAmount] = useState(null);
+  const [selectedAmount, setSelectedAmount] = useState(501);
   const [customAmount, setCustomAmount] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -87,9 +87,9 @@ function DonationSection() {
   });
 
   const donationOptions = [
-    { amount: 251, meals: 10 },
-    { amount: 500, meals: 20 },
-    { amount: 1000, meals: 40, popular: true },
+    { amount: 501, meals: 20 },
+    { amount: 751, meals: 30, popular: true },
+    { amount: 1251, meals: 50 },
     { amount: 2500, meals: 100 }
   ];
 
