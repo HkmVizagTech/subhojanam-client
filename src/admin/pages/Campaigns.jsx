@@ -64,6 +64,12 @@ function Campaigns() {
     }
   };
 
+  const getSlugUrl = (campaign) => {
+    if (!campaign?.utm?.campaign) return "";
+    const base = window.location.origin.replace("/admin", "");
+    return `${base}/c/${campaign.utm.campaign}`;
+  };
+
   const handleCopy = url => {
     navigator.clipboard.writeText(url);
     setToast("Copied!");
@@ -138,9 +144,9 @@ function Campaigns() {
                 <tr>
                   <th>Name</th>
                   <th>UTM Campaign</th>
-                  <th>URL</th>
+                  <th>UTM URL</th>
+                  <th>Short Slug URL</th>
                   <th>Status</th>
-                  <th>Copy</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -151,16 +157,24 @@ function Campaigns() {
                     <td>{c.utm?.campaign}</td>
                     <td className="url-cell">
                       <a href={c.generatedUrl} target="_blank" rel="noopener noreferrer">{c.generatedUrl}</a>
+                      <button className="copy-btn" onClick={() => handleCopy(c.generatedUrl)} title="Copy UTM URL">
+                        <Copy size={16} />
+                      </button>
+                    </td>
+                    <td className="url-cell">
+                      {c.utm?.campaign ? (
+                        <>
+                          <a href={getSlugUrl(c)} target="_blank" rel="noopener noreferrer">{getSlugUrl(c)}</a>
+                          <button className="copy-btn" onClick={() => handleCopy(getSlugUrl(c))} title="Copy Short URL">
+                            <Copy size={16} />
+                          </button>
+                        </>
+                      ) : "—"}
                     </td>
                     <td>
                       <span className={c.isActive ? "status-active-badge" : "status-inactive-badge"} title={c.isActive ? "Active" : "Inactive"}>
                         {c.isActive ? "Active" : "Inactive"}
                       </span>
-                    </td>
-                    <td>
-                      <button className="copy-btn" onClick={() => handleCopy(c.generatedUrl)} title="Copy URL">
-                        <Copy size={16} />
-                      </button>
                     </td>
                     <td>
                       <button className="copy-btn" style={{color:'#ef4444'}} onClick={() => handleDelete(c._id)} title="Delete Campaign">

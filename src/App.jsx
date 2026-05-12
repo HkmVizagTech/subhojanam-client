@@ -124,6 +124,7 @@ function App() {
     <Suspense fallback={null}>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/c/:slug" element={<Home />} />
         <Route path="/receipt-preview" element={<ReceiptPreview />} />
         <Route path="/thankyou" element={<ThankYouPage />} />
         <Route path="/admin/login" element={<Login />} />

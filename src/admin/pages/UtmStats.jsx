@@ -237,6 +237,7 @@ function UtmStats() {
               <thead>
                 <tr>
                   <th>Source</th>
+                  <th>Medium</th>
                   <th>Donations</th>
                   <th>Amount</th>
                 </tr>
@@ -263,6 +264,7 @@ function UtmStats() {
                         <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
                         {row._id?.source || "(none)"}
                       </td>
+                      <td>{row._id?.medium || "(none)"}</td>
                       <td>{row.count}</td>
                       <td>{String.fromCharCode(8377)}{row.totalAmount.toLocaleString()}</td>
                     </tr>

@@ -4,23 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { Lock, FileText, Check } from "lucide-react";
 import "../styles/donation.css";
 import { fbEvent } from "../lib/fbPixel";
-import { getMetaBrowserIds } from "../utils/tracking.js";
+import { getMetaBrowserIds, captureTrackingData, getStoredTracking } from "../utils/tracking.js";
 
 function DonationSection() {
 
   useEffect(() => {
+    // Capture all tracking data — UTM, ref param, slug, or auto-referrer
+    captureTrackingData();
+
     const params = new URLSearchParams(window.location.search);
-    const utmData = {
-      source: params.get("utm_source"),
-      medium: params.get("utm_medium"),
-      campaign: params.get("utm_campaign"),
-      content: params.get("utm_content"),
-      term: params.get("utm_term")
-    };
-    
-    if (Object.values(utmData).some(Boolean)) {
-      localStorage.setItem("utm", JSON.stringify(utmData));
-    }
     
     const amountParam = params.get('amount');
     if (amountParam && !isNaN(Number(amountParam))) {
@@ -286,7 +278,7 @@ function DonationSection() {
       
       let utm = null;
       try {
-        utm = JSON.parse(localStorage.getItem("utm"));
+        utm = getStoredTracking();
       } catch {}
       const tracking = getMetaBrowserIds();
 
