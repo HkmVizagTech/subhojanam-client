@@ -1,6 +1,6 @@
-import { CheckCircle, Heart, Utensils, ArrowLeft, Download } from "lucide-react";
+import { CheckCircle, Heart, Utensils, ArrowLeft, Download, Share2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/thankyou.css";
 import logo from "../assets/logo.png"
 
@@ -19,8 +19,37 @@ const ThankYouPage = () => {
     date: searchParams.get("date") || new Date().toLocaleDateString("en-IN", {
       year: "numeric", month: "long", day: "numeric",
     }),
-    seva: "Subhojanam Seva",
+    seva: "Annadana Seva",
     method: searchParams.get("method") || "UPI",
+  };
+
+  // Fire GA4 purchase event on page load
+  useEffect(() => {
+    try {
+      if (typeof window.gtag === "function" && paymentDetails.transactionId) {
+        window.gtag("event", "purchase", {
+          transaction_id: paymentDetails.transactionId,
+          value: parseFloat(String(paymentDetails.amount).replace(/,/g, "")) || 0,
+          currency: "INR",
+          items: [{
+            item_id: "annadana-seva",
+            item_name: "Annadana Seva Donation",
+            quantity: 1,
+            price: parseFloat(String(paymentDetails.amount).replace(/,/g, "")) || 0,
+          }],
+        });
+      }
+    } catch (e) {
+      console.error("GA4 purchase event error:", e);
+    }
+  }, []);
+
+  const handleWhatsAppShare = () => {
+    const meals = Math.floor(
+      parseFloat(String(paymentDetails.amount).replace(/,/g, "")) / 25
+    ) || 20;
+    const message = `🙏 I just donated ₹${paymentDetails.amount} through ISKCON Visakhapatnam's Annadana Seva and fed ${meals} people today!\n\nYou can also offer your seva here:\nhttps://annadan.harekrishnavizag.org\n\nHare Krishna! 🙏`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const handleDownloadReceipt = async () => {
@@ -88,9 +117,9 @@ const ThankYouPage = () => {
               <Utensils />
             </div>
             <div>
-              <h2 className="message-card-title">Subhojanam Seva</h2>
+              <h2 className="message-card-title">Annadana Seva</h2>
               <p className="message-card-text">
-                Your contribution will help provide <strong>free nutritious meals</strong> to those in need through the Hare Krishna Movement's Subhojanam Seva program.
+                Your contribution will help provide <strong>free nutritious meals</strong> to needy people and patient attendants at government hospitals through ISKCON Visakhapatnam's Annadana Seva program.
               </p>
             </div>
           </div>
@@ -130,6 +159,10 @@ const ThankYouPage = () => {
               {downloading ? "Downloading..." : "Download 80G Receipt"}
             </button>
           )}
+          <button className="btn-whatsapp" onClick={handleWhatsAppShare}>
+            <Share2 />
+            Share on WhatsApp
+          </button>
           <a href="/" className="btn-back">
             <ArrowLeft />
             Back to Home
@@ -137,10 +170,10 @@ const ThankYouPage = () => {
         </div>
 
         <p className="thankyou-footer">
-          A confirmation email has been sent to {paymentDetails.email}.<br />
+          A confirmation has been sent to {paymentDetails.email}.<br />
           {hasCertificate && "Your 80G receipt will also be sent via WhatsApp shortly."}<br />
           For queries, contact{" "}
-          <a href="mailto:seva@harekrishna.org">seva@harekrishna.org</a>
+          <a href="mailto:mukunda@hkmvizag.org">mukunda@hkmvizag.org</a>
         </p>
       </div>
     </div>

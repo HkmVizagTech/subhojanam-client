@@ -405,7 +405,7 @@ const data = await response.json();
         <div className="box">
 
           <h2>Support Annadana Seva</h2>
-          <p>Every ₹25 feeds one soul — serve hot prasadam to the needy today</p>
+          <p>₹351 feeds 14 people — serve hot prasadam to the needy today</p>
 
           <div className="toggle">
             <button

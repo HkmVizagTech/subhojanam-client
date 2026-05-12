@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import SeoManager from "./components/SeoManager.jsx";
 
 // Lazy load below-fold components
 const DonationCards = lazy(() => import("./components/DonationCards"));
@@ -76,7 +77,7 @@ function StickyDonateBar() {
   return (
     <div className={`sticky-donate-bar${isHidden ? ' hidden' : ''}`}>
       <button className="sticky-donate-bar__btn" onClick={scrollToForm}>
-        🙏 Donate Now — ₹25 feeds one soul
+        🙏 Donate Now — ₹351 feeds 14 people
       </button>
     </div>
   );
@@ -122,6 +123,7 @@ function Home() {
 function App() {
   return (
     <Suspense fallback={null}>
+      <SeoManager />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/c/:slug" element={<Home />} />

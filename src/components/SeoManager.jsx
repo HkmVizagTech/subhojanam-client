@@ -80,6 +80,17 @@ function removeJsonLd(id) {
 }
 
 function getPageSeo(pathname) {
+  if (pathname.startsWith("/c/")) {
+    const slug = pathname.replace("/c/", "");
+    return {
+      title: `${slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())} | Annadana Seva`,
+      description: DEFAULT_DESCRIPTION,
+      keywords: DEFAULT_KEYWORDS,
+      robots: "index, follow",
+      canonical: `${SITE_URL}/c/${slug}`,
+    };
+  }
+
   if (pathname === "/") {
     return {
       title: DEFAULT_TITLE,
