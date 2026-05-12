@@ -78,6 +78,11 @@ function DonationSection() {
     mahaprasadam: false,
     prasadamAddressOption: "same",
     prasadamAddress: "",
+    prasadamName: "",
+    prasadamMobile: "",
+    prasadamCity: "",
+    prasadamState: "",
+    prasadamPincode: "",
     panNumber: "",
     address: "",
     city: "",
@@ -294,14 +299,18 @@ function DonationSection() {
           body: JSON.stringify({
             ...formData,
             amount: finalAmount,
-            // Resolve prasadam address correctly for both cases
+            // Resolve prasadam address correctly for all cases
             prasadamAddress: formData.mahaprasadam
               ? formData.certificate && formData.prasadamAddressOption === "same"
-                // Case 1: Has certificate + selected "same" → use certificate address
+                // Case 1: Certificate + same address → use certificate address
                 ? `${formData.address || ""}, ${formData.city || ""}, ${formData.state || ""} - ${formData.pincode || ""}`.trim().replace(/^,\s*/, "")
-                // Case 2: No certificate OR selected "different" → use typed address
-                : formData.prasadamAddress
+                // Case 2: No certificate OR different address → use typed address
+                : `${formData.prasadamAddress || ""}, ${formData.prasadamCity || ""}, ${formData.prasadamState || ""} - ${formData.prasadamPincode || ""}`.trim().replace(/^,\s*/, "")
               : "",
+            prasadamName: formData.mahaprasadam && (!formData.certificate || formData.prasadamAddressOption === "different")
+              ? formData.prasadamName : "",
+            prasadamMobile: formData.mahaprasadam && (!formData.certificate || formData.prasadamAddressOption === "different")
+              ? formData.prasadamMobile : "",
             tracking,
             ...(utm ? { utm } : {})
           })
@@ -600,56 +609,91 @@ const data = await response.json();
 
               {formData.mahaprasadam && finalAmount >= 1000 && (
                 <div className="prasadam-address-section">
-                  <p className="section-label">Maha Prasadam Delivery Address:</p>
+                  <p className="section-label">Maha Prasadam Delivery Details:</p>
 
                   {/* Only show "Same as above" if certificate address was filled */}
                   {formData.certificate && (
                     <>
                       <label className="radio-row">
-                        <input 
-                          type="radio" 
-                          name="prasadamAddressOption" 
+                        <input
+                          type="radio"
+                          name="prasadamAddressOption"
                           value="same"
                           checked={formData.prasadamAddressOption === "same"}
                           onChange={handleChange}
                         />
                         <span>Same as certificate address</span>
                       </label>
-
                       <label className="radio-row">
-                        <input 
-                          type="radio" 
-                          name="prasadamAddressOption" 
+                        <input
+                          type="radio"
+                          name="prasadamAddressOption"
                           value="different"
                           checked={formData.prasadamAddressOption === "different"}
                           onChange={handleChange}
                         />
-                        <span>I want to provide different address</span>
+                        <span>Deliver to a different address</span>
                       </label>
-
-                      {formData.prasadamAddressOption === "different" && (
-                        <textarea
-                          name="prasadamAddress"
-                          placeholder="Enter complete delivery address with pincode *"
-                          className="form-field address-textarea"
-                          rows="4"
-                          onChange={handleChange}
-                          value={formData.prasadamAddress}
-                        />
-                      )}
                     </>
                   )}
 
-                  {/* If no certificate selected — show address input directly */}
-                  {!formData.certificate && (
-                    <textarea
-                      name="prasadamAddress"
-                      placeholder="Enter complete delivery address with pincode *"
-                      className="form-field address-textarea"
-                      rows="4"
-                      onChange={handleChange}
-                      value={formData.prasadamAddress}
-                    />
+                  {/* Show delivery fields when:
+                      - No certificate selected, OR
+                      - Certificate selected but "different" chosen */}
+                  {(!formData.certificate || formData.prasadamAddressOption === "different") && (
+                    <div className="prasadam-fields">
+                      <input
+                        type="text"
+                        name="prasadamName"
+                        placeholder="Recipient Name *"
+                        className="form-field"
+                        onChange={handleChange}
+                        value={formData.prasadamName}
+                      />
+                      <input
+                        type="tel"
+                        name="prasadamMobile"
+                        placeholder="Recipient Mobile Number *"
+                        className="form-field"
+                        onChange={handleChange}
+                        value={formData.prasadamMobile}
+                      />
+                      <textarea
+                        name="prasadamAddress"
+                        placeholder="Door No, Street, Area *"
+                        className="form-field address-textarea"
+                        rows="3"
+                        onChange={handleChange}
+                        value={formData.prasadamAddress}
+                      />
+                      <div className="address-row">
+                        <input
+                          type="text"
+                          name="prasadamCity"
+                          placeholder="City *"
+                          className="form-field"
+                          onChange={handleChange}
+                          value={formData.prasadamCity}
+                        />
+                        <input
+                          type="text"
+                          name="prasadamPincode"
+                          placeholder="Pincode *"
+                          className="form-field"
+                          onChange={handleChange}
+                          value={formData.prasadamPincode}
+                          maxLength="6"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        name="prasadamState"
+                        placeholder="State *"
+                        className="form-field"
+                        onChange={handleChange}
+                        value={formData.prasadamState}
+                      />
+                    </div>
                   )}
                 </div>
               )}
