@@ -124,9 +124,32 @@ function captureTrackingData() {
 
   // 5. Auto-detect from referrer
   const { source, medium } = detectReferrerSource();
+
+  // 6. Always record which domain the donation came from
+  const hostname = window.location.hostname;
+  let domainSource = source;
+  let domainMedium = medium;
+
+  if (source === "direct" || source === "unknown") {
+    // No referrer — record the domain itself as source
+    if (hostname.includes("donations.harekrishnavizag")) {
+      domainSource = "donations-site";
+      domainMedium = "organic";
+    } else if (hostname.includes("annadan.harekrishnavizag")) {
+      domainSource = "annadan-site";
+      domainMedium = "organic";
+    } else if (hostname.includes("iskconcharity")) {
+      domainSource = "iskconcharity-site";
+      domainMedium = "organic";
+    } else {
+      domainSource = hostname || "direct";
+      domainMedium = "organic";
+    }
+  }
+
   const utmData = {
-    source,
-    medium,
+    source: domainSource,
+    medium: domainMedium,
     campaign: "",
     content: "",
     term: "",
