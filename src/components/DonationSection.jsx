@@ -294,6 +294,12 @@ function DonationSection() {
           body: JSON.stringify({
             ...formData,
             amount: finalAmount,
+            // If prasadam address is "same as certificate", send the actual address
+            prasadamAddress: formData.mahaprasadam
+              ? formData.prasadamAddressOption === "same"
+                ? `${formData.address || ""}, ${formData.city || ""}, ${formData.state || ""} - ${formData.pincode || ""}`.trim().replace(/^,\s*/, "")
+                : formData.prasadamAddress
+              : "",
             tracking,
             ...(utm ? { utm } : {})
           })
