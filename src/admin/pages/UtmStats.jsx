@@ -92,7 +92,7 @@ function UtmStats() {
             <Search size={18} />
             <input
               type="text"
-              placeholder="Search UTM source..."
+              placeholder="Search source, medium, campaign..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="utm-source-search"
@@ -238,6 +238,7 @@ function UtmStats() {
                 <tr>
                   <th>Source</th>
                   <th>Medium</th>
+                  <th>Campaign</th>
                   <th>Donations</th>
                   <th>Amount</th>
                 </tr>
@@ -247,24 +248,37 @@ function UtmStats() {
                   search.trim()
                     ? (row._id?.source || "(none)")
                         .toLowerCase()
+                        .includes(search.trim().toLowerCase()) ||
+                      (row._id?.campaign || "")
+                        .toLowerCase()
+                        .includes(search.trim().toLowerCase()) ||
+                      (row._id?.medium || "")
+                        .toLowerCase()
                         .includes(search.trim().toLowerCase())
                     : true
                 ).length === 0 ? (
-                  <tr><td colSpan={3} className="utm-empty-row">No data</td></tr>
+                  <tr><td colSpan={5} className="utm-empty-row">No data</td></tr>
                 ) : (
                   sourceBreakdownStats.filter(row =>
                     search.trim()
                       ? (row._id?.source || "(none)")
                           .toLowerCase()
+                          .includes(search.trim().toLowerCase()) ||
+                        (row._id?.campaign || "")
+                          .toLowerCase()
+                          .includes(search.trim().toLowerCase()) ||
+                        (row._id?.medium || "")
+                          .toLowerCase()
                           .includes(search.trim().toLowerCase())
                       : true
                   ).map(row => (
-                    <tr key={row._id ? row._id.campaign + row._id.source : "unknown"}>
+                    <tr key={row._id ? row._id.campaign + row._id.source + row._id.medium : "unknown"}>
                       <td className="utm-source-cell">
                         <Tag size={15} style={{ marginRight: 5, color: '#0A97EF' }} />
-                        {row._id?.source || "(none)"}
+                        {row._id?.source || "direct"}
                       </td>
-                      <td>{row._id?.medium || "(none)"}</td>
+                      <td>{row._id?.medium || "none"}</td>
+                      <td>{row._id?.campaign && row._id.campaign !== "direct" ? row._id.campaign : "—"}</td>
                       <td>{row.count}</td>
                       <td>{String.fromCharCode(8377)}{row.totalAmount.toLocaleString()}</td>
                     </tr>
