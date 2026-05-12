@@ -294,10 +294,12 @@ function DonationSection() {
           body: JSON.stringify({
             ...formData,
             amount: finalAmount,
-            // If prasadam address is "same as certificate", send the actual address
+            // Resolve prasadam address correctly for both cases
             prasadamAddress: formData.mahaprasadam
-              ? formData.prasadamAddressOption === "same"
+              ? formData.certificate && formData.prasadamAddressOption === "same"
+                // Case 1: Has certificate + selected "same" → use certificate address
                 ? `${formData.address || ""}, ${formData.city || ""}, ${formData.state || ""} - ${formData.pincode || ""}`.trim().replace(/^,\s*/, "")
+                // Case 2: No certificate OR selected "different" → use typed address
                 : formData.prasadamAddress
               : "",
             tracking,
@@ -599,30 +601,47 @@ const data = await response.json();
               {formData.mahaprasadam && finalAmount >= 1000 && (
                 <div className="prasadam-address-section">
                   <p className="section-label">Maha Prasadam Delivery Address:</p>
-                  
-                  <label className="radio-row">
-                    <input 
-                      type="radio" 
-                      name="prasadamAddressOption" 
-                      value="same"
-                      checked={formData.prasadamAddressOption === "same"}
-                      onChange={handleChange}
-                    />
-                    <span>Same as above</span>
-                  </label>
 
-                  <label className="radio-row">
-                    <input 
-                      type="radio" 
-                      name="prasadamAddressOption" 
-                      value="different"
-                      checked={formData.prasadamAddressOption === "different"}
-                      onChange={handleChange}
-                    />
-                    <span>I want to provide different address</span>
-                  </label>
+                  {/* Only show "Same as above" if certificate address was filled */}
+                  {formData.certificate && (
+                    <>
+                      <label className="radio-row">
+                        <input 
+                          type="radio" 
+                          name="prasadamAddressOption" 
+                          value="same"
+                          checked={formData.prasadamAddressOption === "same"}
+                          onChange={handleChange}
+                        />
+                        <span>Same as certificate address</span>
+                      </label>
 
-                  {formData.prasadamAddressOption === "different" && (
+                      <label className="radio-row">
+                        <input 
+                          type="radio" 
+                          name="prasadamAddressOption" 
+                          value="different"
+                          checked={formData.prasadamAddressOption === "different"}
+                          onChange={handleChange}
+                        />
+                        <span>I want to provide different address</span>
+                      </label>
+
+                      {formData.prasadamAddressOption === "different" && (
+                        <textarea
+                          name="prasadamAddress"
+                          placeholder="Enter complete delivery address with pincode *"
+                          className="form-field address-textarea"
+                          rows="4"
+                          onChange={handleChange}
+                          value={formData.prasadamAddress}
+                        />
+                      )}
+                    </>
+                  )}
+
+                  {/* If no certificate selected — show address input directly */}
+                  {!formData.certificate && (
                     <textarea
                       name="prasadamAddress"
                       placeholder="Enter complete delivery address with pincode *"
