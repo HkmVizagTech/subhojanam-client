@@ -13,7 +13,14 @@ function DonationSection() {
     captureTrackingData();
 
     const params = new URLSearchParams(window.location.search);
-    
+
+    // Auto-switch to monthly tab if ?type=monthly
+    const typeParam = params.get('type');
+    if (typeParam === 'monthly') {
+      setType('monthly');
+      setShowForm(true);
+    }
+
     const amountParam = params.get('amount');
     if (amountParam && !isNaN(Number(amountParam))) {
       
