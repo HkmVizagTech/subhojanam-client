@@ -103,7 +103,7 @@ function DonationSection() {
 
   const monthlyDonationOptions = [
     { amount: 500, meals: 20 },
-    { amount: 1000, meals: 40 },
+    { amount: 1000, meals: 40, popular: true },
     { amount: 1500, meals: 60 },
     { amount: 2000, meals: 80 },
     { amount: 2500, meals: 100 },
@@ -440,11 +440,11 @@ const data = await response.json();
                 key={item.amount}
                 className={`card 
                   ${selectedAmount === item.amount ? "selected" : ""}
-                  ${item.popular && type === "one" ? "special" : ""}
+                  ${item.popular ? "special" : ""}
                 `}
                 onClick={() => handleSelect(item.amount)}
               >
-                {item.popular && type === "one" && <div className="tag">MOST DONATED</div>}
+                {item.popular && <div className="tag">MOST DONATED</div>}
                 <h3>₹{item.amount.toLocaleString()}</h3>
                 <p>
                   {type === "monthly"
