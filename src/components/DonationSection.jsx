@@ -18,7 +18,11 @@ function DonationSection() {
     const typeParam = params.get('type');
     if (typeParam === 'monthly') {
       setType('monthly');
-      setShowForm(true);
+      // Scroll to donation section smoothly
+      setTimeout(() => {
+        const el = document.getElementById('donate');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
     }
 
     const amountParam = params.get('amount');
