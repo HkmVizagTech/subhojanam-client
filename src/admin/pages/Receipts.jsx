@@ -70,7 +70,7 @@ function Receipts() {
       const params = {
         page,
         limit: itemsPerPage,
-        status: "paid",
+        status: "all",
         hasReceipt: "true",
       };
       if (search) params.search = search;
