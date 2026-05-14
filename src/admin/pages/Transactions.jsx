@@ -489,17 +489,7 @@ function Transactions() {
                       setResending(true)
                       setResendResult(null)
                       try {
-                        const res = await fetch(
-                          `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/resend-receipt`,
-                          {
-                            method: "POST",
-                            headers: {
-                              "Content-Type": "application/json",
-                              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-                            },
-                          }
-                        )
-                        const data = await res.json()
+                        const data = await adminAPI.resendReceipt(selectedTransaction._id)
                         setResendResult(data)
                       } catch (err) {
                         setResendResult({ success: false, message: err.message })
@@ -520,18 +510,8 @@ function Transactions() {
                       setResending(true)
                       setResendResult(null)
                       try {
-                        const res = await fetch(
-                          `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/mark-receipt-generated`,
-                          {
-                            method: "PATCH",
-                            headers: {
-                              "Content-Type": "application/json",
-                              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-                            },
-                          }
-                        )
-                        const data = await res.json()
-                        setResendResult({ ...data, message: data.success ? "✅ Receipt marked — will now show in Receipts tab" : data.message })
+                        const data = await adminAPI.markReceiptGenerated(selectedTransaction._id)
+                        setResendResult({ ...data, message: data.success ? "Receipt marked — will now show in Receipts tab" : data.message })
                       } catch (err) {
                         setResendResult({ success: false, message: err.message })
                       } finally {

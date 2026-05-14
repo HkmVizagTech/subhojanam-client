@@ -123,6 +123,18 @@ class AdminAPI {
     return this.request(`/api/admin/transactions/${id}`);
   }
 
+  async resendReceipt(id) {
+    return this.request(`/api/admin/transactions/${id}/resend-receipt`, {
+      method: "POST",
+    });
+  }
+
+  async markReceiptGenerated(id) {
+    return this.request(`/api/admin/transactions/${id}/mark-receipt-generated`, {
+      method: "PATCH",
+    });
+  }
+
   async exportTransactions(params = {}) {
     const status = params.status || 'all';
     const queryParams = new URLSearchParams({
