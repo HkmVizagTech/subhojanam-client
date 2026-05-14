@@ -291,7 +291,10 @@ function DonationSection() {
       try {
         utm = getStoredTracking();
       } catch {}
-      const tracking = getMetaBrowserIds();
+      const tracking = {
+        ...getMetaBrowserIds(),
+        pageUrl: window.location.origin,
+      };
 
       const response = await fetch(
         `https://subhojanam-server-main-882278565284.asia-south1.run.app/api/payment/${endpoint}`,
