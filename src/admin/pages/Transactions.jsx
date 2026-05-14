@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Search, Download, Filter, Calendar, X, Check } from "lucide-react"
+import { Search, Download, Filter, Calendar, X, Check, Send } from "lucide-react"
 import adminAPI from "../../services/adminApi"
 import "../styles/Transactions.css"
 
@@ -16,6 +16,8 @@ function Transactions() {
   const [error, setError] = useState(null)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendResult, setResendResult] = useState(null)
 
   useEffect(() => {
     fetchTransactions()
@@ -480,6 +482,44 @@ function Transactions() {
                   </div>
                 </div>
               )}
+
+              <div className="detail-section">
+                <h3>Actions</h3>
+                <button
+                  className="resend-receipt-btn"
+                  disabled={resending}
+                  onClick={async () => {
+                    setResending(true)
+                    setResendResult(null)
+                    try {
+                      const res = await fetch(
+                        `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/resend-receipt`,
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+                          },
+                        }
+                      )
+                      const data = await res.json()
+                      setResendResult(data)
+                    } catch (err) {
+                      setResendResult({ success: false, message: err.message })
+                    } finally {
+                      setResending(false)
+                    }
+                  }}
+                >
+                  <Send size={16} />
+                  {resending ? "Sending..." : "Resend Receipt via WhatsApp"}
+                </button>
+                {resendResult && (
+                  <p className={`resend-result ${resendResult.success ? "success" : "error"}`}>
+                    {resendResult.success ? "✅ " : "❌ "}{resendResult.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
