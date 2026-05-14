@@ -42,15 +42,13 @@ function Transactions() {
   const fetchTransactions = async () => {
     try {
       setLoading(true)
-      // Map 'completed' to 'paid' for backend compatibility
-      const statusForBackend = filterStatus === 'completed' ? 'paid' : filterStatus;
       const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
       const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
       const response = await adminAPI.getAllTransactions({
         page: currentPage,
         limit: 10,
         search: searchTerm,
-        status: statusForBackend,
+        status: filterStatus,
         mahaprasadam: prasadamForBackend,
         certificate: certificateForBackend
       })
@@ -68,10 +66,8 @@ function Transactions() {
 
   const fetchStats = async () => {
     try {
-      
-      const statusForBackend = filterStatus === 'completed' ? 'paid' : filterStatus;
       const response = await adminAPI.getTransactionStats({
-        status: statusForBackend
+        status: filterStatus
       })
       setStats(response.stats)
     } catch (err) {
@@ -180,7 +176,7 @@ function Transactions() {
                   }}
                 >
                   <option value="all">All Status</option>
-                  <option value="completed">Paid</option>
+                  <option value="paid,active,completed">Paid</option>
                   <option value="pending">Pending</option>
                   <option value="failed">Failed</option>
                 </select>
