@@ -70,7 +70,7 @@ function Receipts() {
       const params = {
         page,
         limit: itemsPerPage,
-        status: "all",
+        status: "paid,completed",
         hasReceipt: "true",
       };
       if (search) params.search = search;
@@ -84,13 +84,7 @@ function Receipts() {
 
       const response = await adminAPI.getAllTransactions(params);
       const allTransactions = response.transactions || [];
-
-      // Filter only those with receiptNumber
-      const withReceipts = allTransactions.filter(
-        (txn) => txn.receiptNumber && txn.amount >= 1
-      );
-
-      setReceipts(withReceipts);
+      setReceipts(allTransactions);
       setPagination(response.pagination || null);
       setTotalAmount(response.pagination?.totalAmount || 0);
     } catch (err) {
