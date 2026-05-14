@@ -481,35 +481,68 @@ function Transactions() {
 
               <div className="detail-section">
                 <h3>Actions</h3>
-                <button
-                  className="resend-receipt-btn"
-                  disabled={resending}
-                  onClick={async () => {
-                    setResending(true)
-                    setResendResult(null)
-                    try {
-                      const res = await fetch(
-                        `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/resend-receipt`,
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-                          },
-                        }
-                      )
-                      const data = await res.json()
-                      setResendResult(data)
-                    } catch (err) {
-                      setResendResult({ success: false, message: err.message })
-                    } finally {
-                      setResending(false)
-                    }
-                  }}
-                >
-                  <Send size={16} />
-                  {resending ? "Sending..." : "Resend Receipt via WhatsApp"}
-                </button>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <button
+                    className="resend-receipt-btn"
+                    disabled={resending}
+                    onClick={async () => {
+                      setResending(true)
+                      setResendResult(null)
+                      try {
+                        const res = await fetch(
+                          `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/resend-receipt`,
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+                            },
+                          }
+                        )
+                        const data = await res.json()
+                        setResendResult(data)
+                      } catch (err) {
+                        setResendResult({ success: false, message: err.message })
+                      } finally {
+                        setResending(false)
+                      }
+                    }}
+                  >
+                    <Send size={16} />
+                    {resending ? "Sending..." : "Resend Receipt via WhatsApp"}
+                  </button>
+
+                  <button
+                    className="resend-receipt-btn"
+                    style={{ background: "#6b7280" }}
+                    disabled={resending}
+                    onClick={async () => {
+                      setResending(true)
+                      setResendResult(null)
+                      try {
+                        const res = await fetch(
+                          `${import.meta.env.VITE_API_URL}/api/admin/transactions/${selectedTransaction._id}/mark-receipt-generated`,
+                          {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+                            },
+                          }
+                        )
+                        const data = await res.json()
+                        setResendResult({ ...data, message: data.success ? "✅ Receipt marked — will now show in Receipts tab" : data.message })
+                      } catch (err) {
+                        setResendResult({ success: false, message: err.message })
+                      } finally {
+                        setResending(false)
+                      }
+                    }}
+                  >
+                    <Check size={16} />
+                    Fix Receipt Visibility (No WhatsApp)
+                  </button>
+                </div>
                 {resendResult && (
                   <p className={`resend-result ${resendResult.success ? "success" : "error"}`}>
                     {resendResult.success ? "✅ " : "❌ "}{resendResult.message}
