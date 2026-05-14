@@ -93,28 +93,30 @@ class AdminAPI {
   }
 
   async getAllTransactions(params = {}) {
+    const status = params.status || 'all';
     const query = {
       page: params.page || 1,
       limit: params.limit || 10,
       search: params.search || '',
-      status: params.status || 'all',
     };
     if (params.startDate) query.startDate = params.startDate;
     if (params.endDate) query.endDate = params.endDate;
     if (typeof params.mahaprasadam === 'boolean') query.mahaprasadam = params.mahaprasadam;
     if (typeof params.certificate === 'boolean') query.certificate = params.certificate;
+    if (params.hasReceipt) query.hasReceipt = params.hasReceipt;
     const queryParams = new URLSearchParams(query).toString();
-    return this.request(`/api/admin/transactions?${queryParams}`);
+    return this.request(`/api/admin/transactions?status=${status}&${queryParams}`);
   }
 
   async getTransactionStats(params = {}) {
+    const status = params.status || 'all';
     const queryParams = new URLSearchParams({
-      status: params.status || 'all',
       ...(params.startDate && { startDate: params.startDate }),
       ...(params.endDate && { endDate: params.endDate }),
     }).toString();
-
-    return this.request(`/api/admin/transactions/stats?${queryParams}`);
+    const statusParam = `status=${status}`;
+    const query = queryParams ? `${statusParam}&${queryParams}` : statusParam;
+    return this.request(`/api/admin/transactions/stats?${query}`);
   }
 
   async getTransactionById(id) {
@@ -122,13 +124,13 @@ class AdminAPI {
   }
 
   async exportTransactions(params = {}) {
+    const status = params.status || 'all';
     const queryParams = new URLSearchParams({
-      status: params.status || 'all',
       ...(params.startDate && { startDate: params.startDate }),
       ...(params.endDate && { endDate: params.endDate }),
     }).toString();
-
-    return this.request(`/api/admin/transactions/export?${queryParams}`);
+    const query = queryParams ? `status=${status}&${queryParams}` : `status=${status}`;
+    return this.request(`/api/admin/transactions/export?${query}`);
   }
 
   async getAllDonors(params = {}) {
