@@ -396,3 +396,5 @@
     font-size: 13px;
   }
 }
+
+.loading-inline { text-align: center; padding: 12px; color: #6b7280; font-size: 0.9rem; }

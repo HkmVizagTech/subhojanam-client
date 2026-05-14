@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   FileText,
   Search,
@@ -12,291 +12,152 @@ import adminAPI from "../../services/adminApi";
 import { useNavigate } from "react-router-dom";
 import "../styles/Receipts.css";
 
+const convertAmountToWords = (amount) => {
+  const ones = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  const tens = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];
+  const teens = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"];
+
+  const convertLessThanThousand = (num) => {
+    if (num === 0) return "";
+    if (num < 10) return ones[num];
+    if (num < 20) return teens[num - 10];
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? " " + ones[num % 10] : "");
+    return ones[Math.floor(num / 100)] + " HUNDRED" + (num % 100 ? " " + convertLessThanThousand(num % 100) : "");
+  };
+
+  const num = parseInt(amount);
+  if (num === 0) return "ZERO RUPEES ONLY";
+  let result = "";
+  const crore = Math.floor(num / 10000000);
+  const lakh = Math.floor((num % 10000000) / 100000);
+  const thousand = Math.floor((num % 100000) / 1000);
+  const remainder = num % 1000;
+  if (crore > 0) result += convertLessThanThousand(crore) + " CRORE ";
+  if (lakh > 0) result += convertLessThanThousand(lakh) + " LAKH ";
+  if (thousand > 0) result += convertLessThanThousand(thousand) + " THOUSAND ";
+  if (remainder > 0) result += convertLessThanThousand(remainder);
+  return result.trim() + " RUPEES ONLY";
+};
+
+const formatReceiptNumber = (number) => {
+  if (!number) return "N/A";
+  if (typeof number === "string" && number.includes("HKMI|")) return number;
+  return `HKMI|${new Date().getFullYear()}|D/VSP|${String(number).padStart(5, "0")}`;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString("en-IN", {
+    year: "numeric", month: "short", day: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+};
+
 function Receipts() {
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [pagination, setPagination] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const itemsPerPage = 20;
 
-  useEffect(() => {
-    fetchReceipts();
-  }, []);
-
-  const fetchReceipts = async () => {
+  const fetchReceipts = useCallback(async (page = 1, search = "", date = "") => {
     try {
       setLoading(true);
-      const response = await adminAPI.getAllTransactions({
-        limit: 1000,
+      const params = {
+        page,
+        limit: itemsPerPage,
         status: "paid",
-      });
+        hasReceipt: "true",
+      };
+      if (search) params.search = search;
+      if (date) {
+        params.startDate = date;
+        // end of that day
+        const end = new Date(date);
+        end.setHours(23, 59, 59, 999);
+        params.endDate = end.toISOString();
+      }
 
-      // console.log('API Response:', response)
-
+      const response = await adminAPI.getAllTransactions(params);
       const allTransactions = response.transactions || [];
 
-      const paidDonations = allTransactions.filter(
-        (txn) => txn.status === "paid" && txn.amount >= 1 && txn.receiptNumber,
+      // Filter only those with receiptNumber
+      const withReceipts = allTransactions.filter(
+        (txn) => txn.receiptNumber && txn.amount >= 1
       );
 
-      // console.log('Filtered receipts:', paidDonations)
+      setReceipts(withReceipts);
+      setPagination(response.pagination || null);
 
-      setReceipts(paidDonations);
+      // Calculate total for current page
+      setTotalAmount(withReceipts.reduce((sum, r) => sum + (r.amount || 0), 0));
     } catch (err) {
       console.error("Error fetching receipts:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleViewReceipt = (receipt) => {
-    const convertAmountToWords = (amount) => {
-      const ones = [
-        "",
-        "ONE",
-        "TWO",
-        "THREE",
-        "FOUR",
-        "FIVE",
-        "SIX",
-        "SEVEN",
-        "EIGHT",
-        "NINE",
-      ];
-      const tens = [
-        "",
-        "",
-        "TWENTY",
-        "THIRTY",
-        "FORTY",
-        "FIFTY",
-        "SIXTY",
-        "SEVENTY",
-        "EIGHTY",
-        "NINETY",
-      ];
-      const teens = [
-        "TEN",
-        "ELEVEN",
-        "TWELVE",
-        "THIRTEEN",
-        "FOURTEEN",
-        "FIFTEEN",
-        "SIXTEEN",
-        "SEVENTEEN",
-        "EIGHTEEN",
-        "NINETEEN",
-      ];
+  useEffect(() => {
+    fetchReceipts(1, searchTerm, dateFilter);
+  }, []);
 
-      const convertLessThanThousand = (num) => {
-        if (num === 0) return "";
-        if (num < 10) return ones[num];
-        if (num < 20) return teens[num - 10];
-        if (num < 100)
-          return (
-            tens[Math.floor(num / 10)] + (num % 10 ? " " + ones[num % 10] : "")
-          );
-        return (
-          ones[Math.floor(num / 100)] +
-          " HUNDRED" +
-          (num % 100 ? " " + convertLessThanThousand(num % 100) : "")
-        );
-      };
-
-      const num = parseInt(amount);
-      if (num === 0) return "ZERO RUPEES ONLY";
-
-      let result = "";
-      const crore = Math.floor(num / 10000000);
-      const lakh = Math.floor((num % 10000000) / 100000);
-      const thousand = Math.floor((num % 100000) / 1000);
-      const remainder = num % 1000;
-
-      if (crore > 0) result += convertLessThanThousand(crore) + " CRORE ";
-      if (lakh > 0) result += convertLessThanThousand(lakh) + " LAKH ";
-      if (thousand > 0)
-        result += convertLessThanThousand(thousand) + " THOUSAND ";
-      if (remainder > 0) result += convertLessThanThousand(remainder);
-
-      return result.trim() + " RUPEES ONLY";
-    };
-
-    const params = new URLSearchParams({
-      name: receipt.name,
-      amount: receipt.amount,
-      amountInWords: convertAmountToWords(receipt.amount),
-      receiptNumber: formatReceiptNumber(receipt.receiptNumber),
-      receiptDate: receipt.receiptGeneratedAt || receipt.date,
-      mobile: receipt.mobile,
-      email: receipt.email || "",
-      address: receipt.address || "",
-      city: receipt.city || "",
-      state: receipt.state || "",
-      pincode: receipt.pincode || "",
-      panNumber: receipt.panNumber || "",
-      certificate: receipt.certificate ? "YES" : "NO",
-      razorpayPaymentId: receipt.razorpayPaymentId || receipt.id,
-      donorNumber: receipt.externalApiResponse?.DonorNumber || "",
-    });
-
-    window.open(`/receipt-preview?${params.toString()}`, "_blank");
-  };
-
-  const handleDownloadReceipt = (receipt) => {
-    const convertAmountToWords = (amount) => {
-      const ones = [
-        "",
-        "ONE",
-        "TWO",
-        "THREE",
-        "FOUR",
-        "FIVE",
-        "SIX",
-        "SEVEN",
-        "EIGHT",
-        "NINE",
-      ];
-      const tens = [
-        "",
-        "",
-        "TWENTY",
-        "THIRTY",
-        "FORTY",
-        "FIFTY",
-        "SIXTY",
-        "SEVENTY",
-        "EIGHTY",
-        "NINETY",
-      ];
-      const teens = [
-        "TEN",
-        "ELEVEN",
-        "TWELVE",
-        "THIRTEEN",
-        "FOURTEEN",
-        "FIFTEEN",
-        "SIXTEEN",
-        "SEVENTEEN",
-        "EIGHTEEN",
-        "NINETEEN",
-      ];
-
-      const convertLessThanThousand = (num) => {
-        if (num === 0) return "";
-        if (num < 10) return ones[num];
-        if (num < 20) return teens[num - 10];
-        if (num < 100)
-          return (
-            tens[Math.floor(num / 10)] + (num % 10 ? " " + ones[num % 10] : "")
-          );
-        return (
-          ones[Math.floor(num / 100)] +
-          " HUNDRED" +
-          (num % 100 ? " " + convertLessThanThousand(num % 100) : "")
-        );
-      };
-
-      const num = parseInt(amount);
-      if (num === 0) return "ZERO RUPEES ONLY";
-
-      let result = "";
-      const crore = Math.floor(num / 10000000);
-      const lakh = Math.floor((num % 10000000) / 100000);
-      const thousand = Math.floor((num % 100000) / 1000);
-      const remainder = num % 1000;
-
-      if (crore > 0) result += convertLessThanThousand(crore) + " CRORE ";
-      if (lakh > 0) result += convertLessThanThousand(lakh) + " LAKH ";
-      if (thousand > 0)
-        result += convertLessThanThousand(thousand) + " THOUSAND ";
-      if (remainder > 0) result += convertLessThanThousand(remainder);
-
-      return result.trim() + " RUPEES ONLY";
-    };
-
-    const params = new URLSearchParams({
-      name: receipt.name,
-      amount: receipt.amount,
-      amountInWords: convertAmountToWords(receipt.amount),
-      receiptNumber: formatReceiptNumber(receipt.receiptNumber),
-      receiptDate: receipt.receiptGeneratedAt || receipt.date,
-      mobile: receipt.mobile,
-      email: receipt.email || "",
-      address: receipt.address || "",
-      city: receipt.city || "",
-      state: receipt.state || "",
-      pincode: receipt.pincode || "",
-      panNumber: receipt.panNumber || "",
-      donorNumber: receipt.externalApiResponse?.DonorNumber || "",
-      certificate: receipt.certificate ? "YES" : "NO",
-      razorpayPaymentId: receipt.razorpayPaymentId || receipt.id,
-      autoPrint: "true",
-    });
-
-    window.open(`/receipt-preview?${params.toString()}`, "_blank");
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const formatReceiptNumber = (number) => {
-    if (!number) return "N/A";
-
-    // If it's already a string containing the HKMI format, return as-is
-    if (typeof number === "string" && number.includes("HKMI|")) {
-      return number;
-    }
-
-    // If it's a number or needs formatting
-    return `HKMI|${new Date().getFullYear()}|D/VSP|${String(number).padStart(5, "0")}`;
-  };
-
-  const filteredReceipts = receipts.filter((receipt) => {
-    const matchesSearch =
-      receipt.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      receipt.mobile?.includes(searchTerm) ||
-      receipt.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      String(receipt.receiptNumber)?.includes(searchTerm);
-
-    const matchesDate =
-      !dateFilter ||
-      new Date(receipt.receiptGeneratedAt)
-        .toLocaleDateString("en-CA")
-        .includes(dateFilter);
-
-    return matchesSearch && matchesDate;
-  });
-
-  const totalPages = Math.ceil(filteredReceipts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentReceipts = filteredReceipts.slice(startIndex, endIndex);
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(searchInput);
+      setCurrentPage(1);
+      fetchReceipts(1, searchInput, dateFilter);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, dateFilter]);
+    fetchReceipts(1, searchTerm, dateFilter);
+  }, [dateFilter]);
 
-  if (loading) {
+  const handlePageChange = (newPage) => {
+    if (!pagination) return;
+    if (newPage < 1 || newPage > pagination.totalPages) return;
+    setCurrentPage(newPage);
+    fetchReceipts(newPage, searchTerm, dateFilter);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const openReceiptWindow = (receipt, autoPrint = false) => {
+    const params = new URLSearchParams({
+      name: receipt.name,
+      amount: receipt.amount,
+      amountInWords: convertAmountToWords(receipt.amount),
+      receiptNumber: formatReceiptNumber(receipt.receiptNumber),
+      receiptDate: receipt.receiptGeneratedAt || receipt.date,
+      mobile: receipt.mobile,
+      email: receipt.email || "",
+      address: receipt.address || "",
+      city: receipt.city || "",
+      state: receipt.state || "",
+      pincode: receipt.pincode || "",
+      panNumber: receipt.panNumber || "",
+      certificate: receipt.certificate ? "YES" : "NO",
+      razorpayPaymentId: receipt.razorpayPaymentId || receipt.id,
+      donorNumber: receipt.externalApiResponse?.DonorNumber || "",
+      ...(autoPrint ? { autoPrint: "true" } : {}),
+    });
+    window.open(`/receipt-preview?${params.toString()}`, "_blank");
+  };
+
+  const totalPages = pagination?.totalPages || 1;
+  const totalReceipts = pagination?.totalTransactions || receipts.length;
+
+  if (loading && receipts.length === 0) {
     return (
       <div className="receipts-page">
-        <div className="loading-state">
-          <p>Loading receipts...</p>
-        </div>
+        <div className="loading-state"><p>Loading receipts...</p></div>
       </div>
     );
   }
@@ -318,19 +179,14 @@ function Receipts() {
           <FileText size={24} />
           <div>
             <p>Total Receipts</p>
-            <h3>{receipts.length}</h3>
+            <h3>{totalReceipts.toLocaleString()}</h3>
           </div>
         </div>
         <div className="stat-card">
           <span style={{ fontSize: "24px", fontWeight: "bold" }}>₹</span>
           <div>
-            <p>Total Amount</p>
-            <h3>
-              ₹
-              {receipts
-                .reduce((sum, r) => sum + (r.amount || 0), 0)
-                .toLocaleString()}
-            </h3>
+            <p>This Page Amount</p>
+            <h3>₹{totalAmount.toLocaleString()}</h3>
           </div>
         </div>
       </div>
@@ -341,23 +197,23 @@ function Receipts() {
           <input
             type="text"
             placeholder="Search by name, mobile, email, or receipt number..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
-
         <div className="date-filter">
           <Calendar size={18} />
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            placeholder="Filter by date"
           />
         </div>
       </div>
 
-      {filteredReceipts.length === 0 ? (
+      {loading && <div className="loading-inline">Loading...</div>}
+
+      {!loading && receipts.length === 0 ? (
         <div className="empty-state">
           <FileText size={48} />
           <h3>No Receipts Found</h3>
@@ -380,7 +236,7 @@ function Receipts() {
                 </tr>
               </thead>
               <tbody>
-                {currentReceipts.map((receipt) => (
+                {receipts.map((receipt) => (
                   <tr key={receipt._id}>
                     <td className="receipt-number-cell">
                       {formatReceiptNumber(receipt.receiptNumber)}
@@ -389,9 +245,7 @@ function Receipts() {
                     <td className="donor-name-cell">{receipt.name}</td>
                     <td>{receipt.mobile}</td>
                     <td>{receipt.email || "N/A"}</td>
-                    <td className="amount-cell">
-                      ₹{receipt.amount.toLocaleString()}
-                    </td>
+                    <td className="amount-cell">₹{receipt.amount.toLocaleString()}</td>
                     <td>
                       {receipt.certificate ? (
                         <span className="badge-yes">YES</span>
@@ -403,14 +257,14 @@ function Receipts() {
                       <div className="action-buttons">
                         <button
                           className="btn-action btn-view"
-                          onClick={() => handleViewReceipt(receipt)}
+                          onClick={() => openReceiptWindow(receipt)}
                           title="View Receipt"
                         >
                           <Eye size={16} />
                         </button>
                         <button
                           className="btn-action btn-download"
-                          onClick={() => handleDownloadReceipt(receipt)}
+                          onClick={() => openReceiptWindow(receipt, true)}
                           title="Download Receipt"
                         >
                           <Download size={16} />
@@ -423,30 +277,24 @@ function Receipts() {
             </table>
           </div>
 
-          <div className="pagination">
-            <div className="pagination-info">
-              Showing {startIndex + 1} to{" "}
-              {Math.min(endIndex, filteredReceipts.length)} of{" "}
-              {filteredReceipts.length} receipts
-            </div>
-            <div className="pagination-controls">
-              <button
-                className="pagination-btn"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft size={18} />
-                Previous
-              </button>
-
-              <div className="pagination-numbers">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => {
-                    if (
-                      page === 1 ||
-                      page === totalPages ||
-                      (page >= currentPage - 1 && page <= currentPage + 1)
-                    ) {
+          {totalPages > 1 && (
+            <div className="pagination">
+              <div className="pagination-info">
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to{" "}
+                {Math.min(currentPage * itemsPerPage, totalReceipts)} of{" "}
+                {totalReceipts} receipts
+              </div>
+              <div className="pagination-controls">
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft size={18} /> Previous
+                </button>
+                <div className="pagination-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
                       return (
                         <button
                           key={page}
@@ -456,31 +304,22 @@ function Receipts() {
                           {page}
                         </button>
                       );
-                    } else if (
-                      page === currentPage - 2 ||
-                      page === currentPage + 2
-                    ) {
-                      return (
-                        <span key={page} className="pagination-ellipsis">
-                          ...
-                        </span>
-                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return <span key={page} className="pagination-ellipsis">...</span>;
                     }
                     return null;
-                  },
-                )}
+                  })}
+                </div>
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next <ChevronRight size={18} />
+                </button>
               </div>
-
-              <button
-                className="pagination-btn"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-                <ChevronRight size={18} />
-              </button>
             </div>
-          </div>
+          )}
         </>
       )}
     </div>
