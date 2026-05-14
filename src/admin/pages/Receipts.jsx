@@ -92,9 +92,7 @@ function Receipts() {
 
       setReceipts(withReceipts);
       setPagination(response.pagination || null);
-
-      // Calculate total for current page
-      setTotalAmount(withReceipts.reduce((sum, r) => sum + (r.amount || 0), 0));
+      setTotalAmount(response.pagination?.totalAmount || 0);
     } catch (err) {
       console.error("Error fetching receipts:", err);
     } finally {
@@ -185,7 +183,7 @@ function Receipts() {
         <div className="stat-card">
           <span style={{ fontSize: "24px", fontWeight: "bold" }}>₹</span>
           <div>
-            <p>This Page Amount</p>
+            <p>Total Donations</p>
             <h3>₹{totalAmount.toLocaleString()}</h3>
           </div>
         </div>
