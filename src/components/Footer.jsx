@@ -23,7 +23,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <h3>Subhojanam</h3>
+            <h3>Annadana Seva</h3>
             <p className="footer-subtitle">ISKCON Hospital Feeding Program</p>
             <div className="footer-contact-item">
               <MapPin />
@@ -77,7 +77,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2026 Hare Krishna Movement Visakhapatnam — Subhojanam Seva</p>
+          <p>© 2026 Hare Krishna Movement Visakhapatnam — Annadana Seva</p>
           <div className="footer-bottom-links">
             <a href="#privacy">Privacy</a>
             <a href="#terms">Terms</a>

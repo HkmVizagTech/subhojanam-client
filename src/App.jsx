@@ -77,7 +77,7 @@ function StickyDonateBar() {
   return (
     <div className={`sticky-donate-bar${isHidden ? ' hidden' : ''}`}>
       <button className="sticky-donate-bar__btn" onClick={scrollToForm}>
-        🙏 Donate Now — ₹351 feeds 14 people
+        🙏 Donate Now — ₹501 feeds 20 people
       </button>
     </div>
   );

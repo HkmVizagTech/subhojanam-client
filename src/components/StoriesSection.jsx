@@ -26,7 +26,7 @@ function StoriesSection() {
 
           <p className="story-text">
             Standing in the pharmacy line, Savitri Amma realized she had to skip lunch
-            to afford her husband's pills. Then the Subhojanam van arrived. The hot meal
+            to afford her husband's pills. Then the Annadana Seva team arrived. The hot meal
             gave her strength, and the money she saved bought the medicine.
           </p>
 

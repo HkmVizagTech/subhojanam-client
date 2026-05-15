@@ -14,7 +14,7 @@ function AboutSection() {
 
       <section className="about-section">
 
-        <h2 className="about-title">About Subhojanam</h2>
+        <h2 className="about-title">About Annadana Seva</h2>
 
         <div className="about-content">
 
@@ -22,7 +22,7 @@ function AboutSection() {
             <h3>Our Mission</h3>
 
             <p>
-              Subhojanam is ISKCON initiative to serve nutritious,
+              Annadana Seva is ISKCON's initiative to serve nutritious,
               sacred meals to caregivers and their families at government hospitals.
               We bring the Lord's prasadam to those going through their hardest days.
             </p>

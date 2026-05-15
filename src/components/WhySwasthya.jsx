@@ -12,12 +12,12 @@ function WhySwasthya() {
         <div className="why-left">
 
           <h2 className="why-title">
-            Why Subhojanam?
+            Why Annadana Seva?
             <span className="underline"></span>
           </h2>
 
           <p className="why-desc">
-            With Subhojanam, we're driven by a profound mission:
+            With Annadana Seva, we're driven by a profound mission:
             <strong> to elevate healthcare quality by harnessing the transformative power of nutritious meals.</strong>
           </p>
 
@@ -57,7 +57,7 @@ function WhySwasthya() {
 
       
         <div className="why-right">
-          <img src={"/images/img1.webp"} loading="lazy" alt="Subhojanam Kitchen" />
+          <img src={"/images/img1.webp"} loading="lazy" alt="Annadana Seva Kitchen" />
         </div>
 
       </div>

@@ -102,7 +102,7 @@ const ThankYouPage = () => {
       <div className="thankyou-container">
         <div className="thankyou-header">
           <div className="thankyou-logo">
-            <img src={logo} alt="Subhojanam Logo" />
+            <img src={logo} alt="Annadana Seva Logo" />
           </div>
           <h1 className="thankyou-title">Hare Krishna! 🙏</h1>
         </div>
