@@ -97,7 +97,8 @@ function DonationSection() {
   const donationOptions = [
     { amount: 501, meals: 20 },
     { amount: 1251, meals: 50, popular: true },
-    { amount: 2500, meals: 100 }
+    { amount: 2500, meals: 100 },
+    { amount: 3000, meals: 120 }
   ];
 
   const monthlyDonationOptions = [
