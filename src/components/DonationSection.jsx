@@ -95,7 +95,6 @@ function DonationSection() {
   });
 
   const donationOptions = [
-    { amount: 351, meals: 14 },
     { amount: 501, meals: 20 },
     { amount: 1251, meals: 50, popular: true },
     { amount: 2500, meals: 100 }
