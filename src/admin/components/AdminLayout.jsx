@@ -11,7 +11,8 @@ import {
   X,
   Bell,
   RefreshCw,
-  FileText
+  FileText,
+  AlertCircle
 } from "lucide-react"
 import "../styles/AdminLayout.css"
 
@@ -32,6 +33,7 @@ function AdminLayout() {
     { path: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/admin/transactions", icon: IndianRupee, label: "Transactions" },
     { path: "/admin/subscriptions", icon: RefreshCw, label: "Subscriptions" },
+    { path: "/admin/missed-charges", icon: AlertCircle, label: "Missed Charges" },
     { path: "/admin/donors", icon: Users, label: "Donors" },
     { path: "/admin/receipts", icon: FileText, label: "Receipts" },
     { path: "/admin/campaigns", icon: FileText, label: "Campaigns" },
@@ -64,7 +66,7 @@ function AdminLayout() {
     <div className="admin-container">
       <aside className={`admin-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-          <h2>Subhojanam Admin</h2>
+          <h2>Annadana Seva Admin</h2>
           <button 
             className="sidebar-toggle-mobile"
             onClick={() => setSidebarOpen(!sidebarOpen)}
