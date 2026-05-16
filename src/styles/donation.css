@@ -702,9 +702,9 @@
     right: 0;
     z-index: 9999;
     background: linear-gradient(135deg, #FBA630 0%, #f59a1a 100%);
-    padding: 12px 20px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    box-shadow: 0 -4px 20px rgba(251, 166, 48, 0.4);
+    padding: 8px 16px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -3px 12px rgba(251, 166, 48, 0.4);
     align-items: center;
     justify-content: center;
     gap: 10px;
@@ -722,14 +722,14 @@
     color: #e67e00;
     border: none;
     border-radius: 30px;
-    padding: 12px 32px;
-    font-size: 16px;
+    padding: 9px 28px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     width: 100%;
-    max-width: 320px;
+    max-width: 280px;
     letter-spacing: 0.3px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
   }
 
   .sticky-donate-bar__text {

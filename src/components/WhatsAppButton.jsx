@@ -1,9 +1,11 @@
 import "../styles/whatsappbutton.css";
 
+const WA_MESSAGE = encodeURIComponent("Hare Krishna! 🙏 I would like to know more about Annadana Seva and how I can support.");
+
 function WhatsAppButton() {
   return (
     <a
-      href="https://wa.me/918977761187"
+      href={`https://wa.me/918977761187?text=${WA_MESSAGE}`}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-float"
