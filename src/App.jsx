@@ -6,6 +6,7 @@ import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
 import BankDonation from "./components/BankDonation";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import WhatsAppButton from "./components/WhatsAppButton.jsx";
 import SeoManager from "./components/SeoManager.jsx";
 
 // Lazy load below-fold components
@@ -117,6 +118,7 @@ function Home() {
         <Footer />
       </Suspense>
       <ScrollToTop />
+      <WhatsAppButton />
       <StickyDonateBar />
     </>
   );
