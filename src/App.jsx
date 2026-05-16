@@ -99,7 +99,6 @@ function Home() {
       <Navbar />
       <Hero />
       <DonationSection />
-      <BankDonation />
       <Suspense fallback={null}>
         <DonationCards />
         <Moments />
@@ -112,6 +111,7 @@ function Home() {
         <AboutSection />
         <StoriesSection />
         <FeaturedOn />
+        <BankDonation />
         <Final />
         <FAQsection />
         <Footer />
