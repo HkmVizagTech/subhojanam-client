@@ -4,6 +4,7 @@ import Navbar from "./components/NavbarNew";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
+import BankDonation from "./components/BankDonation";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import SeoManager from "./components/SeoManager.jsx";
 
@@ -98,6 +99,7 @@ function Home() {
       <Navbar />
       <Hero />
       <DonationSection />
+      <BankDonation />
       <Suspense fallback={null}>
         <DonationCards />
         <Moments />
