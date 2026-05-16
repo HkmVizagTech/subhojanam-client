@@ -56,6 +56,32 @@
   text-align: right;
 }
 
+.bank-copy-btn {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #0A97EF;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.bank-copy-btn:hover {
+  background: #0880cc;
+}
+
+.bank-copy-btn:active {
+  transform: scale(0.98);
+}
+
+.bank-copy-btn.copied {
+  background: #22c55e;
+}
+
 .bank-note {
   display: flex;
   gap: 10px;

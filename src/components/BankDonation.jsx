@@ -1,6 +1,21 @@
+import { useState } from "react";
 import "../styles/bankdonation.css";
 
+const BANK_DETAILS = `Beneficiary Name: HARE KRISHNA MOVEMENT INDIA
+Bank Name: IDFC FIRST BANK LTD
+Account No: 10091415313
+IFSC Code: IDFB0080412`;
+
 function BankDonation() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(BANK_DETAILS).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
   return (
     <section className="bank-donation-section">
       <div className="bank-donation-box">
@@ -25,6 +40,10 @@ function BankDonation() {
             <span className="bank-value">IDFB0080412</span>
           </div>
         </div>
+
+        <button className={`bank-copy-btn ${copied ? "copied" : ""}`} onClick={handleCopy}>
+          {copied ? "✅ Copied!" : "📋 Copy Bank Details"}
+        </button>
 
         <div className="bank-note">
           <span className="bank-note-icon">🙏</span>
