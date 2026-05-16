@@ -111,9 +111,9 @@ function Home() {
         <AboutSection />
         <StoriesSection />
         <FeaturedOn />
-        <BankDonation />
         <Final />
         <FAQsection />
+        <BankDonation />
         <Footer />
       </Suspense>
       <ScrollToTop />
