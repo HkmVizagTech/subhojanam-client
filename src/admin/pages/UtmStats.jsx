@@ -20,6 +20,28 @@ function UtmStats() {
   const [search, setSearch] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [campaignStats, setCampaignStats] = useState([]);
+  const [campaignTxns, setCampaignTxns] = useState([]);
+  const [campaignTxnsLoading, setCampaignTxnsLoading] = useState(false);
+  const [campaignTxnsModal, setCampaignTxnsModal] = useState(null); // { campaign, source, medium }
+
+  const handleViewCampaign = async (camp) => {
+    setCampaignTxnsModal(camp);
+    setCampaignTxns([]);
+    setCampaignTxnsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (camp._id?.campaign) params.set("campaign", camp._id.campaign);
+      if (camp._id?.source) params.set("source", camp._id.source);
+      if (camp._id?.medium) params.set("medium", camp._id.medium);
+      const res = await adminAPI.request(`/api/admin/utm-transactions?${params.toString()}`);
+      setCampaignTxns(res.transactions || []);
+    } catch (err) {
+      console.error("Failed to fetch campaign transactions:", err);
+    } finally {
+      setCampaignTxnsLoading(false);
+    }
+  };
+
   const navigate = useNavigate();
 
 
@@ -183,7 +205,7 @@ function UtmStats() {
                         <td>{stat ? stat.count : 0}</td>
                         <td>{String.fromCharCode(8377)}{stat ? stat.totalAmount.toLocaleString() : '0'}</td>
                         <td>
-                          <button className="utm-analytics-link-btn" title="View analytics for this campaign" onClick={() => setSelectedCampaign(camp.utm?.campaign)}>
+                          <button className="utm-analytics-link-btn" title="View transactions for this campaign" onClick={() => handleViewCampaign(camp)}>
                             <ExternalLink size={15} style={{ marginRight: 4 }} />
                             View
                           </button>
@@ -289,6 +311,65 @@ function UtmStats() {
           )}
         </div>
       </div>
+
+      {/* Campaign Transactions Modal */}
+      {campaignTxnsModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
+          <div style={{ background: "white", borderRadius: "16px", width: "100%", maxWidth: "700px", maxHeight: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "700" }}>
+                  {campaignTxnsModal._id?.campaign || "Direct"} — Transactions
+                </h2>
+                <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#888" }}>
+                  Source: {campaignTxnsModal._id?.source || "direct"} · Medium: {campaignTxnsModal._id?.medium || "none"}
+                </p>
+              </div>
+              <button onClick={() => setCampaignTxnsModal(null)} style={{ background: "none", border: "none", fontSize: "22px", cursor: "pointer", color: "#888" }}>✕</button>
+            </div>
+            <div style={{ overflowY: "auto", padding: "16px 24px", flex: 1 }}>
+              {campaignTxnsLoading ? (
+                <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>Loading...</p>
+              ) : campaignTxns.length === 0 ? (
+                <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>No transactions found.</p>
+              ) : (
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                  <thead>
+                    <tr style={{ background: "#f9fafb", borderBottom: "2px solid #e5e7eb" }}>
+                      <th style={{ padding: "10px 12px", textAlign: "left", fontWeight: "600", color: "#555" }}>Donor</th>
+                      <th style={{ padding: "10px 12px", textAlign: "left", fontWeight: "600", color: "#555" }}>Mobile</th>
+                      <th style={{ padding: "10px 12px", textAlign: "right", fontWeight: "600", color: "#555" }}>Amount</th>
+                      <th style={{ padding: "10px 12px", textAlign: "left", fontWeight: "600", color: "#555" }}>Date</th>
+                      <th style={{ padding: "10px 12px", textAlign: "left", fontWeight: "600", color: "#555" }}>Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {campaignTxns.map((txn, i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                        <td style={{ padding: "10px 12px" }}>
+                          <div style={{ fontWeight: "600", color: "#1a1a2e" }}>{txn.name}</div>
+                          <div style={{ color: "#aaa", fontSize: "11px" }}>{txn.email}</div>
+                        </td>
+                        <td style={{ padding: "10px 12px", color: "#555" }}>{txn.mobile}</td>
+                        <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: "700", color: "#0A97EF" }}>₹{txn.amount?.toLocaleString("en-IN")}</td>
+                        <td style={{ padding: "10px 12px", color: "#888" }}>{new Date(txn.createdAt).toLocaleDateString("en-IN")}</td>
+                        <td style={{ padding: "10px 12px" }}>
+                          <span style={{ background: txn.isRecurring ? "#eff6ff" : "#f0fdf4", color: txn.isRecurring ? "#1d4ed8" : "#15803d", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: "600" }}>
+                            {txn.isRecurring ? "Monthly" : "One-time"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            <div style={{ padding: "12px 24px", borderTop: "1px solid #e5e7eb", fontSize: "13px", color: "#888" }}>
+              {campaignTxns.length} transaction{campaignTxns.length !== 1 ? "s" : ""} · Total: ₹{campaignTxns.reduce((s, t) => s + (t.amount || 0), 0).toLocaleString("en-IN")}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
