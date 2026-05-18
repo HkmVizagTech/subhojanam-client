@@ -568,54 +568,19 @@ function Transactions() {
               </div>
 
               {/* UTM / Campaign Source */}
-              {selectedTransaction.utm && (selectedTransaction.utm.source || selectedTransaction.utm.campaign || selectedTransaction.utm.medium) && (
-                <div className="detail-section">
-                  <h3>Campaign Source</h3>
-                  <div className="detail-grid">
-                    {selectedTransaction.utm.campaign && (
-                      <div className="detail-item">
-                        <span className="detail-label">Campaign:</span>
-                        <span className="detail-value">{selectedTransaction.utm.campaign}</span>
-                      </div>
-                    )}
-                    {selectedTransaction.utm.source && (
-                      <div className="detail-item">
-                        <span className="detail-label">Source:</span>
-                        <span className="detail-value">{selectedTransaction.utm.source}</span>
-                      </div>
-                    )}
-                    {selectedTransaction.utm.medium && (
-                      <div className="detail-item">
-                        <span className="detail-label">Medium:</span>
-                        <span className="detail-value">{selectedTransaction.utm.medium}</span>
-                      </div>
-                    )}
-                    {selectedTransaction.utm.content && (
-                      <div className="detail-item">
-                        <span className="detail-label">Content:</span>
-                        <span className="detail-value">{selectedTransaction.utm.content}</span>
-                      </div>
-                    )}
-                    {selectedTransaction.utm.term && (
-                      <div className="detail-item">
-                        <span className="detail-label">Term:</span>
-                        <span className="detail-value">{selectedTransaction.utm.term}</span>
-                      </div>
-                    )}
+              <div className="detail-section">
+                <h3>Campaign Source</h3>
+                <div className="detail-grid">
+                  <div className="detail-item full-width">
+                    <span className="detail-label">Campaign:</span>
+                    <span className="detail-value">
+                      {selectedTransaction.utm?.campaign || 
+                       selectedTransaction.utm?.source || 
+                       <span style={{ color: "#aaa" }}>Direct / Not tracked</span>}
+                    </span>
                   </div>
                 </div>
-              )}
-              {(!selectedTransaction.utm || (!selectedTransaction.utm.source && !selectedTransaction.utm.campaign)) && (
-                <div className="detail-section">
-                  <h3>Campaign Source</h3>
-                  <div className="detail-grid">
-                    <div className="detail-item full-width">
-                      <span className="detail-label">Source:</span>
-                      <span className="detail-value" style={{ color: "#aaa" }}>Direct / Not tracked</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
