@@ -424,15 +424,33 @@ function Transactions() {
                   <h3>Maha Prasadam Details</h3>
                   <div className="detail-grid">
 
-                    {/* Scenario 1: Certificate opted, same address */}
-                    {selectedTransaction.certificate && selectedTransaction.prasadamAddressOption === 'same' && (
-                      <div className="detail-item full-width">
-                        <span className="detail-label">Delivery Address:</span>
-                        <span className="detail-value">Same as certificate address</span>
-                      </div>
+                    {/* Certificate opted, same address (or older records with no prasadamAddressOption) */}
+                    {selectedTransaction.certificate && selectedTransaction.prasadamAddressOption !== 'different' && (
+                      <>
+                        <div className="detail-item full-width">
+                          <span className="detail-label">Delivery Address:</span>
+                          <span className="detail-value">Same as certificate address</span>
+                        </div>
+                        <div className="detail-item full-width">
+                          <span className="detail-label">Address:</span>
+                          <span className="detail-value">{selectedTransaction.address || 'N/A'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">City:</span>
+                          <span className="detail-value">{selectedTransaction.city || 'N/A'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">State:</span>
+                          <span className="detail-value">{selectedTransaction.state || 'N/A'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Pincode:</span>
+                          <span className="detail-value">{selectedTransaction.pincode || 'N/A'}</span>
+                        </div>
+                      </>
                     )}
 
-                    {/* Scenario 2: Certificate opted, different address */}
+                    {/* Certificate opted, different address */}
                     {selectedTransaction.certificate && selectedTransaction.prasadamAddressOption === 'different' && (
                       <>
                         {selectedTransaction.prasadamName && (
@@ -454,7 +472,7 @@ function Transactions() {
                       </>
                     )}
 
-                    {/* Scenario 3: No certificate, address collected in prasadam fields */}
+                    {/* No certificate — address collected in prasadam fields */}
                     {!selectedTransaction.certificate && (
                       <>
                         {selectedTransaction.prasadamName && (
