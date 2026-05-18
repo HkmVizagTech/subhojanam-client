@@ -423,42 +423,59 @@ function Transactions() {
                 <div className="detail-section certificate-section">
                   <h3>Maha Prasadam Details</h3>
                   <div className="detail-grid">
-                    <div className="detail-item">
-                      <span className="detail-label">Delivery Option:</span>
-                      <span className="detail-value">
-                        {selectedTransaction.prasadamAddressOption === 'same' 
-                          ? 'Same as certificate address' 
-                          : selectedTransaction.prasadamAddressOption === 'different'
-                          ? 'Different address'
-                          : 'Not specified'}
-                      </span>
-                    </div>
-                    {selectedTransaction.prasadamAddressOption === 'different' && (
+
+                    {/* Scenario 1: Certificate opted, same address */}
+                    {selectedTransaction.certificate && selectedTransaction.prasadamAddressOption === 'same' && (
                       <div className="detail-item full-width">
                         <span className="detail-label">Delivery Address:</span>
-                        <span className="detail-value">{selectedTransaction.prasadamAddress || 'N/A'}</span>
+                        <span className="detail-value">Same as certificate address</span>
                       </div>
                     )}
-                    {(selectedTransaction.prasadamAddressOption === 'same' || !selectedTransaction.prasadamAddressOption) && (
+
+                    {/* Scenario 2: Certificate opted, different address */}
+                    {selectedTransaction.certificate && selectedTransaction.prasadamAddressOption === 'different' && (
                       <>
+                        {selectedTransaction.prasadamName && (
+                          <div className="detail-item">
+                            <span className="detail-label">Recipient Name:</span>
+                            <span className="detail-value">{selectedTransaction.prasadamName}</span>
+                          </div>
+                        )}
+                        {selectedTransaction.prasadamMobile && (
+                          <div className="detail-item">
+                            <span className="detail-label">Recipient Mobile:</span>
+                            <span className="detail-value">{selectedTransaction.prasadamMobile}</span>
+                          </div>
+                        )}
                         <div className="detail-item full-width">
-                          <span className="detail-label">Address:</span>
-                          <span className="detail-value">{selectedTransaction.address || 'N/A'}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">City:</span>
-                          <span className="detail-value">{selectedTransaction.city || 'N/A'}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">State:</span>
-                          <span className="detail-value">{selectedTransaction.state || 'N/A'}</span>
-                        </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Pincode:</span>
-                          <span className="detail-value">{selectedTransaction.pincode || 'N/A'}</span>
+                          <span className="detail-label">Delivery Address:</span>
+                          <span className="detail-value">{selectedTransaction.prasadamAddress || 'N/A'}</span>
                         </div>
                       </>
                     )}
+
+                    {/* Scenario 3: No certificate, address collected in prasadam fields */}
+                    {!selectedTransaction.certificate && (
+                      <>
+                        {selectedTransaction.prasadamName && (
+                          <div className="detail-item">
+                            <span className="detail-label">Recipient Name:</span>
+                            <span className="detail-value">{selectedTransaction.prasadamName}</span>
+                          </div>
+                        )}
+                        {selectedTransaction.prasadamMobile && (
+                          <div className="detail-item">
+                            <span className="detail-label">Recipient Mobile:</span>
+                            <span className="detail-value">{selectedTransaction.prasadamMobile}</span>
+                          </div>
+                        )}
+                        <div className="detail-item full-width">
+                          <span className="detail-label">Delivery Address:</span>
+                          <span className="detail-value">{selectedTransaction.prasadamAddress || 'N/A'}</span>
+                        </div>
+                      </>
+                    )}
+
                   </div>
                 </div>
               )}
