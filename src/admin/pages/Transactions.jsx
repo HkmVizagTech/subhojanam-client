@@ -428,7 +428,9 @@ function Transactions() {
                       <span className="detail-value">
                         {selectedTransaction.prasadamAddressOption === 'same' 
                           ? 'Same as certificate address' 
-                          : 'Different address'}
+                          : selectedTransaction.prasadamAddressOption === 'different'
+                          ? 'Different address'
+                          : 'Not specified'}
                       </span>
                     </div>
                     {selectedTransaction.prasadamAddressOption === 'different' && (
@@ -437,7 +439,7 @@ function Transactions() {
                         <span className="detail-value">{selectedTransaction.prasadamAddress || 'N/A'}</span>
                       </div>
                     )}
-                    {selectedTransaction.prasadamAddressOption === 'same' && selectedTransaction.certificate && (
+                    {(selectedTransaction.prasadamAddressOption === 'same' || !selectedTransaction.prasadamAddressOption) && (
                       <>
                         <div className="detail-item full-width">
                           <span className="detail-label">Address:</span>
