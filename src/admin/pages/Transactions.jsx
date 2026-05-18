@@ -427,7 +427,7 @@ function Transactions() {
                       <span className="detail-label">Delivery Option:</span>
                       <span className="detail-value">
                         {selectedTransaction.prasadamAddressOption === 'same' 
-                          ? 'Same as certificate address' 
+                          ? 'Same as donation address' 
                           : selectedTransaction.prasadamAddressOption === 'different'
                           ? 'Different address'
                           : 'Not specified'}

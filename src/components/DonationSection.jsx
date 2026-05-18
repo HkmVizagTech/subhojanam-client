@@ -628,7 +628,7 @@ const data = await response.json();
                           checked={formData.prasadamAddressOption === "same"}
                           onChange={handleChange}
                         />
-                        <span>Same as certificate address</span>
+                        <span>Same as donation address</span>
                       </label>
                       <label className="radio-row">
                         <input
