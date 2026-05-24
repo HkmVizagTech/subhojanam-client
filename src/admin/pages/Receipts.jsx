@@ -193,13 +193,15 @@ function Receipts() {
             <h3>₹{totalAmount?.toLocaleString("en-IN") || "0"}</h3>
           </div>
         </div>
+      </div>
+
+      <div style={{ marginBottom: "24px" }}>
         <button onClick={handleHealthCheck} disabled={healthLoading} style={{
-          background: "white", border: "none", borderRadius: "12px",
-          padding: "24px", fontSize: "14px", fontWeight: "600", cursor: healthLoading ? "not-allowed" : "pointer",
-          opacity: healthLoading ? 0.7 : 1, boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-          display: "flex", alignItems: "center", justifyContent: "center", color: "#0A97EF"
+          background: "#0A97EF", color: "white", border: "none", borderRadius: "12px",
+          padding: "12px 24px", fontSize: "14px", fontWeight: "600", cursor: healthLoading ? "not-allowed" : "pointer",
+          opacity: healthLoading ? 0.7 : 1
         }}>
-          {healthLoading ? "Checking..." : "Health Check"}
+          {healthLoading ? "Checking..." : "📊 Health Check (Paid vs Receipts)"}
         </button>
       </div>
 
