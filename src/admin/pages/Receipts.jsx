@@ -143,8 +143,20 @@ function Receipts() {
     window.open(`/receipt-preview?${params.toString()}`, "_blank");
   };
 
-  const totalPages = pagination?.totalPages || 1;
-  const totalReceipts = pagination?.totalTransactions || receipts.length;
+  const [healthCheck, setHealthCheck] = useState(null);
+  const [healthLoading, setHealthLoading] = useState(false);
+
+  const handleHealthCheck = async () => {
+    setHealthLoading(true);
+    try {
+      const res = await adminAPI.request("/api/admin/receipts/health-check");
+      setHealthCheck(res.health);
+    } catch (err) {
+      alert("Health check failed: " + err.message);
+    } finally {
+      setHealthLoading(false);
+    }
+  };
 
   if (loading && receipts.length === 0) {
     return (
@@ -178,6 +190,61 @@ function Receipts() {
           <span style={{ fontSize: "24px", fontWeight: "bold" }}>₹</span>
           <div>
             <p>Total Donations</p>
+            <h3>₹{totalAmount?.toLocaleString("en-IN") || "0"}</h3>
+          </div>
+        </div>
+        <button onClick={handleHealthCheck} disabled={healthLoading} style={{
+          background: "#0A97EF", color: "white", border: "none", borderRadius: "12px",
+          padding: "12px 20px", fontSize: "14px", fontWeight: "600", cursor: healthLoading ? "not-allowed" : "pointer",
+          opacity: healthLoading ? 0.7 : 1, alignSelf: "center", marginTop: "auto"
+        }}>
+          {healthLoading ? "Checking..." : "Health Check"}
+        </button>
+      </div>
+
+      {healthCheck && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, 
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "16px"
+        }}>
+          <div style={{
+            background: "white", borderRadius: "16px", width: "100%", maxWidth: "500px",
+            padding: "24px", maxHeight: "80vh", overflowY: "auto"
+          }}>
+            <h2 style={{ fontSize: "18px", fontWeight: "700", margin: "0 0 20px" }}>Receipts Health Check</h2>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
+              <div style={{ background: "#f0fdf4", padding: "12px", borderRadius: "10px" }}>
+                <p style={{ fontSize: "12px", color: "#888", margin: "0 0 4px" }}>Total Paid</p>
+                <h3 style={{ margin: 0, color: "#1a1a2e", fontSize: "20px" }}>{healthCheck.totalPaid}</h3>
+                <p style={{ fontSize: "11px", color: "#aaa", margin: "4px 0 0" }}>₹{healthCheck.totalAmount?.toLocaleString("en-IN")}</p>
+              </div>
+              
+              <div style={{ background: "#eff6ff", padding: "12px", borderRadius: "10px" }}>
+                <p style={{ fontSize: "12px", color: "#888", margin: "0 0 4px" }}>With Receipts</p>
+                <h3 style={{ margin: 0, color: "#1a1a2e", fontSize: "20px" }}>{healthCheck.withReceipts}</h3>
+                <p style={{ fontSize: "11px", color: "#0A97EF", margin: "4px 0 0", fontWeight: "600" }}>{healthCheck.receiptPercentage}%</p>
+              </div>
+
+              <div style={{ background: "#fef2f2", padding: "12px", borderRadius: "10px" }}>
+                <p style={{ fontSize: "12px", color: "#888", margin: "0 0 4px" }}>Missing Receipts</p>
+                <h3 style={{ margin: 0, color: "#dc2626", fontSize: "20px" }}>{healthCheck.missing}</h3>
+                <p style={{ fontSize: "11px", color: "#aaa", margin: "4px 0 0" }}>₹{healthCheck.missingAmount?.toLocaleString("en-IN")}</p>
+              </div>
+
+              <div style={{ background: "#f5f5f5", padding: "12px", borderRadius: "10px" }}>
+                <p style={{ fontSize: "12px", color: "#888", margin: "0 0 4px" }}>Gap Amount</p>
+                <h3 style={{ margin: 0, color: "#1a1a2e", fontSize: "20px" }}>₹{healthCheck.missingAmount?.toLocaleString("en-IN")}</h3>
+              </div>
+            </div>
+
+            <button onClick={() => setHealthCheck(null)} style={{
+              width: "100%", padding: "10px", background: "#0A97EF", color: "white",
+              border: "none", borderRadius: "10px", fontSize: "14px", fontWeight: "600", cursor: "pointer"
+            }}>Close</button>
+          </div>
+        </div>
+      )}
             <h3>₹{totalAmount.toLocaleString()}</h3>
           </div>
         </div>
