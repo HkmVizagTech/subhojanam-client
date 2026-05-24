@@ -22,7 +22,7 @@ function MissedCharges() {
   const scanUnreceipted = async () => {
     try {
       setUnreceiptedLoading(true); setUnreceiptedScanned(false); setUnreceipted([]); setUnreceiptedResults({})
-      const res = await adminAPI.request("/api/admin/subscriptions/unreceipted-charges")
+      const res = await adminAPI.request("/api/admin/transactions/all-unreceipted")
       setUnreceipted(res.data || []); setUnreceiptedScanned(true)
     } catch (err) { alert("Scan failed: " + err.message) }
     finally { setUnreceiptedLoading(false) }
@@ -135,7 +135,7 @@ function MissedCharges() {
 
       {tab === "unreceipted" && (
         <div>
-          <p style={{ fontSize: "13px", color: "#888", marginBottom: "16px" }}>Finds paid subscription donations in DB with no receipt yet. Calls DCC API → generates receipt → sends WhatsApp.</p>
+          <p style={{ fontSize: "13px", color: "#888", marginBottom: "16px" }}>Finds all paid donations (one-time + monthly) in DB with no receipt yet. Calls DCC API → generates receipt → sends WhatsApp.</p>
           <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
             <button onClick={scanUnreceipted} disabled={unreceiptedLoading} style={s.scanBtn(unreceiptedLoading)}>
               <Search size={16} />{unreceiptedLoading ? "Scanning..." : "Scan for Missing Receipts"}
