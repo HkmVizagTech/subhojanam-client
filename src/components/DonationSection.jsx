@@ -125,7 +125,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 1;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -485,7 +485,7 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-                min="1"
+                min="100"
                 placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
