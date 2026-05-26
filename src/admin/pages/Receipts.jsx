@@ -248,10 +248,6 @@ function Receipts() {
           </div>
         </div>
       )}
-            <h3>₹{totalAmount.toLocaleString()}</h3>
-          </div>
-        </div>
-      </div>
 
       <div className="filters-section">
         <div className="search-box">
