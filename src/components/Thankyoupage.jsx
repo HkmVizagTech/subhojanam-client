@@ -2,6 +2,7 @@ import { CheckCircle, Heart, Utensils, ArrowLeft, Download, Share2 } from "lucid
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../styles/thankyou.css";
+import { apiBaseUrl } from "../lib/apiConfig.js";
 import logo from "../assets/logo.png"
 
 const ThankYouPage = () => {
@@ -60,7 +61,7 @@ const ThankYouPage = () => {
 
     setDownloading(true);
     try {
-  const response = await fetch(`https://subhojanam-server-main-882278565284.asia-south1.run.app/api/payment/download-receipt/${donationId}`);
+      const response = await fetch(apiBaseUrl(`/api/payment/download-receipt/${donationId}`));
       
       if (!response.ok) {
         const error = await response.json();

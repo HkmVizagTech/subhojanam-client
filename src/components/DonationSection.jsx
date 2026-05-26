@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, FileText, Check } from "lucide-react";
 import "../styles/donation.css";
 import { fbEvent } from "../lib/fbPixel";
+import { apiBaseUrl } from "../lib/apiConfig.js";
 import { getMetaBrowserIds, captureTrackingData, getStoredTracking } from "../utils/tracking.js";
 
 function DonationSection() {
@@ -296,9 +297,7 @@ function DonationSection() {
         pageUrl: window.location.origin,
       };
 
-      const response = await fetch(
-        `https://subhojanam-server-main-882278565284.asia-south1.run.app/api/payment/${endpoint}`,
-          // `http://localhost:8080/api/payment/${endpoint}`,
+      const response = await fetch(apiBaseUrl(`/api/payment/${endpoint}`),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

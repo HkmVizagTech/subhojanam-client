@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Lock, User, AlertCircle } from "lucide-react"
 import "./Login.css"
+import { apiBaseUrl } from "../../lib/apiConfig.js";
 
 function Login() {
   const [credentials, setCredentials] = useState({
@@ -24,7 +25,7 @@ function Login() {
     try {
       setLoading(true)
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      const response = await fetch(apiBaseUrl('/api/auth/login'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

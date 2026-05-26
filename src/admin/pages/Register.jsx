@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { UserPlus, User, Mail, Lock, AlertCircle } from "lucide-react"
 import "./Login.css"
+import { apiBaseUrl } from "../../lib/apiConfig.js";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ function Register() {
     try {
       setLoading(true)
       
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/x7k9m2p5q8w3`, {
+      const response = await fetch(apiBaseUrl('/api/auth/x7k9m2p5q8w3'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

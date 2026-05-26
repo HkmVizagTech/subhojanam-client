@@ -15,6 +15,7 @@ import {
   AlertCircle
 } from "lucide-react"
 import "../styles/AdminLayout.css"
+import { apiBaseUrl } from "../../lib/apiConfig.js";
 
 function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -48,7 +49,7 @@ function AdminLayout() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+      await fetch(apiBaseUrl('/api/auth/logout'), {
         method: "POST",
         credentials: "include"
       })

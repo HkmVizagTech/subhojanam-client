@@ -1,7 +1,6 @@
 
+import { apiBaseUrl } from "../lib/apiConfig.js";
 
- const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://subhojanam-server-main-882278565284.asia-south1.run.app';
-// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 class AdminAPI {
   // Special CSV export fetcher
   async exportTransactionsCSV(params = {}) {
@@ -11,7 +10,7 @@ class AdminAPI {
       ...(params.endDate && { endDate: params.endDate }),
     }).toString();
 
-    const url = `${API_BASE_URL}/api/admin/transactions/export?${queryParams}`;
+    const url = apiBaseUrl(`/api/admin/transactions/export?${queryParams}`);
     const token = localStorage.getItem('adminToken');
     const config = {
       headers: {
@@ -44,7 +43,7 @@ class AdminAPI {
     return this.request('/api/admin/utm-stats');
   }
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = apiBaseUrl(endpoint);
     const token = localStorage.getItem('adminToken');
     
     const config = {
