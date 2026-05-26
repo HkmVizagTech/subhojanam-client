@@ -485,7 +485,7 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-                min="100"
+                min="1"
                 placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
