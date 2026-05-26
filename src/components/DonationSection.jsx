@@ -125,7 +125,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 1;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
