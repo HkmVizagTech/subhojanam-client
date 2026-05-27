@@ -97,17 +97,17 @@ function DonationSection() {
 
   const donationOptions = [
     { amount: 501, meals: 20 },
-    { amount: 1251, meals: 50, popular: true },
-    { amount: 2500, meals: 100 },
+    { amount: 1251, meals: 50 },
+    { amount: 2500, meals: 100, popular: true },
     { amount: 3000, meals: 120 }
   ];
 
   const monthlyDonationOptions = [
     { amount: 500, meals: 20 },
-    { amount: 1000, meals: 40, popular: true },
+    { amount: 1000, meals: 40 },
     { amount: 1500, meals: 60 },
     { amount: 2000, meals: 80 },
-    { amount: 2500, meals: 100 },
+    { amount: 2500, meals: 100, popular: true },
     { amount: 3000, meals: 120 }
   ];
 
