@@ -143,7 +143,8 @@ function Receipts() {
     window.open(`/receipt-preview?${params.toString()}`, "_blank");
   };
 
-  const [healthCheck, setHealthCheck] = useState(null);
+  const totalPages = pagination?.totalPages || 1;
+  const totalReceipts = pagination?.totalTransactions || receipts.length;
   const [healthLoading, setHealthLoading] = useState(false);
 
   const handleHealthCheck = async () => {
