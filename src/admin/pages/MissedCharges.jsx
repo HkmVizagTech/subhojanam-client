@@ -112,8 +112,17 @@ function MissedCharges() {
         <div style={{ fontSize: "12px", color: "#555" }}>
           <span style={{ background: "#f3f4f6", padding: "2px 8px", borderRadius: "6px", marginRight: "8px" }}>₹{item.amount?.toLocaleString("en-IN")}</span>
           <span style={{ color: "#aaa" }}>{formatDate(item.date)}</span>
+          {item.status && (
+            <span style={{ marginLeft: "8px", padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: "600",
+              background: item.status === "pdf_missing" ? "#eff6ff" : "#fff7ed",
+              color: item.status === "pdf_missing" ? "#1d4ed8" : "#ea580c"
+            }}>
+              {item.status === "pdf_missing" ? "📄 PDF Missing" : "⚠️ Unprocessed"}
+            </span>
+          )}
         </div>
-        {item.paymentId && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "4px", fontFamily: "monospace" }}>{item.paymentId}</div>}
+        {item.receiptNumber && <div style={{ fontSize: "11px", color: "#0A97EF", marginTop: "4px" }}>DCC Receipt: {item.receiptNumber}</div>}
+        {item.paymentId && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px", fontFamily: "monospace" }}>{item.paymentId}</div>}
       </div>
       <button onClick={onAction} disabled={processing} style={s.actionBtn(processing)}>
         {processing ? <><RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} /> Processing...</> : <><CheckCircle size={14} /> {actionLabel}</>}
@@ -148,7 +157,7 @@ function MissedCharges() {
             <div>
               <div style={s.warning}><AlertCircle size={16} color="#ea580c" /><span style={{ fontSize: "13px", color: "#9a3412" }}><strong>{unreceipted.length}</strong> subscription payment{unreceipted.length > 1 ? "s" : ""} with no receipt.</span></div>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {unreceipted.map(item => <DonorCard key={item.donationId} item={{ ...item, paymentId: item.paymentId }} onAction={() => generateReceipt(item)} processing={unreceiptedProcessing[item.donationId]} actionLabel="Generate" />)}
+                {unreceipted.map(item => <DonorCard key={item.donationId} item={{ ...item, paymentId: item.paymentId }} onAction={() => generateReceipt(item)} processing={unreceiptedProcessing[item.donationId]} actionLabel={item.status === "pdf_missing" ? "Regenerate PDF" : "Generate"} />)}
               </div>
             </div>
           )}
