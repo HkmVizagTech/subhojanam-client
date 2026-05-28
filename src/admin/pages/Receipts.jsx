@@ -62,6 +62,8 @@ function Receipts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [healthCheck, setHealthCheck] = useState(null);
+  const [healthLoading, setHealthLoading] = useState(false);
   const itemsPerPage = 20;
 
   const fetchReceipts = useCallback(async (page = 1, search = "", date = "") => {
@@ -145,7 +147,6 @@ function Receipts() {
 
   const totalPages = pagination?.totalPages || 1;
   const totalReceipts = pagination?.totalTransactions || receipts.length;
-  const [healthLoading, setHealthLoading] = useState(false);
 
   const handleHealthCheck = async () => {
     setHealthLoading(true);
