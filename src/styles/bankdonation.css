@@ -1,18 +1,21 @@
 .bank-donation-section {
   background: #FEF2E1;
-  padding: 10px 20px 40px;
+  padding: 40px 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .bank-donation-box {
   background: white;
-  max-width: 558px;
+  max-width: 560px;
   width: 100%;
   padding: 28px 30px;
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(10, 151, 239, 0.1);
+  box-sizing: border-box;
 }
 
 .bank-donation-title {
@@ -20,9 +23,187 @@
   font-size: 18px;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 20px;
+  margin: 0 0 20px;
 }
 
+/* PhonePe header */
+.phonepe-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: #faf5ff;
+  border-radius: 12px;
+  border: 1px solid #e9d5ff;
+}
+
+.phonepe-logo {
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.phonepe-upi-label {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 2px;
+}
+
+.phonepe-upi-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: #5f259f;
+  margin: 0;
+  word-break: break-all;
+}
+
+/* PhonePe buttons */
+.phonepe-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.phonepe-pay-btn {
+  flex: 1;
+  min-width: 140px;
+  background: #5f259f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.phonepe-pay-btn:hover { background: #4a1d7a; }
+
+.phonepe-copy-btn {
+  flex: 1;
+  min-width: 120px;
+  background: #f3f4f6;
+  color: #555;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.phonepe-copy-btn.copied {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.phonepe-paid-btn {
+  width: 100%;
+  background: none;
+  border: 1.5px solid #5f259f;
+  color: #5f259f;
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.phonepe-paid-btn:hover {
+  background: #faf5ff;
+}
+
+/* Paid form */
+.paid-form {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.paid-form-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f259f;
+  margin: 0 0 12px;
+}
+
+.paid-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.paid-form-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.paid-form-field input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.paid-form-field input:focus {
+  border-color: #5f259f;
+}
+
+.paid-form-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.paid-submit-btn {
+  background: #5f259f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.paid-cancel-btn {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #888;
+}
+
+.paid-success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #166534;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* Bank details */
 .bank-details-grid {
   display: flex;
   flex-direction: column;
@@ -67,20 +248,11 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s;
 }
 
-.bank-copy-btn:hover {
-  background: #0880cc;
-}
-
-.bank-copy-btn:active {
-  transform: scale(0.98);
-}
-
-.bank-copy-btn.copied {
-  background: #22c55e;
-}
+.bank-copy-btn:hover { background: #0880cc; }
+.bank-copy-btn.copied { background: #22c55e; }
 
 .bank-note {
   display: flex;
@@ -111,13 +283,29 @@
   text-decoration: none;
 }
 
-.bank-note a:hover {
-  text-decoration: underline;
-}
+.bank-note a:hover { text-decoration: underline; }
 
 @media (max-width: 480px) {
+  .bank-donation-section {
+    padding: 24px 16px;
+    gap: 16px;
+  }
+
   .bank-donation-box {
-    padding: 22px 18px;
+    padding: 20px 16px;
+  }
+
+  .phonepe-buttons {
+    flex-direction: column;
+  }
+
+  .phonepe-pay-btn,
+  .phonepe-copy-btn {
+    width: 100%;
+  }
+
+  .paid-form-grid {
+    grid-template-columns: 1fr;
   }
 
   .bank-row {

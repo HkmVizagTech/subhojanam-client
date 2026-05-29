@@ -2,18 +2,16 @@ import { useState } from "react";
 import "../styles/bankdonation.css";
 
 const BANK_DETAILS = `Beneficiary Name: HARE KRISHNA MOVEMENT INDIA\nBank Name: IDFC FIRST BANK LTD\nAccount No: 10091415313\nIFSC Code: IDFB0080412`;
-
 const PHONEPE_UPI = "9666399108@ybl";
-const PHONEPE_NUMBER = "9666399108";
-const PHONEPE_NAME = "HARE KRISHNA MOVEMENT INDIA";
+const WA_NUMBER = "918977761187";
 
 function BankDonation() {
   const [copied, setCopied] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
   const [showPaidForm, setShowPaidForm] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", mobile: "", amount: "", utr: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(BANK_DETAILS).then(() => {
@@ -30,131 +28,105 @@ function BankDonation() {
   };
 
   const handlePhonePePay = () => {
-    const upiUrl = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent(PHONEPE_NAME)}&cu=INR`;
+    const upiUrl = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent("HARE KRISHNA MOVEMENT INDIA")}&cu=INR`;
     window.location.href = upiUrl;
     setTimeout(() => setShowPaidForm(true), 2000);
   };
 
-  const handleSubmitUTR = async () => {
+  const handleSubmit = () => {
     if (!form.name || !form.mobile || !form.amount || !form.utr) {
       alert("Please fill all fields");
       return;
     }
     setSubmitting(true);
-    try {
-      const waMsg = `Hare Krishna! 🙏\n\nNew PhonePe Donation Received:\n\nName: ${form.name}\nMobile: ${form.mobile}\nAmount: ₹${form.amount}\nUTR/Ref No: ${form.utr}\n\nPlease verify and generate receipt.`;
-      window.open(`https://wa.me/918977761187?text=${encodeURIComponent(waMsg)}`, "_blank");
-      setSubmitted(true);
-      setShowPaidForm(false);
-    } catch (err) {
-      alert("Something went wrong. Please contact us directly.");
-    } finally {
-      setSubmitting(false);
-    }
+    const msg = `Hare Krishna! 🙏\n\nNew PhonePe Donation:\n\nName: ${form.name}\nMobile: ${form.mobile}\nAmount: ₹${form.amount}\nUTR / Ref No: ${form.utr}\n\nPlease verify and generate receipt.`;
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+    setSubmitted(true);
+    setShowPaidForm(false);
+    setSubmitting(false);
   };
 
   return (
     <section className="bank-donation-section">
 
-      {/* PhonePe Section */}
-      <div className="bank-donation-box" style={{ marginBottom: "20px" }}>
+      {/* PhonePe Box */}
+      <div className="bank-donation-box">
         <h2 className="bank-donation-title">Donate via PhonePe / UPI</h2>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", marginBottom: "16px" }}>
+        <div className="phonepe-header">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe_Logo.svg/200px-PhonePe_Logo.svg.png"
             alt="PhonePe"
-            style={{ height: "36px", objectFit: "contain" }}
+            className="phonepe-logo"
           />
           <div>
-            <div style={{ fontSize: "13px", color: "#888" }}>UPI ID</div>
-            <div style={{ fontSize: "18px", fontWeight: "700", color: "#5f259f", letterSpacing: "0.5px" }}>{PHONEPE_UPI}</div>
+            <p className="phonepe-upi-label">UPI ID</p>
+            <p className="phonepe-upi-value">{PHONEPE_UPI}</p>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
-          <button
-            onClick={handlePhonePePay}
-            style={{
-              background: "#5f259f", color: "white", border: "none", borderRadius: "10px",
-              padding: "11px 20px", fontSize: "14px", fontWeight: "700", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: "8px"
-            }}
-          >
+        <div className="phonepe-buttons">
+          <button className="phonepe-pay-btn" onClick={handlePhonePePay}>
             📱 Pay via PhonePe
           </button>
           <button
+            className={`phonepe-copy-btn${upiCopied ? " copied" : ""}`}
             onClick={handleCopyUPI}
-            style={{
-              background: upiCopied ? "#f0fdf4" : "#f3f4f6", color: upiCopied ? "#166534" : "#555",
-              border: `1px solid ${upiCopied ? "#86efac" : "#e5e7eb"}`, borderRadius: "10px",
-              padding: "11px 20px", fontSize: "14px", fontWeight: "600", cursor: "pointer"
-            }}
           >
             {upiCopied ? "✅ Copied!" : "📋 Copy UPI ID"}
           </button>
         </div>
 
         {submitted ? (
-          <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: "10px", padding: "14px 16px", color: "#166534", fontSize: "14px" }}>
-            🙏 Thank you! Your payment details have been sent to our team on WhatsApp. We will generate your receipt shortly.
+          <div className="paid-success">
+            🙏 Thank you! Your details have been sent to our team on WhatsApp. We will generate your receipt shortly.
           </div>
         ) : showPaidForm ? (
-          <div style={{ background: "#faf5ff", border: "1px solid #e9d5ff", borderRadius: "12px", padding: "16px" }}>
-            <p style={{ fontSize: "14px", fontWeight: "600", color: "#5f259f", margin: "0 0 12px" }}>🙏 Thank you for your donation! Please share your details:</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
-              {[
-                { name: "name", placeholder: "Your Full Name", label: "Name *" },
-                { name: "mobile", placeholder: "10-digit Mobile", label: "Mobile *" },
-                { name: "amount", placeholder: "Amount Paid (₹)", label: "Amount *" },
-                { name: "utr", placeholder: "UTR / Transaction ID", label: "PhonePe Ref No. *" },
-              ].map(f => (
-                <div key={f.name}>
-                  <label style={{ fontSize: "12px", fontWeight: "600", color: "#666", display: "block", marginBottom: "4px" }}>{f.label}</label>
-                  <input
-                    value={form[f.name]}
-                    onChange={e => setForm(prev => ({ ...prev, [f.name]: e.target.value }))}
-                    placeholder={f.placeholder}
-                    style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "13px", boxSizing: "border-box" }}
-                  />
-                </div>
-              ))}
+          <div className="paid-form">
+            <p className="paid-form-title">🙏 Thank you! Please share your payment details:</p>
+            <div className="paid-form-grid">
+              <div className="paid-form-field">
+                <label>Full Name *</label>
+                <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" />
+              </div>
+              <div className="paid-form-field">
+                <label>Mobile *</label>
+                <input value={form.mobile} onChange={e => setForm(p => ({ ...p, mobile: e.target.value }))} placeholder="10-digit number" maxLength={10} />
+              </div>
+              <div className="paid-form-field">
+                <label>Amount Paid (₹) *</label>
+                <input value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))} placeholder="e.g. 2500" type="number" />
+              </div>
+              <div className="paid-form-field">
+                <label>PhonePe Ref No. *</label>
+                <input value={form.utr} onChange={e => setForm(p => ({ ...p, utr: e.target.value }))} placeholder="UTR / Transaction ID" />
+              </div>
             </div>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button
-                onClick={handleSubmitUTR}
-                disabled={submitting}
-                style={{ background: "#5f259f", color: "white", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "13px", fontWeight: "700", cursor: "pointer" }}
-              >
+            <div className="paid-form-actions">
+              <button className="paid-submit-btn" onClick={handleSubmit} disabled={submitting}>
                 {submitting ? "Sending..." : "Send via WhatsApp →"}
               </button>
-              <button
-                onClick={() => setShowPaidForm(false)}
-                style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "10px 16px", fontSize: "13px", cursor: "pointer", color: "#888" }}
-              >
+              <button className="paid-cancel-btn" onClick={() => setShowPaidForm(false)}>
                 Cancel
               </button>
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setShowPaidForm(true)}
-            style={{ background: "none", border: "1px solid #5f259f", color: "#5f259f", borderRadius: "10px", padding: "10px 18px", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
-          >
-            ✅ Already Paid? Click here
+          <button className="phonepe-paid-btn" onClick={() => setShowPaidForm(true)}>
+            ✅ Already Paid? Click here to share details
           </button>
         )}
 
-        <div className="bank-note" style={{ marginTop: "16px" }}>
+        <div className="bank-note">
           <span className="bank-note-icon">🙏</span>
           <p>
-            <strong>Gentle Request!</strong> After paying, please use the <strong>"Already Paid?"</strong> button above to share your transaction details. 
+            After paying, click <strong>"Already Paid?"</strong> to share your details.
             Our team will verify and send your receipt on WhatsApp within a few hours.
           </p>
         </div>
       </div>
 
-      {/* Bank Transfer Section */}
+      {/* Bank Transfer Box */}
       <div className="bank-donation-box">
         <h2 className="bank-donation-title">Donation Through Bank (NEFT / RTGS)</h2>
         <div className="bank-details-grid">
@@ -175,17 +147,15 @@ function BankDonation() {
             <span className="bank-value">IDFB0080412</span>
           </div>
         </div>
-        <button className={`bank-copy-btn ${copied ? "copied" : ""}`} onClick={handleCopy}>
+        <button className={`bank-copy-btn${copied ? " copied" : ""}`} onClick={handleCopy}>
           {copied ? "✅ Copied!" : "📋 Copy Bank Details"}
         </button>
         <div className="bank-note">
           <span className="bank-note-icon">🙏</span>
           <p>
-            <strong>Gentle Request!</strong> After transferring, please send us a screenshot along with your
-            complete address and PAN details on our WhatsApp{" "}
-            <a href="https://wa.me/918977761187" target="_blank" rel="noopener noreferrer">+91 89777 61187</a>{" "}
-            or email us at{" "}
-            <a href="mailto:mukunda@hkmvizag.org">mukunda@hkmvizag.org</a>.
+            After transferring, please send us a screenshot with your address and PAN on{" "}
+            <a href="https://wa.me/918977761187" target="_blank" rel="noopener noreferrer">WhatsApp +91 89777 61187</a>{" "}
+            or email <a href="mailto:mukunda@hkmvizag.org">mukunda@hkmvizag.org</a>.
           </p>
         </div>
       </div>
