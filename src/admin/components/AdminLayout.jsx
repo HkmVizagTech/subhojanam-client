@@ -12,7 +12,8 @@ import {
   Bell,
   RefreshCw,
   FileText,
-  AlertCircle
+  AlertCircle,
+  PlusCircle
 } from "lucide-react"
 import "../styles/AdminLayout.css"
 import { apiBaseUrl } from "../../lib/apiConfig.js";
@@ -35,6 +36,7 @@ function AdminLayout() {
     { path: "/admin/transactions", icon: IndianRupee, label: "Transactions" },
     { path: "/admin/subscriptions", icon: RefreshCw, label: "Subscriptions" },
     { path: "/admin/missed-charges", icon: AlertCircle, label: "Missed Charges" },
+    { path: "/admin/offline-donation", icon: PlusCircle, label: "Offline Donation" },
     { path: "/admin/donors", icon: Users, label: "Donors" },
     { path: "/admin/receipts", icon: FileText, label: "Receipts" },
     { path: "/admin/campaigns", icon: FileText, label: "Campaigns" },

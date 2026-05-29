@@ -11,6 +11,7 @@ function Transactions() {
   const [filterStatus, setFilterStatus] = useState("all")
   const [prasadamFilter, setPrasadamFilter] = useState("all") // all | yes | no
   const [certificateFilter, setCertificateFilter] = useState("all") // all | yes | no
+  const [sourceFilter, setSourceFilter] = useState("all") // all | online | offline
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -21,7 +22,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions()
-  }, [currentPage, filterStatus, prasadamFilter, certificateFilter])
+  }, [currentPage, filterStatus, prasadamFilter, certificateFilter, sourceFilter])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,7 +51,8 @@ function Transactions() {
         search: searchTerm,
         status: filterStatus,
         mahaprasadam: prasadamForBackend,
-        certificate: certificateForBackend
+        certificate: certificateForBackend,
+        source: sourceFilter === 'all' ? undefined : sourceFilter,
       })
 
       setTransactions(response.transactions)
@@ -213,6 +215,21 @@ function Transactions() {
               </div>
 
               <div className="filter-group">
+                <select
+                  className="filter-select"
+                  value={sourceFilter}
+                  onChange={e => {
+                    setSourceFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                >
+                  <option value="all">All Sources</option>
+                  <option value="online">Online Only</option>
+                  <option value="offline">Offline Only</option>
+                </select>
+              </div>
+
+              <div className="filter-group">
                 <Calendar size={18} />
                 <input type="date" />
               </div>
@@ -274,6 +291,9 @@ function Transactions() {
                         <span className={`status-badge ${txn.status.toLowerCase()}`}>
                           {txn.status}
                         </span>
+                        {txn.donationSource === "offline" && (
+                          <span style={{ marginLeft: "6px", background: "#f3f4f6", color: "#555", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" }}>OFFLINE</span>
+                        )}
                       </td>
                       <td>
                         <button className="action-btn view-btn" onClick={() => handleViewDetails(txn)}>View</button>
