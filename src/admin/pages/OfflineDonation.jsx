@@ -25,7 +25,7 @@ const defaultForm = {
   paymentDate: new Date().toISOString().split("T")[0],
   certificate: false, panNumber: "",
   address: "", city: "", state: "", pincode: "",
-  occasion: "",
+  occasion: "", showInTransactions: true,
 }
 
 function OfflineDonation() {
@@ -186,6 +186,36 @@ function OfflineDonation() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Visibility */}
+      <div style={s.section}>
+        <div style={s.sectionTitle}>Transaction Visibility</div>
+        <div style={{ display: "flex", gap: "12px" }}>
+          {[
+            { value: true, label: "Show in Transactions", desc: "Visible in main Transactions tab" },
+            { value: false, label: "Separate (Offline Only)", desc: "Only visible in Offline filter" },
+          ].map(opt => (
+            <label key={String(opt.value)} style={{
+              flex: 1, display: "flex", alignItems: "flex-start", gap: "10px",
+              background: form.showInTransactions === opt.value ? "#eff6ff" : "#f9fafb",
+              border: `1.5px solid ${form.showInTransactions === opt.value ? "#0A97EF" : "#e5e7eb"}`,
+              borderRadius: "12px", padding: "12px 14px", cursor: "pointer"
+            }}>
+              <input
+                type="radio"
+                name="showInTransactions"
+                checked={form.showInTransactions === opt.value}
+                onChange={() => setForm(p => ({ ...p, showInTransactions: opt.value }))}
+                style={{ marginTop: "2px", flexShrink: 0 }}
+              />
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: "700", color: "#1a1a2e" }}>{opt.label}</div>
+                <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{opt.desc}</div>
+              </div>
+            </label>
+          ))}
+        </div>
       </div>
 
       <button onClick={handleSubmit} disabled={loading} style={s.submitBtn(loading)}>
