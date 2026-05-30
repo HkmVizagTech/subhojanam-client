@@ -28,6 +28,20 @@ const defaultForm = {
   occasion: "", showInTransactions: true,
 }
 
+const s = {
+  page: { padding: "24px", maxWidth: "700px" },
+  title: { fontSize: "22px", fontWeight: "700", color: "#1a1a2e", margin: "0 0 6px" },
+  sub: { color: "#888", fontSize: "14px", margin: "0 0 24px" },
+  section: { marginBottom: "24px" },
+  sectionTitle: { fontSize: "13px", fontWeight: "700", color: "#555", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" },
+  grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" },
+  grid1: { display: "grid", gridTemplateColumns: "1fr", gap: "12px" },
+  label: { display: "block", fontSize: "13px", fontWeight: "600", color: "#444", marginBottom: "5px" },
+  input: { width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" },
+  select: { width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" },
+  required: { color: "#ef4444", marginLeft: "2px" },
+}
+
 function OfflineDonation() {
   const [form, setForm] = useState(defaultForm)
   const [loading, setLoading] = useState(false)
@@ -59,25 +73,12 @@ function OfflineDonation() {
     }
   }
 
-  const s = {
-    page: { padding: "24px", maxWidth: "700px" },
-    title: { fontSize: "22px", fontWeight: "700", color: "#1a1a2e", margin: "0 0 6px" },
-    sub: { color: "#888", fontSize: "14px", margin: "0 0 24px" },
-    section: { marginBottom: "24px" },
-    sectionTitle: { fontSize: "13px", fontWeight: "700", color: "#555", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" },
-    grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" },
-    grid1: { display: "grid", gridTemplateColumns: "1fr", gap: "12px" },
-    label: { display: "block", fontSize: "13px", fontWeight: "600", color: "#444", marginBottom: "5px" },
-    input: { width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" },
-    select: { width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", boxSizing: "border-box", background: "white" },
-    required: { color: "#ef4444", marginLeft: "2px" },
-    submitBtn: (loading) => ({
-      background: loading ? "#e5e7eb" : "#0A97EF", color: loading ? "#888" : "white",
-      border: "none", borderRadius: "12px", padding: "13px 32px",
-      fontSize: "15px", fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
-      display: "flex", alignItems: "center", gap: "8px"
-    }),
-  }
+  const submitBtnStyle = (loading) => ({
+    background: loading ? "#e5e7eb" : "#0A97EF", color: loading ? "#888" : "white",
+    border: "none", borderRadius: "12px", padding: "13px 32px",
+    fontSize: "15px", fontWeight: "700", cursor: loading ? "not-allowed" : "pointer",
+    display: "flex", alignItems: "center", gap: "8px"
+  })
 
   return (
     <div style={s.page}>
@@ -218,7 +219,7 @@ function OfflineDonation() {
         </div>
       </div>
 
-      <button onClick={handleSubmit} disabled={loading} style={s.submitBtn(loading)}>
+      <button onClick={handleSubmit} disabled={loading} style={submitBtnStyle(loading)}>
         {loading
           ? <><RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> Processing...</>
           : <><CheckCircle size={16} /> Register Donation & Send Receipt</>
