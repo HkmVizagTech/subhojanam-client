@@ -29,6 +29,7 @@ const defaultForm = {
   mahaprasadam: false,
   prasadamAddressOption: "same",
   prasadamName: "", prasadamMobile: "", prasadamAddress: "",
+  prasadamCity: "", prasadamState: "", prasadamPincode: "",
 }
 
 const s = {
@@ -196,7 +197,13 @@ function OfflineDonation() {
       <div style={s.section}>
         <div style={s.sectionTitle}>Maha Prasadam</div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-          <input type="checkbox" id="mahaprasadam" name="mahaprasadam" checked={form.mahaprasadam} onChange={handleChange} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
+          <input type="checkbox" id="mahaprasadam" name="mahaprasadam" checked={form.mahaprasadam}
+            onChange={e => setForm(p => ({
+              ...p,
+              mahaprasadam: e.target.checked,
+              prasadamMobile: e.target.checked ? p.mobile : "", // auto-fill donor mobile
+            }))}
+            style={{ width: "16px", height: "16px", cursor: "pointer" }} />
           <label htmlFor="mahaprasadam" style={{ fontSize: "14px", cursor: "pointer" }}>Donor wants Maha Prasadam</label>
         </div>
         {form.mahaprasadam && (
@@ -222,18 +229,37 @@ function OfflineDonation() {
               </div>
             )}
             {(!form.certificate || form.prasadamAddressOption === "different") && (
-              <div style={s.grid2}>
-                <div>
-                  <label style={s.label}>Recipient Name</label>
-                  <input style={s.input} name="prasadamName" value={form.prasadamName} onChange={handleChange} placeholder="Recipient name" />
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={s.grid2}>
+                  <div>
+                    <label style={s.label}>Recipient Name</label>
+                    <input style={s.input} name="prasadamName" value={form.prasadamName} onChange={handleChange} placeholder="Recipient name" />
+                  </div>
+                  <div>
+                    <label style={s.label}>Recipient Mobile</label>
+                    <input style={s.input} name="prasadamMobile" value={form.prasadamMobile} onChange={handleChange} placeholder="10-digit mobile" maxLength={10} />
+                  </div>
                 </div>
                 <div>
-                  <label style={s.label}>Recipient Mobile</label>
-                  <input style={s.input} name="prasadamMobile" value={form.prasadamMobile} onChange={handleChange} placeholder="10-digit mobile" maxLength={10} />
+                  <label style={s.label}>Full Address</label>
+                  <textarea style={{ ...s.input, resize: "vertical", minHeight: "70px" }} name="prasadamAddress" value={form.prasadamAddress} onChange={handleChange} placeholder="Door No, Street, Area" />
                 </div>
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <label style={s.label}>Delivery Address</label>
-                  <input style={s.input} name="prasadamAddress" value={form.prasadamAddress} onChange={handleChange} placeholder="Full delivery address" />
+                <div style={s.grid2}>
+                  <div>
+                    <label style={s.label}>City</label>
+                    <input style={s.input} name="prasadamCity" value={form.prasadamCity} onChange={handleChange} placeholder="City" />
+                  </div>
+                  <div>
+                    <label style={s.label}>Pincode</label>
+                    <input style={s.input} name="prasadamPincode" value={form.prasadamPincode} onChange={handleChange} placeholder="6-digit pincode" maxLength={6} />
+                  </div>
+                </div>
+                <div>
+                  <label style={s.label}>State</label>
+                  <select style={s.select} name="prasadamState" value={form.prasadamState} onChange={handleChange}>
+                    <option value="">Select State</option>
+                    {INDIAN_STATES.map(st => <option key={st} value={st}>{st}</option>)}
+                  </select>
                 </div>
               </div>
             )}
