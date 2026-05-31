@@ -26,6 +26,9 @@ const defaultForm = {
   certificate: false, panNumber: "",
   address: "", city: "", state: "", pincode: "",
   occasion: "", showInTransactions: true,
+  mahaprasadam: false,
+  prasadamAddressOption: "same",
+  prasadamName: "", prasadamMobile: "", prasadamAddress: "",
 }
 
 const s = {
@@ -186,6 +189,55 @@ function OfflineDonation() {
               <input style={s.input} name="pincode" value={form.pincode} onChange={handleChange} placeholder="6-digit pincode" maxLength={6} />
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Prasadam */}
+      <div style={s.section}>
+        <div style={s.sectionTitle}>Maha Prasadam</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+          <input type="checkbox" id="mahaprasadam" name="mahaprasadam" checked={form.mahaprasadam} onChange={handleChange} style={{ width: "16px", height: "16px", cursor: "pointer" }} />
+          <label htmlFor="mahaprasadam" style={{ fontSize: "14px", cursor: "pointer" }}>Donor wants Maha Prasadam</label>
+        </div>
+        {form.mahaprasadam && (
+          <>
+            {form.certificate && (
+              <div style={{ display: "flex", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
+                {[
+                  { value: "same", label: "Same as certificate address" },
+                  { value: "different", label: "Different address" },
+                ].map(opt => (
+                  <label key={opt.value} style={{
+                    display: "flex", alignItems: "center", gap: "8px",
+                    background: form.prasadamAddressOption === opt.value ? "#eff6ff" : "#f9fafb",
+                    border: `1.5px solid ${form.prasadamAddressOption === opt.value ? "#0A97EF" : "#e5e7eb"}`,
+                    borderRadius: "10px", padding: "10px 14px", cursor: "pointer", fontSize: "13px", fontWeight: "600"
+                  }}>
+                    <input type="radio" name="prasadamAddressOption" value={opt.value}
+                      checked={form.prasadamAddressOption === opt.value}
+                      onChange={handleChange} />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+            )}
+            {(!form.certificate || form.prasadamAddressOption === "different") && (
+              <div style={s.grid2}>
+                <div>
+                  <label style={s.label}>Recipient Name</label>
+                  <input style={s.input} name="prasadamName" value={form.prasadamName} onChange={handleChange} placeholder="Recipient name" />
+                </div>
+                <div>
+                  <label style={s.label}>Recipient Mobile</label>
+                  <input style={s.input} name="prasadamMobile" value={form.prasadamMobile} onChange={handleChange} placeholder="10-digit mobile" maxLength={10} />
+                </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label style={s.label}>Delivery Address</label>
+                  <input style={s.input} name="prasadamAddress" value={form.prasadamAddress} onChange={handleChange} placeholder="Full delivery address" />
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
