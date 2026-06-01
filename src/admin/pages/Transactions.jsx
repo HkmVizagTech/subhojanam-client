@@ -40,7 +40,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchStats()
-  }, [filterStatus, prasadamFilter, certificateFilter])
+  }, [filterStatus, prasadamFilter, certificateFilter, sourceFilter, startDate, endDate, searchTerm])
 
   const fetchTransactions = async () => {
     try {
@@ -72,8 +72,16 @@ function Transactions() {
 
   const fetchStats = async () => {
     try {
+      const prasadamForBackend = prasadamFilter === 'all' ? undefined : prasadamFilter === 'yes';
+      const certificateForBackend = certificateFilter === 'all' ? undefined : certificateFilter === 'yes';
       const response = await adminAPI.getTransactionStats({
-        status: filterStatus
+        status: filterStatus,
+        search: searchTerm || undefined,
+        mahaprasadam: prasadamForBackend,
+        certificate: certificateForBackend,
+        source: sourceFilter === 'all' ? undefined : sourceFilter,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
       })
       setStats(response.stats)
     } catch (err) {
