@@ -9,9 +9,11 @@ function Transactions() {
   const [pagination, setPagination] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
-  const [prasadamFilter, setPrasadamFilter] = useState("all") // all | yes | no
-  const [certificateFilter, setCertificateFilter] = useState("all") // all | yes | no
-  const [sourceFilter, setSourceFilter] = useState("all") // all | online | offline
+  const [prasadamFilter, setPrasadamFilter] = useState("all")
+  const [certificateFilter, setCertificateFilter] = useState("all")
+  const [sourceFilter, setSourceFilter] = useState("all")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -22,7 +24,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions()
-  }, [currentPage, filterStatus, prasadamFilter, certificateFilter, sourceFilter])
+  }, [currentPage, filterStatus, prasadamFilter, certificateFilter, sourceFilter, startDate, endDate])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -53,6 +55,8 @@ function Transactions() {
         mahaprasadam: prasadamForBackend,
         certificate: certificateForBackend,
         source: sourceFilter === 'all' ? undefined : sourceFilter,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
       })
 
       setTransactions(response.transactions)
@@ -229,9 +233,30 @@ function Transactions() {
                 </select>
               </div>
 
-              <div className="filter-group">
+              <div className="filter-group" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <Calendar size={18} />
-                <input type="date" />
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={e => { setStartDate(e.target.value); setCurrentPage(1); }}
+                  style={{ fontSize: "13px", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "6px 8px" }}
+                  title="From date"
+                />
+                <span style={{ color: "#aaa", fontSize: "13px" }}>–</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={e => { setEndDate(e.target.value); setCurrentPage(1); }}
+                  style={{ fontSize: "13px", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "6px 8px" }}
+                  title="To date"
+                />
+                {(startDate || endDate) && (
+                  <button
+                    onClick={() => { setStartDate(""); setEndDate(""); setCurrentPage(1); }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: "16px", padding: "0 4px" }}
+                    title="Clear dates"
+                  >✕</button>
+                )}
               </div>
             </div>
           </div>
