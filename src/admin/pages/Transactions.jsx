@@ -612,31 +612,6 @@ function Transactions() {
                     <Check size={16} />
                     Fix Receipt Visibility (No WhatsApp)
                   </button>
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm(`Delete transaction ${selectedTransaction.id}? This cannot be undone.`)) return;
-                      try {
-                        const res = await adminAPI.request("/api/admin/transactions/bulk-delete", {
-                          method: "DELETE",
-                          body: JSON.stringify({ paymentIds: [selectedTransaction.id] })
-                        });
-                        if (res.success) {
-                          alert(`✅ Deleted successfully`);
-                          setSelectedTransaction(null);
-                          fetchTransactions();
-                        }
-                      } catch (err) {
-                        alert("❌ Delete failed: " + err.message);
-                      }
-                    }}
-                    style={{
-                      background: "#fef2f2", color: "#dc2626", border: "1px solid #fca5a5",
-                      borderRadius: "8px", padding: "10px 16px", fontSize: "13px",
-                      fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px"
-                    }}
-                  >
-                    🗑️ Delete Transaction
-                  </button>
                 </div>
                 {resendResult && (
                   <p className={`resend-result ${resendResult.success ? "success" : "error"}`}>
