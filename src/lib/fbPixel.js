@@ -2,9 +2,6 @@
 // Pixel ID: 3766034960331245
 
 export const fbEvent = {
-  /**
-   * Fire when donation form becomes visible to the user
-   */
   viewContent: (amount) => {
     if (!window.fbq) return;
     window.fbq('track', 'ViewContent', {
@@ -14,9 +11,6 @@ export const fbEvent = {
     });
   },
 
-  /**
-   * Fire when user clicks "Proceed to Pay" button (before Razorpay opens)
-   */
   initiateCheckout: (amount) => {
     if (!window.fbq) return;
     window.fbq('track', 'InitiateCheckout', {
@@ -27,11 +21,9 @@ export const fbEvent = {
     });
   },
 
-  /**
-   * Fire inside Razorpay handler on successful payment
-   */
   purchase: (amount, paymentId) => {
     if (!window.fbq) return;
+    // Fire both Purchase and Donate for maximum tracking coverage
     window.fbq('track', 'Purchase', {
       content_name: 'Annadana Seva',
       currency: 'INR',
@@ -39,11 +31,14 @@ export const fbEvent = {
       num_items: Math.floor(amount / 25),
       content_ids: [paymentId],
     }, paymentId ? { eventID: paymentId } : undefined);
+
+    window.fbq('track', 'Donate', {
+      content_name: 'Annadana Seva',
+      currency: 'INR',
+      value: amount,
+    }, paymentId ? { eventID: `donate_${paymentId}` } : undefined);
   },
 
-  /**
-   * Fire when user closes Razorpay popup without paying
-   */
   paymentAbandoned: (amount) => {
     if (!window.fbq) return;
     window.fbq('trackCustom', 'PaymentAbandoned', {
