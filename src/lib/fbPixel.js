@@ -32,10 +32,11 @@ export const fbEvent = {
       content_ids: [paymentId],
     }, paymentId ? { eventID: paymentId } : undefined);
 
+    const donateAmount = Number(amount) || 0;
     window.fbq('track', 'Donate', {
       content_name: 'Annadana Seva',
       currency: 'INR',
-      value: amount,
+      value: donateAmount,
     }, paymentId ? { eventID: `donate_${paymentId}` } : undefined);
   },
 
