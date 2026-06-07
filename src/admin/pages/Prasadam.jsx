@@ -54,12 +54,19 @@ function Prasadam() {
   }
 
   const markDelivered = async (ids) => {
-    if (!window.confirm(`Mark ${ids.length} as delivered and send WhatsApp notification?`)) return
+    const trackingNumbers = {}
+    if (ids.length === 1) {
+      const tn = window.prompt("Enter DTDC tracking number (leave empty if not available):", "")
+      if (tn === null) return // cancelled
+      if (tn.trim()) trackingNumbers[ids[0]] = tn.trim()
+    } else {
+      if (!window.confirm(`Mark ${ids.length} as dispatched and send WhatsApp notification? (Tracking numbers can be added individually)`)) return
+    }
     try {
       setMarking(true)
       const res = await adminAPI.request("/api/admin/prasadam/mark-delivered", {
         method: "POST",
-        body: JSON.stringify({ donationIds: ids, sendWhatsapp: true }),
+        body: JSON.stringify({ donationIds: ids, sendWhatsapp: true, trackingNumbers }),
       })
       alert(res.message)
       fetchData()
@@ -205,6 +212,7 @@ function Prasadam() {
                     </button>
                   )}
                   {item.whatsappSentAt && <span style={{ fontSize: "10px", color: "#aaa" }}>WhatsApp sent ✓</span>}
+                  {item.trackingNumber && <span style={{ fontSize: "10px", color: "#0A97EF", fontFamily: "monospace" }}>DTDC: {item.trackingNumber}</span>}
                 </div>
               </div>
             ))}
