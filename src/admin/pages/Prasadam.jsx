@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Package, CheckCircle, RefreshCw, Download, Search, MapPin } from "lucide-react"
 import adminAPI from "../../services/adminApi"
-
-const API_BASE = import.meta.env.VITE_API_URL
+import { apiBaseUrl } from "../../lib/apiConfig"
 
 function Prasadam() {
   const [items, setItems] = useState([])
@@ -79,14 +78,19 @@ function Prasadam() {
 
   const handleExport = async () => {
     try {
-      const url = `${API_BASE}/api/admin/prasadam/export?status=${statusFilter}`
-      const response = await fetch(url, { credentials: "include" })
-      if (!response.ok) throw new Error("Export failed")
+      const url = apiBaseUrl(`/api/admin/prasadam/export?status=${statusFilter}`)
+      const response = await fetch(url, {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      })
+      if (!response.ok) throw new Error(`Server returned ${response.status}`)
       const blob = await response.blob()
       const link = document.createElement("a")
       link.href = URL.createObjectURL(blob)
       link.download = `prasadam_${statusFilter}_deliveries.csv`
+      document.body.appendChild(link)
       link.click()
+      document.body.removeChild(link)
       URL.revokeObjectURL(link.href)
     } catch (err) {
       alert("Export failed: " + err.message)
