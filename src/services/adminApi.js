@@ -26,9 +26,13 @@ class AdminAPI {
   }
   async exportPrasadamCSV(status = "pending") {
     const url = apiBaseUrl(`/api/admin/prasadam/export?status=${status}`);
+    const token = localStorage.getItem('adminToken');
     const response = await fetch(url, {
       credentials: 'include',
-      headers: { 'Accept': 'text/csv' }
+      headers: {
+        'Accept': 'text/csv',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      }
     });
     if (!response.ok) throw new Error(`Failed to export: ${response.status}`);
     return response.blob();
