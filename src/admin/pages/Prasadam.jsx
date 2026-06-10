@@ -77,9 +77,20 @@ function Prasadam() {
     }
   }
 
-  const handleExport = () => {
-    const token = document.cookie.split("; ").find(c => c.startsWith("adminToken="))?.split("=")[1]
-    window.open(`${API_BASE}/api/admin/prasadam/export?status=${statusFilter}`, "_blank")
+  const handleExport = async () => {
+    try {
+      const url = `${API_BASE}/api/admin/prasadam/export?status=${statusFilter}`
+      const response = await fetch(url, { credentials: "include" })
+      if (!response.ok) throw new Error("Export failed")
+      const blob = await response.blob()
+      const link = document.createElement("a")
+      link.href = URL.createObjectURL(blob)
+      link.download = `prasadam_${statusFilter}_deliveries.csv`
+      link.click()
+      URL.revokeObjectURL(link.href)
+    } catch (err) {
+      alert("Export failed: " + err.message)
+    }
   }
 
   const formatDate = (d) => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
