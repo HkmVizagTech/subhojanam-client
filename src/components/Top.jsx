@@ -6,7 +6,7 @@ function Top() {
     <div className="topbar">
       <div className="topbar__content">
         <HandHeart className="topbar-icon" />
-        <span>Make a gift of giving food to all - Every offering is blessed</span>
+        <span>🪔 Purushottam Maas Special — every meal offered is doubled in merit · 80G tax benefits available</span>
       </div>
     </div>
   )
