@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const PHONEPE_UPI = "9666399108@ybl";
+const PHONEPE_UPI = "hare.india@ibl";
 const WA_NUMBER = "918977761187";
 
 const inputStyle = {
