@@ -3,6 +3,12 @@ import { useState } from "react";
 const PHONEPE_UPI = "9666399108@ybl";
 const WA_NUMBER = "918977761187";
 
+const inputStyle = {
+  width: "100%", padding: "9px 12px", borderRadius: "8px",
+  border: "1px solid #e5e7eb", fontSize: "13px",
+  boxSizing: "border-box", outline: "none", background: "white",
+};
+
 function PhonePeStrip() {
   const [showForm, setShowForm] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -10,9 +16,13 @@ function PhonePeStrip() {
   const [form, setForm] = useState({ name: "", mobile: "", amount: "", utr: "" });
 
   const handlePay = () => {
+    // Use anchor tag with UPI deep link — doesn't navigate away on desktop
     const upiUrl = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent("HARE KRISHNA MOVEMENT INDIA")}&cu=INR`;
-    window.location.href = upiUrl;
-    setTimeout(() => setShowForm(true), 2000);
+    const a = document.createElement("a");
+    a.href = upiUrl;
+    a.click();
+    // Show "Already Paid" form after 2.5s (user returns from PhonePe app)
+    setTimeout(() => setShowForm(true), 2500);
   };
 
   const handleCopy = () => {
@@ -27,7 +37,8 @@ function PhonePeStrip() {
       alert("Please fill all fields");
       return;
     }
-    const msg = `Hare Krishna! 🙏\n\nNew PhonePe Donation:\n\nName: ${form.name}\nMobile: ${form.mobile}\nAmount: ₹${form.amount}\nUTR / Ref No: ${form.utr}\n\nPlease verify and generate receipt.`;
+    const msg =
+      `Hare Krishna! 🙏\n\nNew PhonePe Donation:\n\nName: ${form.name}\nMobile: ${form.mobile}\nAmount: ₹${form.amount}\nUTR / Ref No: ${form.utr}\n\nPlease verify and generate receipt.`;
     window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
     setSubmitted(true);
     setShowForm(false);
@@ -35,12 +46,7 @@ function PhonePeStrip() {
   };
 
   return (
-    <div style={{
-      background: "#faf5ff",
-      borderTop: "1px solid #e9d5ff",
-      borderBottom: "1px solid #e9d5ff",
-      padding: "20px 16px",
-    }}>
+    <div style={{ background: "#faf5ff", borderTop: "1px solid #e9d5ff", borderBottom: "1px solid #e9d5ff", padding: "20px 16px" }}>
       <div style={{ maxWidth: "480px", margin: "0 auto" }}>
 
         {/* Header */}
@@ -69,13 +75,13 @@ function PhonePeStrip() {
             border: copied ? "1px solid #86efac" : "none",
             borderRadius: "8px", padding: "8px 14px",
             fontSize: "13px", fontWeight: "600", cursor: "pointer",
-            whiteSpace: "nowrap", flexShrink: 0
+            whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.2s"
           }}>
             {copied ? "✅ Copied" : "📋 Copy"}
           </button>
         </div>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
           <button onClick={handlePay} style={{
             flex: 1, background: "#5f259f", color: "white", border: "none",
@@ -85,15 +91,17 @@ function PhonePeStrip() {
             📱 Open PhonePe App
           </button>
           <button onClick={() => setShowForm(f => !f)} style={{
-            flex: 1, background: "white", color: "#5f259f",
+            flex: 1, background: showForm ? "#5f259f" : "white",
+            color: showForm ? "white" : "#5f259f",
             border: "1.5px solid #5f259f", borderRadius: "10px",
-            padding: "12px", fontSize: "13px", fontWeight: "600", cursor: "pointer"
+            padding: "12px", fontSize: "13px", fontWeight: "600", cursor: "pointer",
+            transition: "all 0.2s"
           }}>
             ✅ Already Paid?
           </button>
         </div>
 
-        {/* Success */}
+        {/* Success message */}
         {submitted && (
           <div style={{
             background: "#f0fdf4", border: "1px solid #86efac", borderRadius: "10px",
@@ -113,26 +121,22 @@ function PhonePeStrip() {
               Share your payment details:
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
-              {[
-                { key: "name", label: "Full Name *", placeholder: "Your name" },
-                { key: "mobile", label: "Mobile *", placeholder: "10-digit number" },
-                { key: "amount", label: "Amount (₹) *", placeholder: "e.g. 2500" },
-                { key: "utr", label: "PhonePe Ref No. *", placeholder: "UTR / Transaction ID" },
-              ].map(f => (
-                <div key={f.key}>
-                  <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#666", marginBottom: "4px" }}>{f.label}</label>
-                  <input
-                    value={form[f.key]}
-                    onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
-                    placeholder={f.placeholder}
-                    style={{
-                      width: "100%", padding: "9px 12px", borderRadius: "8px",
-                      border: "1px solid #e5e7eb", fontSize: "13px",
-                      boxSizing: "border-box", outline: "none"
-                    }}
-                  />
-                </div>
-              ))}
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#666", marginBottom: "4px" }}>Full Name *</label>
+                <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#666", marginBottom: "4px" }}>Mobile *</label>
+                <input value={form.mobile} onChange={e => setForm(p => ({ ...p, mobile: e.target.value }))} placeholder="10-digit number" maxLength={10} style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#666", marginBottom: "4px" }}>Amount (₹) *</label>
+                <input value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))} placeholder="e.g. 2500" type="number" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#666", marginBottom: "4px" }}>PhonePe Ref No. *</label>
+                <input value={form.utr} onChange={e => setForm(p => ({ ...p, utr: e.target.value }))} placeholder="UTR / Transaction ID" style={inputStyle} />
+              </div>
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
               <button onClick={handleSubmit} style={{
@@ -151,6 +155,13 @@ function PhonePeStrip() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* Note */}
+        {!submitted && (
+          <p style={{ fontSize: "12px", color: "#999", textAlign: "center", marginTop: "12px", marginBottom: 0 }}>
+            After paying via PhonePe, click <strong style={{ color: "#5f259f" }}>Already Paid?</strong> to share your details. Receipt will be sent on WhatsApp.
+          </p>
         )}
 
       </div>
