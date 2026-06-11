@@ -63,7 +63,7 @@ function DonationSection() {
   }, []);
 
   const [type, setType] = useState("one");
-  const [selectedAmount, setSelectedAmount] = useState(501);
+  const [selectedAmount, setSelectedAmount] = useState(1251);
   const [customAmount, setCustomAmount] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
