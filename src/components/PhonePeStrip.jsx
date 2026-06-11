@@ -88,7 +88,7 @@ function PhonePeStrip() {
             borderRadius: "10px", padding: "12px", fontSize: "14px",
             fontWeight: "700", cursor: "pointer"
           }}>
-            📱 Open PhonePe App
+            📱 Pay via PhonePe
           </button>
           <button onClick={() => setShowForm(f => !f)} style={{
             flex: 1, background: showForm ? "#5f259f" : "white",
@@ -160,7 +160,7 @@ function PhonePeStrip() {
         {/* Note */}
         {!submitted && (
           <p style={{ fontSize: "12px", color: "#999", textAlign: "center", marginTop: "12px", marginBottom: 0 }}>
-            After paying via PhonePe, click <strong style={{ color: "#5f259f" }}>Already Paid?</strong> to share your details. Receipt will be sent on WhatsApp.
+            After paying, PhonePe may show a redirect screen — tap <strong style={{ color: "#5f259f" }}>Go Back / Done</strong> to return here, then click <strong style={{ color: "#5f259f" }}>Already Paid?</strong> to share your details.
           </p>
         )}
 
