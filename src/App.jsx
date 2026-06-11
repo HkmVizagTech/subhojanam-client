@@ -5,8 +5,7 @@ import Hero from "./components/Hero";
 import Top from "./components/Top";
 import DonationSection from "./components/DonationSection";
 import BankDonation from "./components/BankDonation";
-import PhonePeStrip from "./components/PhonePeStrip";
-import ScrollToTop from "./components/ScrollToTop.jsx";
+import PhonePeStrip from "./components/PhonePeStrip";import ScrollToTop from "./components/ScrollToTop.jsx";
 import WhatsAppButton from "./components/WhatsAppButton.jsx";
 import SeoManager from "./components/SeoManager.jsx";
 
@@ -98,6 +97,13 @@ function ProtectedRoute({ children }) {
 }
 
 function Home() {
+  useEffect(() => {
+    setTimeout(() => {
+      const el = document.getElementById("donate");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
+  }, []);
+
   return (
     <>
       <Top />
