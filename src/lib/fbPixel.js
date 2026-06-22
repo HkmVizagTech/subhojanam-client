@@ -4,47 +4,53 @@
 export const fbEvent = {
   viewContent: (amount) => {
     if (!window.fbq) return;
+    const value = parseFloat(Number(amount).toFixed(2)) || 0;
     window.fbq('track', 'ViewContent', {
       content_name: 'Annadana Seva Donation Form',
       currency: 'INR',
-      value: amount,
+      value,
     });
   },
 
   initiateCheckout: (amount) => {
     if (!window.fbq) return;
+    const value = parseFloat(Number(amount).toFixed(2)) || 0;
     window.fbq('track', 'InitiateCheckout', {
       content_name: 'Annadana Seva',
       currency: 'INR',
-      value: amount,
-      num_items: Math.floor(amount / 25),
+      value,
+      num_items: Math.floor(value / 25) || 1,
     });
   },
 
   purchase: (amount, paymentId) => {
     if (!window.fbq) return;
-    // Fire both Purchase and Donate for maximum tracking coverage
+    // Always a clean float — never string, never undefined
+    const value = parseFloat(Number(amount).toFixed(2)) || 0;
+    const eid = paymentId ? String(paymentId) : undefined;
+
     window.fbq('track', 'Purchase', {
       content_name: 'Annadana Seva',
       currency: 'INR',
-      value: amount,
-      num_items: Math.floor(amount / 25),
-      content_ids: [paymentId],
-    }, paymentId ? { eventID: paymentId } : undefined);
+      value,
+      content_type: 'product',
+      content_ids: eid ? [eid] : [],
+      num_items: Math.floor(value / 25) || 1,
+    }, eid ? { eventID: eid } : undefined);
 
-    const donateAmount = Number(amount) || 0;
     window.fbq('track', 'Donate', {
       content_name: 'Annadana Seva',
       currency: 'INR',
-      value: donateAmount,
-    }, paymentId ? { eventID: `donate_${paymentId}` } : undefined);
+      value,
+    }, eid ? { eventID: `donate_${eid}` } : undefined);
   },
 
   paymentAbandoned: (amount) => {
     if (!window.fbq) return;
+    const value = parseFloat(Number(amount).toFixed(2)) || 0;
     window.fbq('trackCustom', 'PaymentAbandoned', {
       currency: 'INR',
-      value: amount,
+      value,
     });
   },
 };
