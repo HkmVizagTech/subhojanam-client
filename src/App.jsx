@@ -42,6 +42,7 @@ const Campaigns = lazy(() => import("./admin/pages/Campaigns.jsx"));
 const MissedCharges = lazy(() => import("./admin/pages/MissedCharges.jsx"));
 const OfflineDonation = lazy(() => import("./admin/pages/OfflineDonation.jsx"));
 const Prasadam = lazy(() => import("./admin/pages/Prasadam.jsx"));
+const SubscriptionRepair = lazy(() => import("./admin/pages/SubscriptionRepair.jsx"));
 const ReceiptPreview = lazy(() => import("./pages/ReceiptPreview.js"));
 
 function StickyDonateBar() {
@@ -167,6 +168,7 @@ function App() {
           <Route path="missed-charges" element={<MissedCharges />} />
           <Route path="offline-donation" element={<OfflineDonation />} />
           <Route path="prasadam" element={<Prasadam />} />
+          <Route path="subscription-repair" element={<SubscriptionRepair />} />
         </Route>
       </Routes>
     </Suspense>

@@ -14,7 +14,8 @@ import {
   FileText,
   AlertCircle,
   PlusCircle,
-  Package
+  Package,
+  Wrench
 } from "lucide-react"
 import "../styles/AdminLayout.css"
 import { apiBaseUrl } from "../../lib/apiConfig.js";
@@ -39,6 +40,7 @@ function AdminLayout() {
     { path: "/admin/missed-charges", icon: AlertCircle, label: "Missed Charges" },
     { path: "/admin/offline-donation", icon: PlusCircle, label: "Offline Donation" },
     { path: "/admin/prasadam", icon: Package, label: "Prasadam" },
+    { path: "/admin/subscription-repair", icon: Wrench, label: "Subscription Repair" },
     { path: "/admin/donors", icon: Users, label: "Donors" },
     { path: "/admin/receipts", icon: FileText, label: "Receipts" },
     { path: "/admin/campaigns", icon: FileText, label: "Campaigns" },
