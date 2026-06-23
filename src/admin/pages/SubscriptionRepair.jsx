@@ -86,6 +86,14 @@ function SubscriptionRepair() {
       ""
     )
     if (!name) return
+
+    const regen = window.confirm(
+      "Regenerate receipt for the corrected donor?\n\n" +
+      "OK = Correct name + re-send to DCC + new PDF + WhatsApp to correct donor\n" +
+      "Cancel = Only correct the name in our database (no receipt change)\n\n" +
+      "⚠️ Make sure DCC has cancelled the old receipt before regenerating."
+    )
+
     try {
       const res = await adminAPI.request("/api/admin/subscription-repair/fix-payment-donor", {
         method: "POST",
@@ -94,9 +102,13 @@ function SubscriptionRepair() {
           name: name.trim(),
           mobile,
           email: verifyResult.razorpay.email,
+          regenerateReceipt: regen,
         }),
       })
-      addLog(`Fixed ${res.paymentId}: ${res.before?.name} → ${res.after?.name} (${res.after?.mobile})`)
+      let msg = `Fixed ${res.paymentId}: ${res.before?.name} → ${res.after?.name} (${res.after?.mobile})`
+      if (res.regeneration?.newReceiptNumber) msg += ` · New receipt: ${res.regeneration.newReceiptNumber}`
+      if (res.regeneration?.error) msg += ` · Receipt regen failed: ${res.regeneration.error}`
+      addLog(msg)
       verifyPayment()
     } catch (e) {
       addLog("Fix failed: " + e.message)
