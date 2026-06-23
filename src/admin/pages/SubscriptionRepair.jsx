@@ -77,6 +77,32 @@ function SubscriptionRepair() {
     }
   }
 
+  const fixPaymentDonor = async () => {
+    if (!verifyResult?.razorpay?.paymentId) return
+    const rzContact = verifyResult.razorpay.contact || ""
+    const mobile = rzContact.replace(/^\+?91/, "")
+    const name = window.prompt(
+      `Enter correct donor name (Razorpay contact: ${rzContact}, email: ${verifyResult.razorpay.email || "—"}):`,
+      ""
+    )
+    if (!name) return
+    try {
+      const res = await adminAPI.request("/api/admin/subscription-repair/fix-payment-donor", {
+        method: "POST",
+        body: JSON.stringify({
+          paymentId: verifyResult.razorpay.paymentId,
+          name: name.trim(),
+          mobile,
+          email: verifyResult.razorpay.email,
+        }),
+      })
+      addLog(`Fixed ${res.paymentId}: ${res.before?.name} → ${res.after?.name} (${res.after?.mobile})`)
+      verifyPayment()
+    } catch (e) {
+      addLog("Fix failed: " + e.message)
+    }
+  }
+
   const box = { background: "white", border: "1px solid #e5e7eb", borderRadius: "14px", padding: "20px", marginBottom: "20px" }
   const btn = { background: "#0A97EF", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }
   const input = { padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box" }
@@ -168,6 +194,23 @@ function SubscriptionRepair() {
                     {new Date(d.date).toLocaleDateString("en-IN")} — <strong>{d.name}</strong> ({d.mobile}) ₹{d.amount} · {d.paymentId}
                   </div>
                 ))}
+              </div>
+            )}
+            {verifyResult.recordsMatchingRazorpayContact?.length > 0 && (
+              <div style={{ gridColumn: "1 / -1", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: "10px", padding: "14px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "700", color: "#92400e", marginBottom: "8px" }}>OTHER RECORDS WITH RAZORPAY'S CONTACT NUMBER ({verifyResult.razorpay?.contact})</div>
+                {verifyResult.recordsMatchingRazorpayContact.map(d => (
+                  <div key={d.id} style={{ fontSize: "12px", padding: "4px 0", borderBottom: "1px solid #f5e9c8" }}>
+                    {new Date(d.date).toLocaleDateString("en-IN")} — <strong>{d.name}</strong> ({d.mobile}) ₹{d.amount} {d.isRecurring ? "· Monthly" : ""} · {d.paymentId || "no payment id"}
+                  </div>
+                ))}
+              </div>
+            )}
+            {verifyResult.ourDbRecord && (
+              <div style={{ gridColumn: "1 / -1" }}>
+                <button onClick={fixPaymentDonor} style={{ background: "#16a34a", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "14px", fontWeight: "700", cursor: "pointer" }}>
+                  ✏️ Fix This Payment's Donor Name
+                </button>
               </div>
             )}
           </div>
