@@ -58,6 +58,25 @@ function SubscriptionRepair() {
     }
   }
 
+  const [verifyId, setVerifyId] = useState("")
+  const [verifyResult, setVerifyResult] = useState(null)
+  const [verifying, setVerifying] = useState(false)
+
+  const verifyPayment = async () => {
+    if (!verifyId) { alert("Enter payment ID"); return }
+    setVerifying(true)
+    setVerifyResult(null)
+    try {
+      const res = await adminAPI.request(`/api/admin/subscription-repair/verify?paymentId=${verifyId.trim()}`)
+      setVerifyResult(res)
+      addLog(`Verified ${verifyId}: Razorpay=${res.razorpay?.contact}, DB=${res.ourDbRecord?.name}`)
+    } catch (e) {
+      addLog("Verify failed: " + e.message)
+    } finally {
+      setVerifying(false)
+    }
+  }
+
   const box = { background: "white", border: "1px solid #e5e7eb", borderRadius: "14px", padding: "20px", marginBottom: "20px" }
   const btn = { background: "#0A97EF", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }
   const input = { padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box" }
@@ -109,6 +128,50 @@ function SubscriptionRepair() {
             {syncing ? "Syncing..." : "Sync This Charge"}
           </button>
         </div>
+      </div>
+
+      {/* Verify payment */}
+      <div style={box}>
+        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>0. Verify Payment (Razorpay vs DB)</h3>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>Check what Razorpay says about a payment and compare with our database record.</p>
+        <div style={{ display: "flex", gap: "10px", maxWidth: "520px" }}>
+          <input style={input} placeholder="Payment ID (pay_xxx)" value={verifyId} onChange={e => setVerifyId(e.target.value)} />
+          <button style={btn} onClick={verifyPayment} disabled={verifying}>{verifying ? "Checking..." : "Verify"}</button>
+        </div>
+
+        {verifyResult && (
+          <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+            <div style={{ background: "#eff6ff", borderRadius: "10px", padding: "14px" }}>
+              <div style={{ fontSize: "12px", fontWeight: "700", color: "#1d4ed8", marginBottom: "8px" }}>RAZORPAY (Source of Truth)</div>
+              <div style={{ fontSize: "13px", lineHeight: "1.8" }}>
+                <div>Contact: <strong>{verifyResult.razorpay?.contact || "—"}</strong></div>
+                <div>Email: <strong>{verifyResult.razorpay?.email || "—"}</strong></div>
+                <div>Amount: <strong>₹{verifyResult.razorpay?.amount}</strong></div>
+                <div>Status: <strong>{verifyResult.razorpay?.status}</strong></div>
+                <div style={{ fontSize: "11px", color: "#888", marginTop: "4px" }}>Sub: {verifyResult.razorpay?.subscription_id || "—"}</div>
+              </div>
+            </div>
+            <div style={{ background: verifyResult.ourDbRecord?.mobile && verifyResult.razorpay?.contact?.includes(verifyResult.ourDbRecord?.mobile) ? "#f0fdf4" : "#fef2f2", borderRadius: "10px", padding: "14px" }}>
+              <div style={{ fontSize: "12px", fontWeight: "700", color: "#991b1b", marginBottom: "8px" }}>OUR DATABASE</div>
+              <div style={{ fontSize: "13px", lineHeight: "1.8" }}>
+                <div>Name: <strong>{verifyResult.ourDbRecord?.name || "Not found"}</strong></div>
+                <div>Mobile: <strong>{verifyResult.ourDbRecord?.mobile || "—"}</strong></div>
+                <div>Email: <strong>{verifyResult.ourDbRecord?.email || "—"}</strong></div>
+                <div>Amount: <strong>₹{verifyResult.ourDbRecord?.amount}</strong></div>
+              </div>
+            </div>
+            {verifyResult.allDonationsUnderSubscription?.length > 0 && (
+              <div style={{ gridColumn: "1 / -1", background: "#f9fafb", borderRadius: "10px", padding: "14px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "700", color: "#555", marginBottom: "8px" }}>ALL CHARGES UNDER THIS SUBSCRIPTION</div>
+                {verifyResult.allDonationsUnderSubscription.map(d => (
+                  <div key={d.id} style={{ fontSize: "12px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
+                    {new Date(d.date).toLocaleDateString("en-IN")} — <strong>{d.name}</strong> ({d.mobile}) ₹{d.amount} · {d.paymentId}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Log */}
