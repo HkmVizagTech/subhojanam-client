@@ -3,7 +3,7 @@ import { useState } from "react";
 const PHONEPE_UPI = "hkmivsp9.08@idfcbank";
 const WA_NUMBER = "918977761187";
 const UPI_DEEP_LINK = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent("HARE KRISHNA MOVEMENT INDIA")}&cu=INR`;
-const QR_IMAGE_URL = "/phonepe-qr.png";
+const QR_IMAGE_URL = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(UPI_DEEP_LINK)}`;
 
 const inputStyle = {
   width: "100%", padding: "9px 12px", borderRadius: "8px",
