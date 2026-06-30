@@ -2,6 +2,8 @@ import { useState } from "react";
 
 const PHONEPE_UPI = "hare.india@ibl";
 const WA_NUMBER = "918977761187";
+const UPI_DEEP_LINK = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent("HARE KRISHNA MOVEMENT INDIA")}&cu=INR`;
+const QR_IMAGE_URL = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(UPI_DEEP_LINK)}`;
 
 const inputStyle = {
   width: "100%", padding: "9px 12px", borderRadius: "8px",
@@ -17,9 +19,8 @@ function PhonePeStrip() {
 
   const handlePay = () => {
     // Use anchor tag with UPI deep link — doesn't navigate away on desktop
-    const upiUrl = `upi://pay?pa=${PHONEPE_UPI}&pn=${encodeURIComponent("HARE KRISHNA MOVEMENT INDIA")}&cu=INR`;
     const a = document.createElement("a");
-    a.href = upiUrl;
+    a.href = UPI_DEEP_LINK;
     a.click();
     // Show "Already Paid" form after 2.5s (user returns from PhonePe app)
     setTimeout(() => setShowForm(true), 2500);
@@ -59,26 +60,36 @@ function PhonePeStrip() {
           <span style={{ fontSize: "15px", fontWeight: "700", color: "#5f259f" }}>Prefer PhonePe / UPI?</span>
         </div>
 
-        {/* UPI ID row */}
+        {/* QR + UPI ID row */}
         <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: "white", border: "1px solid #e9d5ff", borderRadius: "12px",
-          padding: "12px 16px", marginBottom: "12px", gap: "12px"
+          display: "flex", gap: "16px", alignItems: "center",
+          background: "white", border: "1px solid #e9d5ff", borderRadius: "14px",
+          padding: "16px", marginBottom: "12px", flexWrap: "wrap", justifyContent: "center"
         }}>
-          <div>
-            <div style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>UPI ID</div>
-            <div style={{ fontSize: "16px", fontWeight: "700", color: "#5f259f" }}>{PHONEPE_UPI}</div>
+          <img
+            src={QR_IMAGE_URL}
+            alt="Scan to pay via PhonePe/UPI"
+            width={130}
+            height={130}
+            style={{ borderRadius: "10px", border: "1px solid #f0e6ff", flexShrink: 0 }}
+          />
+          <div style={{ flex: 1, minWidth: "160px" }}>
+            <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>📷 Scan with any UPI app</div>
+            <div style={{ fontSize: "11px", color: "#888", marginBottom: "2px" }}>or use UPI ID</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <div style={{ fontSize: "16px", fontWeight: "700", color: "#5f259f" }}>{PHONEPE_UPI}</div>
+              <button onClick={handleCopy} style={{
+                background: copied ? "#f0fdf4" : "#5f259f",
+                color: copied ? "#166534" : "white",
+                border: copied ? "1px solid #86efac" : "none",
+                borderRadius: "8px", padding: "5px 11px",
+                fontSize: "12px", fontWeight: "600", cursor: "pointer",
+                whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.2s"
+              }}>
+                {copied ? "✅ Copied" : "📋 Copy"}
+              </button>
+            </div>
           </div>
-          <button onClick={handleCopy} style={{
-            background: copied ? "#f0fdf4" : "#5f259f",
-            color: copied ? "#166534" : "white",
-            border: copied ? "1px solid #86efac" : "none",
-            borderRadius: "8px", padding: "8px 14px",
-            fontSize: "13px", fontWeight: "600", cursor: "pointer",
-            whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.2s"
-          }}>
-            {copied ? "✅ Copied" : "📋 Copy"}
-          </button>
         </div>
 
         {/* Action Buttons */}
@@ -88,7 +99,7 @@ function PhonePeStrip() {
             borderRadius: "10px", padding: "12px", fontSize: "14px",
             fontWeight: "700", cursor: "pointer"
           }}>
-            📱 Pay via PhonePe
+            📱 Open in PhonePe App
           </button>
           <button onClick={() => setShowForm(f => !f)} style={{
             flex: 1, background: showForm ? "#5f259f" : "white",
