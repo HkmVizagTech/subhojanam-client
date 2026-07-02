@@ -359,7 +359,8 @@ function SubscriptionRepair() {
               })
               addLog(res.message)
               res.results.forEach(r => {
-                if (r.success) addLog(`✅ ${r.paymentId} → ${r.donorName} · Old: ${r.oldReceiptNumber} → New: ${r.newReceiptNumber}${r.whatsappSent ? " · WhatsApp ✓" : ""}`)
+                if (r.status === "already_in_dcc") addLog(`✅ ${r.paymentId} → Already in DCC: ${r.receiptNumber}`)
+                else if (r.success) addLog(`🆕 ${r.paymentId} → ${r.donorName} · Old: ${r.oldReceiptNumber} → New: ${r.newReceiptNumber}${r.whatsappSent ? " · WhatsApp ✓" : ""}`)
                 else addLog(`❌ ${r.paymentId} → ${r.error}`)
               })
             } catch (e) {
@@ -367,7 +368,7 @@ function SubscriptionRepair() {
             }
           }}
         >
-          🔄 Re-send All to DCC
+          🔍 Check DCC & Fix Missing
         </button>
       </div>
 
