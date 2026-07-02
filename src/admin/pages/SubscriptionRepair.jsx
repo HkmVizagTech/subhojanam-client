@@ -335,6 +335,41 @@ function SubscriptionRepair() {
         )}
       </div>
 
+      {/* Bulk Re-send to DCC */}
+      <div style={box}>
+        <h3 style={{ fontSize: "16px", marginBottom: "4px" }}>3. Bulk Re-send to DCC</h3>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>For records that exist in our DB with receipt numbers but are missing from DCC — clears old receipt data, re-calls DCC API, regenerates PDF, sends WhatsApp.</p>
+        <textarea
+          placeholder={"Paste Razorpay Payment IDs (one per line):\npay_T68XOscUoOHaiv\npay_T5omnLQmG9nTdz\n..."}
+          style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "13px", minHeight: "140px", outline: "none", resize: "vertical", fontFamily: "monospace", boxSizing: "border-box" }}
+          id="dccResendIds"
+        />
+        <button
+          style={{ ...btn, marginTop: "10px", background: "#7c3aed" }}
+          onClick={async () => {
+            const raw = document.getElementById("dccResendIds").value
+            const ids = raw.split(/\n|,/).map(s => s.trim()).filter(s => s.startsWith("pay_"))
+            if (ids.length === 0) { alert("No valid payment IDs found (must start with pay_)"); return }
+            if (!window.confirm(`Re-send ${ids.length} payments to DCC API? This will clear old receipt numbers and issue fresh ones.`)) return
+            try {
+              const res = await adminAPI.request("/api/admin/subscription-repair/bulk-resend-dcc", {
+                method: "POST",
+                body: JSON.stringify({ paymentIds: ids }),
+              })
+              addLog(res.message)
+              res.results.forEach(r => {
+                if (r.success) addLog(`✅ ${r.paymentId} → ${r.donorName} · Old: ${r.oldReceiptNumber} → New: ${r.newReceiptNumber}${r.whatsappSent ? " · WhatsApp ✓" : ""}`)
+                else addLog(`❌ ${r.paymentId} → ${r.error}`)
+              })
+            } catch (e) {
+              addLog("Bulk DCC re-send failed: " + e.message)
+            }
+          }}
+        >
+          🔄 Re-send All to DCC
+        </button>
+      </div>
+
       {/* Log */}
       {log.length > 0 && (
         <div style={box}>
