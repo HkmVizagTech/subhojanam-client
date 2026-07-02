@@ -115,6 +115,49 @@ function SubscriptionRepair() {
     }
   }
 
+  const [bulkResult, setBulkResult] = useState(null)
+  const [bulkLoading, setBulkLoading] = useState(false)
+  const [bulkMobile, setBulkMobile] = useState("9581902639")
+  const [bulkFixing, setBulkFixing] = useState(false)
+
+  const runBulkDiagnose = async () => {
+    setBulkLoading(true)
+    setBulkResult(null)
+    try {
+      const res = await adminAPI.request(`/api/admin/subscription-repair/bulk-diagnose?mobile=${bulkMobile.trim()}`)
+      setBulkResult(res)
+      addLog(`Bulk diagnose: ${res.summary.confirmed_wrong} wrong, ${res.summary.confirmed_correct} correct, ${res.summary.needs_razorpay_verification} need verification`)
+    } catch (e) {
+      addLog("Bulk diagnose failed: " + e.message)
+    } finally {
+      setBulkLoading(false)
+    }
+  }
+
+  const runBulkFix = async () => {
+    if (!bulkResult?.wrong?.length) return
+    if (!window.confirm(`Fix ${bulkResult.wrong.length} wrongly attributed donations back to their real donors?`)) return
+    setBulkFixing(true)
+    try {
+      const donationsToFix = bulkResult.wrong.map(w => ({
+        id: w.id,
+        name: w.realDonorName,
+        mobile: w.realDonorMobile,
+        email: w.realDonorEmail,
+      }))
+      const res = await adminAPI.request("/api/admin/subscription-repair/bulk-fix", {
+        method: "POST",
+        body: JSON.stringify({ donationsToFix }),
+      })
+      addLog(res.message)
+      runBulkDiagnose()
+    } catch (e) {
+      addLog("Bulk fix failed: " + e.message)
+    } finally {
+      setBulkFixing(false)
+    }
+  }
+
   const box = { background: "white", border: "1px solid #e5e7eb", borderRadius: "14px", padding: "20px", marginBottom: "20px" }
   const btn = { background: "#0A97EF", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }
   const input = { padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box" }
@@ -166,6 +209,69 @@ function SubscriptionRepair() {
             {syncing ? "Syncing..." : "Sync This Charge"}
           </button>
         </div>
+      </div>
+
+      {/* ⚠️ BULK MISATTRIBUTION FIX */}
+      <div style={{ ...box, border: "1px solid #fca5a5", background: "#fff5f5" }}>
+        <h3 style={{ fontSize: "16px", marginBottom: "4px", color: "#dc2626" }}>⚠️ Bulk Misattribution Diagnosis & Fix</h3>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>Scans all donations under a mobile number and identifies which ones actually belong to other donors based on their subscription origin.</p>
+        <div style={{ display: "flex", gap: "10px", maxWidth: "420px", marginBottom: "14px" }}>
+          <input style={{ padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", flex: 1 }}
+            placeholder="Mobile number" value={bulkMobile} onChange={e => setBulkMobile(e.target.value)} />
+          <button style={{ background: "#dc2626", color: "white", border: "none", borderRadius: "10px", padding: "10px 20px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}
+            onClick={runBulkDiagnose} disabled={bulkLoading}>
+            {bulkLoading ? "Scanning..." : "Diagnose"}
+          </button>
+        </div>
+
+        {bulkResult && (
+          <div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "10px", marginBottom: "14px" }}>
+              {[
+                { label: "Total", val: bulkResult.summary.total, color: "#1a1a2e" },
+                { label: "✅ Correct", val: bulkResult.summary.confirmed_correct, color: "#16a34a" },
+                { label: "❌ Wrong", val: bulkResult.summary.confirmed_wrong, color: "#dc2626" },
+                { label: "⚠️ Need Verify", val: bulkResult.summary.needs_razorpay_verification, color: "#d97706" },
+              ].map(s => (
+                <div key={s.label} style={{ background: "white", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                  <div style={{ fontSize: "22px", fontWeight: "800", color: s.color }}>{s.val}</div>
+                  <div style={{ fontSize: "11px", color: "#888" }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {bulkResult.wrong?.length > 0 && (
+              <>
+                <div style={{ maxHeight: "280px", overflowY: "auto", marginBottom: "12px", border: "1px solid #fca5a5", borderRadius: "10px" }}>
+                  <table style={{ width: "100%", fontSize: "12px", borderCollapse: "collapse" }}>
+                    <thead style={{ background: "#fef2f2", position: "sticky", top: 0 }}>
+                      <tr>
+                        {["Date", "Amount", "Payment ID", "Real Donor", "Real Mobile"].map(h => (
+                          <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: "#dc2626", fontWeight: "600" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bulkResult.wrong.map(w => (
+                        <tr key={w.id} style={{ borderTop: "1px solid #fee2e2" }}>
+                          <td style={{ padding: "7px 10px" }}>{new Date(w.date).toLocaleDateString("en-IN")}</td>
+                          <td style={{ padding: "7px 10px" }}>₹{w.amount}</td>
+                          <td style={{ padding: "7px 10px", fontFamily: "monospace", fontSize: "11px" }}>{w.paymentId?.slice(-8) || "—"}</td>
+                          <td style={{ padding: "7px 10px", fontWeight: "600", color: "#16a34a" }}>{w.realDonorName}</td>
+                          <td style={{ padding: "7px 10px" }}>{w.realDonorMobile}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <button onClick={runBulkFix} disabled={bulkFixing} style={{ background: "#16a34a", color: "white", border: "none", borderRadius: "10px", padding: "12px 24px", fontSize: "14px", fontWeight: "700", cursor: "pointer" }}>
+                  {bulkFixing ? "Fixing..." : `✅ Fix All ${bulkResult.wrong.length} Wrong Records`}
+                </button>
+              </>
+            )}
+            {bulkResult.wrong?.length === 0 && <p style={{ color: "#16a34a", fontWeight: "600" }}>✅ No misattributed records found!</p>}
+          </div>
+        )}
       </div>
 
       {/* Verify payment */}
