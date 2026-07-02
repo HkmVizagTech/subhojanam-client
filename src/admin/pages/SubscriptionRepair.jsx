@@ -341,6 +341,7 @@ function SubscriptionRepair() {
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>For records that exist in our DB with receipt numbers but are missing from DCC — clears old receipt data, re-calls DCC API, regenerates PDF, sends WhatsApp.</p>
         <textarea
           placeholder={"Paste Razorpay Payment IDs (one per line):\npay_T68XOscUoOHaiv\npay_T5omnLQmG9nTdz\n..."}
+          defaultValue={`pay_T68XOscUoOHaiv\npay_T5omnLQmG9nTdz\npay_T5kbr0BFeszXP8\npay_T5gRnOiM9DDIcX\npay_T5gPZioiKFvV2w\npay_T5g6GagnIFCYmg\npay_T0B9HR573zK3Vp\npay_T0B3RSD8eJk29N\npay_SwdQm9CMMDkUar\npay_SwZwAEiNYaX3lA`}
           style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "13px", minHeight: "140px", outline: "none", resize: "vertical", fontFamily: "monospace", boxSizing: "border-box" }}
           id="dccResendIds"
         />
