@@ -398,6 +398,15 @@ const data = await response.json();
       };
 
       const rzp = new window.Razorpay(options);
+
+      // Handle payment failures (card declined, UPI timeout, insufficient funds, etc.)
+      rzp.on("payment.failed", function (response) {
+        const reason = response?.error?.description || "Your payment could not be completed.";
+        setErrorMessage(`Payment failed: ${reason} Please try again or use a different payment method.`);
+        setLoading(false);
+        try { fbEvent.paymentAbandoned(finalAmount); } catch {}
+      });
+
       rzp.open();
 
       // 🔥 Fire InitiateCheckout when Razorpay popup opens
@@ -406,10 +415,10 @@ const data = await response.json();
       setLoading(false);
 
     } catch (error) {
-  console.error("Frontend Error:", error);
-  alert("Payment failed. Check console.");
-  setLoading(false);
-}
+      console.error("Payment error:", error);
+      setErrorMessage("Something went wrong while starting the payment. Please refresh the page and try again, or use the PhonePe/UPI option below.");
+      setLoading(false);
+    }
   };
 
   return (
