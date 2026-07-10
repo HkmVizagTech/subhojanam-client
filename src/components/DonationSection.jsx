@@ -78,6 +78,7 @@ function DonationSection() {
     occasion: "",
     sevaDate: "",
     dob: "",
+    anniversaryDate: "",
     certificate: false,
     mahaprasadam: false,
     prasadamAddressOption: "same",
@@ -592,6 +593,10 @@ const data = await response.json();
                 <div className="date-field-wrapper">
                   <label className="date-label">Date of Birth (Optional)</label>
                   <input type="date" name="dob" className="form-field" onChange={handleChange} />
+                </div>
+                <div className="date-field-wrapper">
+                  <label className="date-label">Anniversary Date (Optional)</label>
+                  <input type="date" name="anniversaryDate" className="form-field" onChange={handleChange} />
                 </div>
               </div>
 
