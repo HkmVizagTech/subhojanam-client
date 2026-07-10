@@ -27,7 +27,7 @@ const defaultForm = {
   address: "", city: "", state: "", pincode: "",
   occasion: "", showInTransactions: true,
   sevakName: "", sevaDate: "",
-  dob: "", anniversaryDate: "",
+  dob: "",
   mahaprasadam: false,
   prasadamAddressOption: "same",
   prasadamName: "", prasadamMobile: "", prasadamAddress: "",
@@ -142,10 +142,6 @@ function OfflineDonation() {
           <div>
             <label style={s.label}>Date of Birth</label>
             <input style={s.input} name="dob" type="date" value={form.dob} onChange={handleChange} />
-          </div>
-          <div>
-            <label style={s.label}>Anniversary Date</label>
-            <input style={s.input} name="anniversaryDate" type="date" value={form.anniversaryDate} onChange={handleChange} />
           </div>
         </div>
       </div>
