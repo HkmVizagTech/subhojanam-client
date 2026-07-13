@@ -4,6 +4,13 @@ import "../styles/hero.css"
 
 function Hero() {
   const [festivalCampaign, setFestivalCampaign] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     try {
@@ -16,58 +23,45 @@ function Hero() {
         .then(data => {
           if (data.success && data.campaign) setFestivalCampaign(data.campaign)
         })
-        .catch(() => {
-          // no-op — Hero simply keeps its default image if fetch fails
-        })
-    } catch {
-      // no-op
-    }
+        .catch(() => {})
+    } catch {}
   }, [])
 
   const handleClick = () => {
-    const donationSection = document.getElementById("donate") || document.getElementById("donation-section") || document.querySelector('.main-section');
-    if (donationSection) {
-      donationSection.scrollIntoView({ behavior: "smooth", block: 'start' });
-    }
-  };
+    const el = document.getElementById("donate") || document.getElementById("donation-section") || document.querySelector(".main-section")
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
-  // When a festival campaign is active, override the CSS background image
-  // with the campaign's own desktop/mobile images. Use `contain` (not `cover`)
-  // so the full creative is always visible, regardless of its exact aspect
-  // ratio — the hero's navy background fills any remaining space.
-  const heroStyle = festivalCampaign
-    ? {
-        backgroundImage: `url(${festivalCampaign.desktopImageUrl})`,
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        cursor: "pointer",
-      }
-    : { cursor: "pointer" };
-
-  return (
-    <>
-      {festivalCampaign && (
-        <style>{`
-          @media (max-width: 768px) {
-            .hero {
-              background-image: url(${festivalCampaign.mobileImageUrl}) !important;
-              background-size: contain !important;
-              background-repeat: no-repeat !important;
-              background-position: center !important;
-            }
-          }
-        `}</style>
-      )}
-      <section
-        className="hero"
+  // Festival campaign active — render a full <img> that auto-sizes to the
+  // image's natural dimensions. No gaps, no cropping, works with any size.
+  if (festivalCampaign) {
+    const src = isMobile ? festivalCampaign.mobileImageUrl : festivalCampaign.desktopImageUrl
+    return (
+      <div
         onClick={handleClick}
-        style={heroStyle}
         role="button"
         aria-label="Scroll to donation section"
-      />
-    </>
-  );
+        style={{ cursor: "pointer", width: "100%", lineHeight: 0 }}
+      >
+        <img
+          src={src}
+          alt={festivalCampaign.name}
+          style={{ width: "100%", height: "auto", display: "block" }}
+        />
+      </div>
+    )
+  }
+
+  // Default — regular CSS hero, no change
+  return (
+    <section
+      className="hero"
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+      role="button"
+      aria-label="Scroll to donation section"
+    />
+  )
 }
 
 export default Hero
