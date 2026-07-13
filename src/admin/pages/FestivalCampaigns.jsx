@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Image as ImageIcon, Upload, Trash2, Copy, Power } from "lucide-react"
+import { Image as ImageIcon, Upload, Trash2, Copy, Power, Pencil, X, Check } from "lucide-react"
 import adminAPI from "../../services/adminApi"
 
 function FestivalCampaigns() {
@@ -14,6 +14,13 @@ function FestivalCampaigns() {
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
   const [copiedId, setCopiedId] = useState(null)
+  const [editingId, setEditingId] = useState(null)
+  const [editName, setEditName] = useState("")
+  const [editDesktopFile, setEditDesktopFile] = useState(null)
+  const [editMobileFile, setEditMobileFile] = useState(null)
+  const [editDesktopPreview, setEditDesktopPreview] = useState(null)
+  const [editMobilePreview, setEditMobilePreview] = useState(null)
+  const [editSubmitting, setEditSubmitting] = useState(false)
 
   const fetchCampaigns = async () => {
     try {
@@ -81,6 +88,48 @@ function FestivalCampaigns() {
     }
   }
 
+  const startEdit = (campaign) => {
+    setEditingId(campaign._id)
+    setEditName(campaign.name)
+    setEditDesktopFile(null)
+    setEditMobileFile(null)
+    setEditDesktopPreview(campaign.desktopImageUrl)
+    setEditMobilePreview(campaign.mobileImageUrl)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditDesktopFile(null)
+    setEditMobileFile(null)
+    setEditDesktopPreview(null)
+    setEditMobilePreview(null)
+  }
+
+  const handleEditFileChange = (file, type) => {
+    if (!file) return
+    const url = URL.createObjectURL(file)
+    if (type === "desktop") { setEditDesktopFile(file); setEditDesktopPreview(url) }
+    else { setEditMobileFile(file); setEditMobilePreview(url) }
+  }
+
+  const handleUpdate = async (id) => {
+    setEditSubmitting(true)
+    try {
+      const formData = new FormData()
+      if (editName) formData.append("name", editName)
+      if (editDesktopFile) formData.append("desktopImage", editDesktopFile)
+      if (editMobileFile) formData.append("mobileImage", editMobileFile)
+
+      await adminAPI.updateFestivalCampaign(id, formData)
+      cancelEdit()
+      fetchCampaigns()
+    } catch (e) {
+      alert("Update failed: " + e.message)
+    } finally {
+      setEditSubmitting(false)
+    }
+  }
+
   const copyUrl = (campaign) => {
     const baseUrl = "https://annadan.harekrishnavizag.org"
     const url = `${baseUrl}?utm_source=meta&utm_medium=paid_social&utm_campaign=${campaign.utmCampaign}`
@@ -122,28 +171,28 @@ function FestivalCampaigns() {
 
         <div style={s.grid2}>
           <div>
-            <label style={s.label}>Desktop Banner Image</label>
+            <label style={s.label}>Desktop Banner Image <span style={{ color: "#aaa", fontWeight: "400" }}>(16:9 · 1920×1080px)</span></label>
             <label style={s.uploadBox}>
               {desktopPreview ? (
                 <img src={desktopPreview} alt="Desktop preview" style={{ maxWidth: "100%", maxHeight: "110px", borderRadius: "8px" }} />
               ) : (
                 <>
                   <Upload size={22} color="#aaa" />
-                  <span style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>Click to upload (wide banner)</span>
+                  <span style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>Click to upload (landscape, wide)</span>
                 </>
               )}
               <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleFileChange(e.target.files[0], "desktop")} />
             </label>
           </div>
           <div>
-            <label style={s.label}>Mobile Banner Image</label>
+            <label style={s.label}>Mobile Banner Image <span style={{ color: "#aaa", fontWeight: "400" }}>(9:16 · 1080×1920px)</span></label>
             <label style={s.uploadBox}>
               {mobilePreview ? (
                 <img src={mobilePreview} alt="Mobile preview" style={{ maxWidth: "100%", maxHeight: "110px", borderRadius: "8px" }} />
               ) : (
                 <>
                   <Upload size={22} color="#aaa" />
-                  <span style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>Click to upload (compact banner)</span>
+                  <span style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>Click to upload (portrait, tall)</span>
                 </>
               )}
               <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleFileChange(e.target.files[0], "mobile")} />
@@ -189,31 +238,66 @@ function FestivalCampaigns() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {campaigns.map(c => (
-              <div key={c._id} style={{
-                display: "flex", alignItems: "center", gap: "14px",
-                border: "1px solid #eee", borderRadius: "12px", padding: "12px 14px"
-              }}>
-                <img src={c.desktopImageUrl} alt={c.name} style={{ width: "90px", height: "50px", objectFit: "cover", borderRadius: "8px", flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: "700", fontSize: "14px", color: "#1a1a2e" }}>{c.name}</div>
-                  <div style={{ fontSize: "12px", color: "#888", fontFamily: "monospace" }}>{c.utmCampaign}</div>
-                </div>
-                <span style={{
-                  fontSize: "11px", fontWeight: "700", padding: "4px 10px", borderRadius: "999px",
-                  background: c.isActive ? "#f0fdf4" : "#f3f4f6",
-                  color: c.isActive ? "#16a34a" : "#888"
-                }}>
-                  {c.isActive ? "Active" : "Inactive"}
-                </span>
-                <button onClick={() => copyUrl(c)} title="Copy campaign URL" style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px", cursor: "pointer", color: copiedId === c._id ? "#16a34a" : "#555" }}>
-                  <Copy size={15} />
-                </button>
-                <button onClick={() => handleToggle(c._id)} title="Toggle active" style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#555" }}>
-                  <Power size={15} />
-                </button>
-                <button onClick={() => handleDelete(c._id)} title="Delete" style={{ background: "none", border: "1px solid #fca5a5", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#dc2626" }}>
-                  <Trash2 size={15} />
-                </button>
+              <div key={c._id} style={{ border: "1px solid #eee", borderRadius: "12px", padding: "12px 14px" }}>
+                {editingId === c._id ? (
+                  <div>
+                    <div style={{ marginBottom: "10px" }}>
+                      <label style={{ ...s.label, fontSize: "12px" }}>Campaign Name</label>
+                      <input style={s.input} value={editName} onChange={e => setEditName(e.target.value)} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                      <div>
+                        <label style={{ ...s.label, fontSize: "12px" }}>Desktop Image <span style={{ color: "#aaa", fontWeight: "400" }}>(16:9)</span></label>
+                        <label style={{ ...s.uploadBox, minHeight: "90px" }}>
+                          <img src={editDesktopPreview} alt="Desktop" style={{ maxWidth: "100%", maxHeight: "70px", borderRadius: "6px" }} />
+                          <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleEditFileChange(e.target.files[0], "desktop")} />
+                        </label>
+                      </div>
+                      <div>
+                        <label style={{ ...s.label, fontSize: "12px" }}>Mobile Image <span style={{ color: "#aaa", fontWeight: "400" }}>(9:16)</span></label>
+                        <label style={{ ...s.uploadBox, minHeight: "90px" }}>
+                          <img src={editMobilePreview} alt="Mobile" style={{ maxWidth: "100%", maxHeight: "70px", borderRadius: "6px" }} />
+                          <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleEditFileChange(e.target.files[0], "mobile")} />
+                        </label>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button onClick={() => handleUpdate(c._id)} disabled={editSubmitting} style={{ display: "flex", alignItems: "center", gap: "6px", background: "#16a34a", color: "white", border: "none", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>
+                        <Check size={14} /> {editSubmitting ? "Saving..." : "Save"}
+                      </button>
+                      <button onClick={cancelEdit} style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", cursor: "pointer", color: "#888" }}>
+                        <X size={14} /> Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    <img src={c.desktopImageUrl} alt={c.name} style={{ width: "90px", height: "50px", objectFit: "cover", borderRadius: "8px", flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: "700", fontSize: "14px", color: "#1a1a2e" }}>{c.name}</div>
+                      <div style={{ fontSize: "12px", color: "#888", fontFamily: "monospace" }}>{c.utmCampaign}</div>
+                    </div>
+                    <span style={{
+                      fontSize: "11px", fontWeight: "700", padding: "4px 10px", borderRadius: "999px",
+                      background: c.isActive ? "#f0fdf4" : "#f3f4f6",
+                      color: c.isActive ? "#16a34a" : "#888"
+                    }}>
+                      {c.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <button onClick={() => startEdit(c)} title="Edit" style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#0A97EF" }}>
+                      <Pencil size={15} />
+                    </button>
+                    <button onClick={() => copyUrl(c)} title="Copy campaign URL" style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px", cursor: "pointer", color: copiedId === c._id ? "#16a34a" : "#555" }}>
+                      <Copy size={15} />
+                    </button>
+                    <button onClick={() => handleToggle(c._id)} title="Toggle active" style={{ background: "none", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#555" }}>
+                      <Power size={15} />
+                    </button>
+                    <button onClick={() => handleDelete(c._id)} title="Delete" style={{ background: "none", border: "1px solid #fca5a5", borderRadius: "8px", padding: "8px", cursor: "pointer", color: "#dc2626" }}>
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

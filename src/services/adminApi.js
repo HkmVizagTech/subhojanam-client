@@ -55,6 +55,22 @@ class AdminAPI {
     return data;
   }
 
+  async updateFestivalCampaign(id, formData) {
+    const url = apiBaseUrl(`/api/admin/festival-campaigns/${id}`);
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      credentials: 'include',
+      body: formData,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Update failed");
+    return data;
+  }
+
   async deleteCampaign(id) {
     return this.request(`/api/admin/campaigns/${id}`, {
       method: 'DELETE',
