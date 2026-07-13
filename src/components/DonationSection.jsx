@@ -68,6 +68,7 @@ function DonationSection() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [paymentFailed, setPaymentFailed] = useState(null); // { reason, code, method }
   const [minAmountLoading, setMinAmountLoading] = useState(false);
   const [minAmountTried, setMinAmountTried] = useState(false);
 
@@ -164,7 +165,7 @@ function DonationSection() {
 
   const handlePayment = async () => {
     setErrorMessage("");
-    
+    setPaymentFailed(null);
   
     document.querySelectorAll('.form-field').forEach(field => {
       field.style.border = '';
@@ -401,8 +402,11 @@ const data = await response.json();
 
       // Handle payment failures (card declined, UPI timeout, insufficient funds, etc.)
       rzp.on("payment.failed", function (response) {
-        const reason = response?.error?.description || "Your payment could not be completed.";
-        setErrorMessage(`Payment failed: ${reason} Please try again or use a different payment method.`);
+        const err = response?.error || {};
+        const code = err.code || "";
+        const reason = err.description || "Your payment could not be completed.";
+        const method = err.metadata?.payment_method || "";
+        setPaymentFailed({ reason, code, method, amount: finalAmount });
         setLoading(false);
         try { fbEvent.paymentAbandoned(finalAmount); } catch {}
       });
@@ -801,6 +805,103 @@ const data = await response.json();
               </label>
 
             </div>
+
+            {paymentFailed && (
+              <div style={{
+                background: "#fff8f0",
+                border: "1px solid #f5c5a3",
+                borderRadius: "14px",
+                padding: "18px",
+                marginBottom: "16px",
+              }}>
+                {/* Header */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "22px", lineHeight: 1 }}>⚠️</span>
+                  <div>
+                    <div style={{ fontSize: "15px", fontWeight: "700", color: "#b45309", marginBottom: "3px" }}>
+                      Payment could not be completed
+                    </div>
+                    <div style={{ fontSize: "13px", color: "#78350f" }}>
+                      {paymentFailed.code === "BAD_REQUEST_ERROR"
+                        ? "Your bank declined this transaction."
+                        : paymentFailed.code === "GATEWAY_ERROR"
+                        ? "The payment gateway had a temporary issue."
+                        : paymentFailed.reason}
+                    </div>
+                  </div>
+                </div>
+
+                {/* What to do */}
+                <div style={{ fontSize: "12.5px", color: "#92400e", marginBottom: "14px", lineHeight: 1.6 }}>
+                  {paymentFailed.code === "BAD_REQUEST_ERROR" ? (
+                    <>Try a different payment method below, or enable online transactions in your bank app.</>
+                  ) : paymentFailed.code === "GATEWAY_ERROR" ? (
+                    <>This is temporary — please wait a moment and try again.</>
+                  ) : (
+                    <>Please try again or use a different payment method.</>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                  <button
+                    onClick={handlePayment}
+                    style={{
+                      background: "var(--brand-primary, #0A97EF)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "10px",
+                      padding: "10px 18px",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    🔄 Try Again
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const el = document.getElementById("phonepe-section") || document.querySelector(".phonepe-strip");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    style={{
+                      background: "#5f259f",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "10px",
+                      padding: "10px 18px",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    📱 Pay via PhonePe / UPI
+                  </button>
+
+                  <button
+                    onClick={() => setPaymentFailed(null)}
+                    style={{
+                      background: "none",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "10px",
+                      padding: "10px 14px",
+                      fontSize: "13px",
+                      color: "#888",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            )}
 
             {errorMessage && !minAmountLoading && (
               <div style={{

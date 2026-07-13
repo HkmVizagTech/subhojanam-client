@@ -47,7 +47,7 @@ function PhonePeStrip() {
   };
 
   return (
-    <div style={{ background: "#faf5ff", borderTop: "1px solid #e9d5ff", borderBottom: "1px solid #e9d5ff", padding: "20px 16px" }}>
+    <div id="phonepe-section" style={{ background: "#faf5ff", borderTop: "1px solid #e9d5ff", borderBottom: "1px solid #e9d5ff", padding: "20px 16px" }}>
       <div style={{ maxWidth: "480px", margin: "0 auto" }}>
 
         {/* Header */}
