@@ -32,11 +32,15 @@ function Hero() {
   };
 
   // When a festival campaign is active, override the CSS background image
-  // with the campaign's own desktop/mobile images via inline style + a
-  // matching <style> block for the mobile breakpoint.
+  // with the campaign's own desktop/mobile images. Use `contain` (not `cover`)
+  // so the full creative is always visible, regardless of its exact aspect
+  // ratio — the hero's navy background fills any remaining space.
   const heroStyle = festivalCampaign
     ? {
         backgroundImage: `url(${festivalCampaign.desktopImageUrl})`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
         cursor: "pointer",
       }
     : { cursor: "pointer" };
@@ -48,6 +52,9 @@ function Hero() {
           @media (max-width: 768px) {
             .hero {
               background-image: url(${festivalCampaign.mobileImageUrl}) !important;
+              background-size: contain !important;
+              background-repeat: no-repeat !important;
+              background-position: center !important;
             }
           }
         `}</style>
