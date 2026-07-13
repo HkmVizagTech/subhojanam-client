@@ -1,7 +1,7 @@
 
 
 .hospitals-section {
-  background: linear-gradient(135deg, #1e88c8 0%, #2196f3 100%);
+  background: linear-gradient(135deg, #1e88c8 0%, var(--brand-accent, #2196f3) 100%);
   padding: 60px 20px 70px;
   text-align: center;
 }

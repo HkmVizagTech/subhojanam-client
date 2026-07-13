@@ -18,7 +18,7 @@
 }
 
 .how-section h2 {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 38px;
   margin-bottom: 10px;
   font-weight: 700;
@@ -34,7 +34,7 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #0A97EF, transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-primary, #0A97EF), transparent);
   border-radius: 2px;
 }
 
@@ -64,7 +64,7 @@
   left: 10%;
   width: 80%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #a0c4dd, #0A97EF, #a0c4dd, transparent);
+  background: linear-gradient(90deg, transparent, #a0c4dd, var(--brand-primary, #0A97EF), #a0c4dd, transparent);
   z-index: 0;
   box-shadow: 0 2px 8px rgba(10, 151, 239, 0.2);
 }
@@ -85,7 +85,7 @@
 .icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #2196f3 0%, #0A97EF 100%);
+  background: linear-gradient(135deg, var(--brand-accent, #2196f3) 0%, var(--brand-primary, #0A97EF) 100%);
   color: white;
   border-radius: 50%;
   display: flex;

@@ -7,7 +7,7 @@ button:active {
 
 .navbar {
   width: 100%;
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
@@ -130,7 +130,7 @@ button:active {
 
   .exempt-btn {
     background: linear-gradient(135deg, #e3f2fd 0%, #d9eaf5 100%);
-    color: #0A97EF;
+    color: var(--brand-primary, #0A97EF);
     border: 2px solid transparent;
     padding: 10px 14px !important;
     border-radius: 30px;
@@ -147,12 +147,12 @@ button:active {
 .exempt-btn-icon {
   width: 16px;
   height: 16px;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   stroke-width: 2.5;
 }
 
 .exempt-btn:hover {
-  border-color: #0A97EF;
+  border-color: var(--brand-primary, #0A97EF);
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(10, 151, 239, 0.3);
   background: white;

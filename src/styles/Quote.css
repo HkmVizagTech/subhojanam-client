@@ -67,7 +67,7 @@
 }
 
 .right h3 {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 28px;
   margin-bottom: 12px;
   font-weight: 700;

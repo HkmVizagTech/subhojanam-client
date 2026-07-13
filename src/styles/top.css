@@ -1,5 +1,5 @@
 .topbar {
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   color: white;
   font-size: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

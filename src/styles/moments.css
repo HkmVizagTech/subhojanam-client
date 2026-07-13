@@ -1,5 +1,5 @@
 .moments {
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   color: white;
   text-align: center;
   padding: 30px 20px;
@@ -82,8 +82,8 @@
 }
 
 .meal-btn {
-  background: #FEF2E1!important;  
-  color: #0A97EF!important;
+  background: var(--brand-bg, #FEF2E1)!important;  
+  color: var(--brand-primary, #0A97EF)!important;
   border: none;
   padding: 18px 45px;
   border-radius: 40px;
@@ -104,7 +104,7 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: #0A97EF;
+  background: var(--brand-primary, #0A97EF);
   transform: translate(-50%, -50%);
   transition: width 0.5s, height 0.5s;
   z-index: -1;

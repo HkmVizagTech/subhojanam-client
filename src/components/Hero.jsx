@@ -21,7 +21,17 @@ function Hero() {
       fetch(apiBaseUrl(`/api/public/festival-campaign?utmCampaign=${encodeURIComponent(utmCampaign)}`))
         .then(res => res.json())
         .then(data => {
-          if (data.success && data.campaign) setFestivalCampaign(data.campaign)
+          if (data.success && data.campaign) {
+            setFestivalCampaign(data.campaign)
+
+            // Inject theme CSS variables onto :root so the whole page
+            // re-themes to match the festival poster palette
+            const theme = data.campaign.theme || {}
+            const root = document.documentElement
+            root.style.setProperty("--brand-primary", theme.primaryColor || "#0A97EF")
+            root.style.setProperty("--brand-accent",  theme.accentColor  || "#2196f3")
+            root.style.setProperty("--brand-bg",      theme.bgColor      || "#FEF2E1")
+          }
         })
         .catch(() => {})
     } catch {}
@@ -32,8 +42,7 @@ function Hero() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
-  // Festival campaign active — render a full <img> that auto-sizes to the
-  // image's natural dimensions. No gaps, no cropping, works with any size.
+  // Festival campaign active — full <img>, auto-height, zero gaps
   if (festivalCampaign) {
     const src = isMobile ? festivalCampaign.mobileImageUrl : festivalCampaign.desktopImageUrl
     return (
@@ -52,7 +61,7 @@ function Hero() {
     )
   }
 
-  // Default — regular CSS hero, no change
+  // Default — regular CSS hero, completely unchanged
   return (
     <section
       className="hero"

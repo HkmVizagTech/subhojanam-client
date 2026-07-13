@@ -7,6 +7,9 @@ function FestivalCampaigns() {
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState("")
   const [utmCampaign, setUtmCampaign] = useState("")
+  const [primaryColor, setPrimaryColor] = useState("#5C1A1B")
+  const [accentColor, setAccentColor] = useState("#8B2E2E")
+  const [bgColor, setBgColor] = useState("#FDF3E3")
   const [desktopFile, setDesktopFile] = useState(null)
   const [mobileFile, setMobileFile] = useState(null)
   const [desktopPreview, setDesktopPreview] = useState(null)
@@ -16,6 +19,9 @@ function FestivalCampaigns() {
   const [copiedId, setCopiedId] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState("")
+  const [editPrimary, setEditPrimary] = useState("#5C1A1B")
+  const [editAccent, setEditAccent] = useState("#8B2E2E")
+  const [editBg, setEditBg] = useState("#FDF3E3")
   const [editDesktopFile, setEditDesktopFile] = useState(null)
   const [editMobileFile, setEditMobileFile] = useState(null)
   const [editDesktopPreview, setEditDesktopPreview] = useState(null)
@@ -54,6 +60,9 @@ function FestivalCampaigns() {
       const formData = new FormData()
       formData.append("name", name)
       formData.append("utmCampaign", utmCampaign)
+      formData.append("primaryColor", primaryColor)
+      formData.append("accentColor", accentColor)
+      formData.append("bgColor", bgColor)
       formData.append("desktopImage", desktopFile)
       formData.append("mobileImage", mobileFile)
 
@@ -61,6 +70,7 @@ function FestivalCampaigns() {
       setResult({ success: true, generatedUrl: res.generatedUrl })
       setName(""); setUtmCampaign(""); setDesktopFile(null); setMobileFile(null)
       setDesktopPreview(null); setMobilePreview(null)
+      setPrimaryColor("#5C1A1B"); setAccentColor("#8B2E2E"); setBgColor("#FDF3E3")
       fetchCampaigns()
     } catch (e) {
       setResult({ success: false, message: e.message })
@@ -91,6 +101,9 @@ function FestivalCampaigns() {
   const startEdit = (campaign) => {
     setEditingId(campaign._id)
     setEditName(campaign.name)
+    setEditPrimary(campaign.theme?.primaryColor || "#5C1A1B")
+    setEditAccent(campaign.theme?.accentColor   || "#8B2E2E")
+    setEditBg(campaign.theme?.bgColor           || "#FDF3E3")
     setEditDesktopFile(null)
     setEditMobileFile(null)
     setEditDesktopPreview(campaign.desktopImageUrl)
@@ -117,6 +130,9 @@ function FestivalCampaigns() {
     try {
       const formData = new FormData()
       if (editName) formData.append("name", editName)
+      formData.append("primaryColor", editPrimary)
+      formData.append("accentColor",  editAccent)
+      formData.append("bgColor",      editBg)
       if (editDesktopFile) formData.append("desktopImage", editDesktopFile)
       if (editMobileFile) formData.append("mobileImage", editMobileFile)
 
@@ -167,6 +183,36 @@ function FestivalCampaigns() {
             <label style={s.label}>UTM Campaign Key</label>
             <input style={s.input} value={utmCampaign} onChange={e => setUtmCampaign(e.target.value)} placeholder="e.g. ratha-yatra-2026" />
           </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px", marginBottom: "16px" }}>
+          <div>
+            <label style={s.label}>Primary Color <span style={{ color: "#aaa", fontWeight: 400 }}>(buttons, headings)</span></label>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} style={{ width: "42px", height: "42px", borderRadius: "8px", border: "1px solid #e5e7eb", cursor: "pointer", padding: "2px" }} />
+              <input style={{ ...s.input, fontFamily: "monospace", fontSize: "13px" }} value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} maxLength={7} />
+            </div>
+          </div>
+          <div>
+            <label style={s.label}>Accent Color <span style={{ color: "#aaa", fontWeight: 400 }}>(button gradient)</span></label>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <input type="color" value={accentColor} onChange={e => setAccentColor(e.target.value)} style={{ width: "42px", height: "42px", borderRadius: "8px", border: "1px solid #e5e7eb", cursor: "pointer", padding: "2px" }} />
+              <input style={{ ...s.input, fontFamily: "monospace", fontSize: "13px" }} value={accentColor} onChange={e => setAccentColor(e.target.value)} maxLength={7} />
+            </div>
+          </div>
+          <div>
+            <label style={s.label}>Page Background <span style={{ color: "#aaa", fontWeight: 400 }}>(donation section)</span></label>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} style={{ width: "42px", height: "42px", borderRadius: "8px", border: "1px solid #e5e7eb", cursor: "pointer", padding: "2px" }} />
+              <input style={{ ...s.input, fontFamily: "monospace", fontSize: "13px" }} value={bgColor} onChange={e => setBgColor(e.target.value)} maxLength={7} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px", padding: "12px 14px", background: primaryColor + "18", borderRadius: "12px", border: `1px solid ${primaryColor}40` }}>
+          <span style={{ fontSize: "13px", color: "#555" }}>Preview:</span>
+          <button style={{ background: `linear-gradient(135deg, ${accentColor}, ${primaryColor})`, color: "#fff", border: "none", borderRadius: "10px", padding: "10px 22px", fontWeight: 700, fontSize: "14px", cursor: "default" }}>Donate Now</button>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: primaryColor }}>Support Annadana Seva</span>
         </div>
 
         <div style={s.grid2}>
@@ -244,6 +290,21 @@ function FestivalCampaigns() {
                     <div style={{ marginBottom: "10px" }}>
                       <label style={{ ...s.label, fontSize: "12px" }}>Campaign Name</label>
                       <input style={s.input} value={editName} onChange={e => setEditName(e.target.value)} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "10px" }}>
+                      {[
+                        { label: "Primary", val: editPrimary, set: setEditPrimary },
+                        { label: "Accent", val: editAccent, set: setEditAccent },
+                        { label: "Background", val: editBg, set: setEditBg },
+                      ].map(({ label, val, set }) => (
+                        <div key={label}>
+                          <label style={{ ...s.label, fontSize: "11px" }}>{label}</label>
+                          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                            <input type="color" value={val} onChange={e => set(e.target.value)} style={{ width: "36px", height: "36px", borderRadius: "6px", border: "1px solid #e5e7eb", cursor: "pointer", padding: "2px" }} />
+                            <input style={{ ...s.input, fontFamily: "monospace", fontSize: "12px", padding: "6px 8px" }} value={val} onChange={e => set(e.target.value)} maxLength={7} />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
                       <div>

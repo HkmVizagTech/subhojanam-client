@@ -1,5 +1,5 @@
 footer {
-  background: linear-gradient(135deg, #0A97EF 0%, #0880d4 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, #0880d4 100%);
   color: #ffffff;
   font-family: inherit;
 }
@@ -110,13 +110,13 @@ footer {
 }
 .footer-social-icon:hover {
   background-color: rgba(255, 255, 255, 0.95);
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
 }
 /* Donate Button */
 .footer-donate-btn {
   display: inline-block;
   background-color: #ffffff;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-weight: 700;
   font-size: 0.875rem;
   text-transform: uppercase;

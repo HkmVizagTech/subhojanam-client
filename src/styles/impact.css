@@ -1,5 +1,5 @@
 .impact-section {
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   padding: 30px 20px;
   text-align: center;
   position: relative;
@@ -18,7 +18,7 @@
 }
 
 .impact-section h2 {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 38px;
   margin-bottom: 15px;
   font-weight: 700;
@@ -34,7 +34,7 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #0A97EF, transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-primary, #0A97EF), transparent);
   border-radius: 2px;
 }
 
@@ -95,11 +95,11 @@
   transition: all 0.4s ease;
   position: relative;
   z-index: 1;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
 }
 
 .impact-card:hover .circle {
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   transform: rotate(360deg) scale(1.1);
   box-shadow: 0 8px 25px rgba(10, 151, 239, 0.3);
   color: white;
@@ -109,7 +109,7 @@
   font-size: 36px;
   margin-bottom: 10px;
   font-weight: 700;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   transition: all 0.3s ease;
 }
 

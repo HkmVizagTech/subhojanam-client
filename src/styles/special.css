@@ -29,7 +29,7 @@
 }
 
 .special-section h2 {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 36px;
   margin-bottom: 20px;
   font-weight: 700;
@@ -73,9 +73,9 @@
 .outline-btn {
   padding: 16px 35px;
   border-radius: 40px;
-  border: 2px solid #0A97EF;
+  border: 2px solid var(--brand-primary, #0A97EF);
   background: white;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
@@ -93,7 +93,7 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: #0A97EF;
+  background: var(--brand-primary, #0A97EF);
   transform: translate(-50%, -50%);
   transition: width 0.5s, height 0.5s;
   z-index: -1;
@@ -108,7 +108,7 @@
   color: white;
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(10, 151, 239, 0.35);
-  border-color: #0A97EF;
+  border-color: var(--brand-primary, #0A97EF);
 }
 
 @media (max-width: 768px) {

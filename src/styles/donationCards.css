@@ -57,7 +57,7 @@
 }
 .donate-btn {
   width: 100%;
-  background: #0a97ef;
+  background: var(--brand-primary, #0A97EF);
   color: #fff;
   border: none;
   padding: 10px 12px;

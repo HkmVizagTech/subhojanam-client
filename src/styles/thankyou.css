@@ -1,6 +1,6 @@
 .thankyou-page {
   min-height: 100vh;
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   font-family: 'Lato', sans-serif;
   color: hsl(25, 40%, 12%);
 }
@@ -8,7 +8,7 @@
 .thankyou-top-bar {
   height: 6px;
   width: 100%;
-  background: linear-gradient(135deg, #0A97EF, #2196f3);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF), var(--brand-accent, #2196f3));
 }
 
 .thankyou-container {
@@ -105,7 +105,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #2196f3;
+  background-color: var(--brand-accent, #2196f3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +131,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 1rem;
   font-weight: 600;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   margin: 0;
 }
 
@@ -172,7 +172,7 @@
   height: 48px;
   min-width: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0A97EF, #2196f3);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF), var(--brand-accent, #2196f3));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -225,7 +225,7 @@
   padding: 24px;
   text-align: center;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   animation: float-up 0.8s ease-out forwards;
   animation-delay: 0.5s;
   opacity: 0;
@@ -331,7 +331,7 @@
   font-family: 'Playfair Display', serif;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
 }
 
 /* Action Buttons */
@@ -379,7 +379,7 @@
 }
 
 .btn-download {
-  background: linear-gradient(135deg, #0A97EF, #2196f3);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF), var(--brand-accent, #2196f3));
   color: #fff;
 }
 
@@ -408,7 +408,7 @@
 }
 
 .thankyou-footer a {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

@@ -1,5 +1,5 @@
 .bank-donation-section {
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@
 }
 
 .bank-donation-title {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -241,7 +241,7 @@
   width: 100%;
   padding: 12px;
   margin-bottom: 16px;
-  background: #0A97EF;
+  background: var(--brand-primary, #0A97EF);
   color: white;
   border: none;
   border-radius: 12px;
@@ -278,7 +278,7 @@
 }
 
 .bank-note a {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-weight: 600;
   text-decoration: none;
 }

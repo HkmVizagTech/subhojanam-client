@@ -1,5 +1,5 @@
 .meal-section {
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   text-align: center;
   padding: 30px 20px;
   position: relative;
@@ -18,7 +18,7 @@
 }
 
 .meal-section h2 {
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   font-size: 38px;
   margin-bottom: 10px;
   font-weight: 700;
@@ -36,7 +36,7 @@
 
 /* Beige container */
 .meal-box {
-  background: #FEF2E1;
+  background: var(--brand-bg, #FEF2E1);
   padding: 40px 40px;
   border-radius: 30px;
   max-width: 1000px;
@@ -88,7 +88,7 @@
 .meal-card:hover {
   transform: translateY(-8px) scale(1.05);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  border-color: #0A97EF;
+  border-color: var(--brand-primary, #0A97EF);
   background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
 }
 
@@ -138,7 +138,7 @@
   padding: 14px 40px;
   border-radius: 40px;
   border: none;
-  background: #0A97EF;
+  background: var(--brand-primary, #0A97EF);
   color: white;
   font-weight: 600;
   font-size: 17px;

@@ -19,7 +19,7 @@
 
 .trust h2 {
   font-size: 38px;
-  color: #0A97EF;
+  color: var(--brand-primary, #0A97EF);
   margin-bottom: 15px;
   font-weight: 700;
   position: relative;
@@ -34,7 +34,7 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #0A97EF, transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-primary, #0A97EF), transparent);
   border-radius: 2px;
 }
 
@@ -87,7 +87,7 @@
 .trust-card:hover {
   transform: translateY(-10px) scale(1.02);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border-color: #0A97EF;
+  border-color: var(--brand-primary, #0A97EF);
 }
 
 .icon-circle {
@@ -105,7 +105,7 @@
 }
 
 .trust-card:hover .icon-circle {
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   transform: rotate(360deg) scale(1.1);
   box-shadow: 0 6px 20px rgba(10, 151, 239, 0.3);
 }

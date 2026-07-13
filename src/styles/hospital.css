@@ -1,5 +1,5 @@
 .hospitals {
-  background: linear-gradient(135deg, #0A97EF 0%, #2196f3 100%);
+  background: linear-gradient(135deg, var(--brand-primary, #0A97EF) 0%, var(--brand-accent, #2196f3) 100%);
   padding: 70px 20px;
   text-align: center;
   position: relative;
@@ -56,7 +56,7 @@
 .hospital-pill:hover {
   transform: translateY(-6px) scale(1.05);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-  border-color: #0A97EF;
+  border-color: var(--brand-primary, #0A97EF);
   background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
 }
 
