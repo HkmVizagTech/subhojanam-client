@@ -38,6 +38,23 @@ class AdminAPI {
     return response.blob();
   }
 
+  async uploadFestivalCampaign(formData) {
+    const url = apiBaseUrl("/api/admin/festival-campaigns");
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...(token && { 'Authorization': `Bearer ${token}` })
+        // NOTE: no Content-Type — browser sets multipart boundary automatically
+      },
+      credentials: 'include',
+      body: formData,
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Upload failed");
+    return data;
+  }
+
   async deleteCampaign(id) {
     return this.request(`/api/admin/campaigns/${id}`, {
       method: 'DELETE',
