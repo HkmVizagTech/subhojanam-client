@@ -3,7 +3,6 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import Navbar from "./components/NavbarNew";
 import Hero from "./components/Hero";
 import Top from "./components/Top";
-import FestivalBanner from "./components/FestivalBanner";
 import DonationSection from "./components/DonationSection";
 import BankDonation from "./components/BankDonation";
 import PhonePeStrip from "./components/PhonePeStrip";import ScrollToTop from "./components/ScrollToTop.jsx";
@@ -109,7 +108,6 @@ function Home() {
 
   return (
     <>
-      <FestivalBanner />
       <Top />
       <Navbar />
       <Hero />
