@@ -26,7 +26,7 @@ const defaultForm = {
   certificate: false, panNumber: "",
   address: "", city: "", state: "", pincode: "",
   occasion: "", showInTransactions: true,
-  sevakName: "", sevaDate: "",
+  sevakName: "", sevakMobile: "", sevaDate: "",
   dob: "",
   mahaprasadam: false,
   prasadamAddressOption: "same",
@@ -133,7 +133,11 @@ function OfflineDonation() {
           </div>
           <div>
             <label style={s.label}>Sevak Name</label>
-            <input style={s.input} name="sevakName" value={form.sevakName} onChange={handleChange} placeholder="Sevak / Volunteer name" />
+            <input style={s.input} name="sevakName" value={form.sevakName} onChange={handleChange} placeholder="Name of person being honoured" />
+          </div>
+          <div>
+            <label style={s.label}>Sevak Mobile <span style={{ color: "#aaa", fontWeight: 400 }}>(optional — wish goes to them)</span></label>
+            <input style={s.input} name="sevakMobile" value={form.sevakMobile} onChange={handleChange} placeholder="Their mobile number" />
           </div>
           <div>
             <label style={s.label}>Seva Date</label>

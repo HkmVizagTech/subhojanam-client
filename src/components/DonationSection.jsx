@@ -78,6 +78,8 @@ function DonationSection() {
     mobile: "",
     occasion: "",
     sevaDate: "",
+    sevakName: "",
+    sevakMobile: "",
     dob: "",
     certificate: false,
     mahaprasadam: false,
@@ -587,6 +589,32 @@ const data = await response.json();
                 <option>Memorial</option>
                 <option>Other</option>
               </select>
+
+              {(formData.occasion === "Birthday" || formData.occasion === "Anniversary") && (
+                <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "10px", padding: "14px", marginTop: "4px" }}>
+                  <div style={{ fontSize: "12px", color: "#0369a1", fontWeight: "600", marginBottom: "10px" }}>
+                    🎁 Donating in someone's honour? Add their details to send them a wish on this day every year.
+                  </div>
+                  <input
+                    type="text"
+                    name="sevakName"
+                    placeholder={`${formData.occasion === "Birthday" ? "Birthday" : "Anniversary"} person's name`}
+                    className="form-field"
+                    onChange={handleChange}
+                    style={{ marginBottom: "8px" }}
+                  />
+                  <input
+                    type="tel"
+                    name="sevakMobile"
+                    placeholder="Their mobile number (optional — wish goes to them)"
+                    className="form-field"
+                    onChange={handleChange}
+                  />
+                  <div style={{ fontSize: "11px", color: "#64748b", marginTop: "6px" }}>
+                    If mobile is provided → wish goes to them. If not → wish goes to you mentioning their name.
+                  </div>
+                </div>
+              )}
 
               <div className="date-row">
                 <div className="date-field-wrapper">
