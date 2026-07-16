@@ -13,6 +13,22 @@ function DonationSection() {
     // Capture all tracking data — UTM, ref param, slug, or auto-referrer
     captureTrackingData();
 
+    // Fetch festival campaign minimum donation amount, if any
+    const utmCampaign = new URLSearchParams(window.location.search).get("utm_campaign");
+    if (utmCampaign) {
+      fetch(apiBaseUrl(`/api/public/festival-campaign?utmCampaign=${encodeURIComponent(utmCampaign)}`))
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.campaign?.minDonationAmount) {
+            const min = data.campaign.minDonationAmount;
+            setCampaignMinAmount(min);
+            // Bump the default pre-selected amount up to the campaign minimum if needed
+            setSelectedAmount(prev => (prev < min ? min : prev));
+          }
+        })
+        .catch(() => {});
+    }
+
     const params = new URLSearchParams(window.location.search);
 
     // Auto-switch to monthly tab if ?type=monthly
@@ -71,6 +87,7 @@ function DonationSection() {
   const [paymentFailed, setPaymentFailed] = useState(null); // { reason, code, method }
   const [minAmountLoading, setMinAmountLoading] = useState(false);
   const [minAmountTried, setMinAmountTried] = useState(false);
+  const [campaignMinAmount, setCampaignMinAmount] = useState(100);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -128,7 +145,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < campaignMinAmount;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -452,7 +469,9 @@ const data = await response.json();
           </div>
 
           <div className="cards">
-            {(type === "monthly" ? monthlyDonationOptions : donationOptions).map((item) => (
+            {(type === "monthly" ? monthlyDonationOptions : donationOptions)
+              .filter((item) => item.amount >= campaignMinAmount)
+              .map((item) => (
               <div
                 key={item.amount}
                 className={`card 
@@ -500,7 +519,7 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-                min="100"
+                min={campaignMinAmount}
                 placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
@@ -509,7 +528,7 @@ const data = await response.json();
             />
               {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
                 <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
-                  Minimum donation is ₹100 (4 meals)
+                  Minimum donation is ₹{campaignMinAmount} ({Math.floor(campaignMinAmount / 25)} meals)
                 </div>
               )}
           </div>

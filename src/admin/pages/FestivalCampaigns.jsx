@@ -10,6 +10,7 @@ function FestivalCampaigns() {
   const [primaryColor, setPrimaryColor] = useState("#5C1A1B")
   const [accentColor, setAccentColor] = useState("#8B2E2E")
   const [bgColor, setBgColor] = useState("#FDF3E3")
+  const [minDonationAmount, setMinDonationAmount] = useState(100)
   const [desktopFile, setDesktopFile] = useState(null)
   const [mobileFile, setMobileFile] = useState(null)
   const [desktopPreview, setDesktopPreview] = useState(null)
@@ -22,6 +23,7 @@ function FestivalCampaigns() {
   const [editPrimary, setEditPrimary] = useState("#5C1A1B")
   const [editAccent, setEditAccent] = useState("#8B2E2E")
   const [editBg, setEditBg] = useState("#FDF3E3")
+  const [editMinAmount, setEditMinAmount] = useState(100)
   const [editDesktopFile, setEditDesktopFile] = useState(null)
   const [editMobileFile, setEditMobileFile] = useState(null)
   const [editDesktopPreview, setEditDesktopPreview] = useState(null)
@@ -63,6 +65,7 @@ function FestivalCampaigns() {
       formData.append("primaryColor", primaryColor)
       formData.append("accentColor", accentColor)
       formData.append("bgColor", bgColor)
+      formData.append("minDonationAmount", minDonationAmount)
       formData.append("desktopImage", desktopFile)
       formData.append("mobileImage", mobileFile)
 
@@ -71,6 +74,7 @@ function FestivalCampaigns() {
       setName(""); setUtmCampaign(""); setDesktopFile(null); setMobileFile(null)
       setDesktopPreview(null); setMobilePreview(null)
       setPrimaryColor("#5C1A1B"); setAccentColor("#8B2E2E"); setBgColor("#FDF3E3")
+      setMinDonationAmount(100)
       fetchCampaigns()
     } catch (e) {
       setResult({ success: false, message: e.message })
@@ -104,6 +108,7 @@ function FestivalCampaigns() {
     setEditPrimary(campaign.theme?.primaryColor || "#5C1A1B")
     setEditAccent(campaign.theme?.accentColor   || "#8B2E2E")
     setEditBg(campaign.theme?.bgColor           || "#FDF3E3")
+    setEditMinAmount(campaign.minDonationAmount || 100)
     setEditDesktopFile(null)
     setEditMobileFile(null)
     setEditDesktopPreview(campaign.desktopImageUrl)
@@ -133,6 +138,7 @@ function FestivalCampaigns() {
       formData.append("primaryColor", editPrimary)
       formData.append("accentColor",  editAccent)
       formData.append("bgColor",      editBg)
+      formData.append("minDonationAmount", editMinAmount)
       if (editDesktopFile) formData.append("desktopImage", editDesktopFile)
       if (editMobileFile) formData.append("mobileImage", editMobileFile)
 
@@ -174,7 +180,7 @@ function FestivalCampaigns() {
       <div style={s.box}>
         <h3 style={{ fontSize: "16px", marginBottom: "16px" }}>Create New Campaign Banner</h3>
 
-        <div style={s.grid2}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px", marginBottom: "16px" }}>
           <div>
             <label style={s.label}>Campaign Name</label>
             <input style={s.input} value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Ratha Yatra 2026" />
@@ -182,6 +188,10 @@ function FestivalCampaigns() {
           <div>
             <label style={s.label}>UTM Campaign Key</label>
             <input style={s.input} value={utmCampaign} onChange={e => setUtmCampaign(e.target.value)} placeholder="e.g. ratha-yatra-2026" />
+          </div>
+          <div>
+            <label style={s.label}>Minimum Donation (₹)</label>
+            <input type="number" min="1" style={s.input} value={minDonationAmount} onChange={e => setMinDonationAmount(e.target.value)} placeholder="100" />
           </div>
         </div>
 
@@ -290,6 +300,10 @@ function FestivalCampaigns() {
                     <div style={{ marginBottom: "10px" }}>
                       <label style={{ ...s.label, fontSize: "12px" }}>Campaign Name</label>
                       <input style={s.input} value={editName} onChange={e => setEditName(e.target.value)} />
+                    </div>
+                    <div style={{ marginBottom: "10px", maxWidth: "220px" }}>
+                      <label style={{ ...s.label, fontSize: "12px" }}>Minimum Donation (₹)</label>
+                      <input type="number" min="1" style={s.input} value={editMinAmount} onChange={e => setEditMinAmount(e.target.value)} />
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "10px" }}>
                       {[
