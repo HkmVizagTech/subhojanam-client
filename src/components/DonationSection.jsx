@@ -145,7 +145,7 @@ function DonationSection() {
     setMinAmountTried(false);
   };
 
-  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < campaignMinAmount;
+  const isCustomAmountInvalid = customAmount !== "" && Number(customAmount) < 100;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -519,7 +519,7 @@ const data = await response.json();
             >₹</span>
             <input
               type="number"
-                min={campaignMinAmount}
+                min="100"
                 placeholder="Enter custom amount"
               className="input-box"
               value={customAmount}
@@ -528,7 +528,7 @@ const data = await response.json();
             />
               {isCustomAmountInvalid && !minAmountLoading && minAmountTried && (
                 <div style={{ color: 'red', fontSize: '13px', marginTop: '2px' }}>
-                  Minimum donation is ₹{campaignMinAmount} ({Math.floor(campaignMinAmount / 25)} meals)
+                  Minimum donation is ₹100 (4 meals)
                 </div>
               )}
           </div>
