@@ -94,6 +94,7 @@ function DonationSection() {
     email: "",
     mobile: "",
     occasion: "",
+    customOccasion: "",
     sevaDate: "",
     sevakName: "",
     sevakMobile: "",
@@ -241,6 +242,28 @@ function DonationSection() {
     }
 
 
+    if (formData.occasion === "Other" && !formData.customOccasion.trim()) {
+      setErrorMessage("Please specify the occasion");
+      const field = document.querySelector('input[name="customOccasion"]');
+      if (field) {
+        field.style.border = '2px solid #ff4444';
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
+      }
+      return;
+    }
+
+    if (formData.sevakMobile.trim() && !formData.sevakName.trim()) {
+      setErrorMessage("Please also provide the honoree's name, or remove their mobile number");
+      const field = document.querySelector('input[name="sevakName"]');
+      if (field) {
+        field.style.border = '2px solid #ff4444';
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
+      }
+      return;
+    }
+
     if (formData.certificate) {
       if (!formData.panNumber || !formData.address || !formData.city || !formData.state || !formData.pincode) {
         setErrorMessage("Please fill all certificate details (PAN Number, Address, City, State, Pincode) to receive 80G Certificate");
@@ -324,6 +347,8 @@ function DonationSection() {
           body: JSON.stringify({
             ...formData,
             amount: finalAmount,
+            // "Other" occasions submit the free-typed name instead of the literal word "Other"
+            occasion: formData.occasion === "Other" ? formData.customOccasion.trim() : formData.occasion,
             // Resolve prasadam address correctly for all cases
             prasadamAddress: formData.mahaprasadam
               ? formData.certificate && formData.prasadamAddressOption === "same"
@@ -609,7 +634,17 @@ const data = await response.json();
                 <option>Other</option>
               </select>
 
-              {(formData.occasion === "Birthday" || formData.occasion === "Anniversary") && (
+              {formData.occasion === "Other" && (
+                <input
+                  type="text"
+                  name="customOccasion"
+                  placeholder="Please specify the occasion *"
+                  className="form-field"
+                  onChange={handleChange}
+                />
+              )}
+
+              {formData.occasion && (
                 <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "10px", padding: "14px", marginTop: "4px" }}>
                   <div style={{ fontSize: "12px", color: "#0369a1", fontWeight: "600", marginBottom: "10px" }}>
                     🎁 Donating in someone's honour? Add their details to send them a wish on this day every year.
@@ -617,7 +652,7 @@ const data = await response.json();
                   <input
                     type="text"
                     name="sevakName"
-                    placeholder={`${formData.occasion === "Birthday" ? "Birthday" : "Anniversary"} person's name`}
+                    placeholder="Honoree's name"
                     className="form-field"
                     onChange={handleChange}
                     style={{ marginBottom: "8px" }}
