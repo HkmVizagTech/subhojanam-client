@@ -200,7 +200,7 @@ function SubscriptionRepair() {
 
       {/* Sync missing charge */}
       <div style={box}>
-        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>2. Sync Missing Charge</h3>
+        <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>2. Sync Missing Charge (Single)</h3>
         <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>If a monthly charge happened in Razorpay but isn't in our system, enter the subscription ID and payment ID to pull it in.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "420px" }}>
           <input style={input} placeholder="Subscription ID (sub_xxx)" value={syncSub} onChange={e => setSyncSub(e.target.value)} />
@@ -209,6 +209,52 @@ function SubscriptionRepair() {
             {syncing ? "Syncing..." : "Sync This Charge"}
           </button>
         </div>
+      </div>
+
+      {/* Bulk sync missing charges */}
+      <div style={box}>
+        <h3 style={{ fontSize: "16px", marginBottom: "4px" }}>2b. Bulk Sync Missing Charges</h3>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>Paste one subscription ID and multiple missing payment IDs (one per line) — pulls all of them in, calls DCC, generates receipts, sends WhatsApp.</p>
+        <input
+          style={{ ...input, maxWidth: "420px", marginBottom: "10px" }}
+          placeholder="Subscription ID (sub_xxx)"
+          defaultValue="sub_SwizOgFJcFFLoR"
+          id="bulkSyncSubId"
+        />
+        <textarea
+          placeholder={"Paste missing Payment IDs (one per line):\npay_T83jSKrW4bEcCt\npay_T8Ogp2wgqEu9LL\n..."}
+          defaultValue={`pay_T83jSKrW4bEcCt\npay_T8Ogp2wgqEu9LL\npay_T9AjJywt0EwZJ0\npay_TANcfeWwEcsBGA\npay_TAkrixHfn6EUhE\npay_TBAWfJUvVMIFRh\npay_TCjoPK5JGMX9ma`}
+          style={{ width: "100%", maxWidth: "420px", padding: "10px 12px", borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "13px", minHeight: "140px", outline: "none", resize: "vertical", fontFamily: "monospace", boxSizing: "border-box", display: "block" }}
+          id="bulkSyncPayIds"
+        />
+        <button
+          style={{ ...btn, marginTop: "10px", background: "#7c3aed" }}
+          onClick={async () => {
+            const subscriptionId = document.getElementById("bulkSyncSubId").value.trim()
+            const raw = document.getElementById("bulkSyncPayIds").value
+            const paymentIds = raw.split(/\n|,/).map(s => s.trim()).filter(s => s.startsWith("pay_"))
+            if (!subscriptionId) { alert("Enter subscription ID"); return }
+            if (paymentIds.length === 0) { alert("No valid payment IDs found (must start with pay_)"); return }
+            if (!window.confirm(`Sync ${paymentIds.length} missing charges for ${subscriptionId}? This will create records, call DCC, generate receipts, and send WhatsApp.`)) return
+            try {
+              const res = await adminAPI.request("/api/admin/subscription-repair/bulk-sync-charges", {
+                method: "POST",
+                body: JSON.stringify({ subscriptionId, paymentIds }),
+              })
+              addLog(res.message)
+              res.results.forEach(r => {
+                if (r.status === "already_exists") addLog(`✅ ${r.paymentId} → Already in our system`)
+                else if (r.status === "dcc_already_had_it") addLog(`✅ ${r.paymentId} → DCC confirmed already exists`)
+                else if (r.status === "created") addLog(`🆕 ${r.paymentId} → ₹${r.amount} · Receipt: ${r.receiptNumber}${r.whatsappSent ? " · WhatsApp ✓" : ""}`)
+                else addLog(`❌ ${r.paymentId} → ${r.error}`)
+              })
+            } catch (e) {
+              addLog("Bulk sync failed: " + e.message)
+            }
+          }}
+        >
+          🔄 Bulk Sync All Missing Charges
+        </button>
       </div>
 
       {/* ⚠️ BULK MISATTRIBUTION FIX */}
