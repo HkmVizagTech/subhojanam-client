@@ -609,6 +609,7 @@ const data = await response.json();
                 <option>Other</option>
               </select>
 
+              {/* TEMPORARILY DISABLED — do not push/enable until instructed
               {(formData.occasion === "Birthday" || formData.occasion === "Anniversary") && (
                 <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "10px", padding: "14px", marginTop: "4px" }}>
                   <div style={{ fontSize: "12px", color: "#0369a1", fontWeight: "600", marginBottom: "10px" }}>
@@ -634,6 +635,7 @@ const data = await response.json();
                   </div>
                 </div>
               )}
+              */}
 
               <div className="date-row">
                 <div className="date-field-wrapper">

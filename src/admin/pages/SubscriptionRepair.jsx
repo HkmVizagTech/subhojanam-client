@@ -41,6 +41,28 @@ function SubscriptionRepair() {
     }
   }
 
+  const reconcileAll = async () => {
+    setReconciling(true)
+    setReconcileReport(null)
+    setReconcileSummary(null)
+    try {
+      const res = await adminAPI.request("/api/admin/subscription-repair/reconcile-all")
+      setReconcileReport(res.report || [])
+      setReconcileSummary(res.summary || null)
+      addLog(`Reconciled ${res.summary.totalSubscriptions} subscriptions — ${res.summary.withMissingCharges} have missing charges (${res.summary.totalMissingCharges} total missing)`)
+    } catch (e) {
+      addLog("Reconcile all failed: " + e.message)
+    } finally {
+      setReconciling(false)
+    }
+  }
+
+  const loadIntoBulkSync = (subscriptionId, missingPaymentIds) => {
+    document.getElementById("bulkSyncSubId").value = subscriptionId
+    document.getElementById("bulkSyncPayIds").value = missingPaymentIds.join("\n")
+    document.getElementById("bulkSyncPayIds").scrollIntoView({ behavior: "smooth", block: "center" })
+  }
+
   const syncCharge = async () => {
     if (!syncSub || !syncPay) { alert("Enter both subscription ID and payment ID"); return }
     setSyncing(true)
@@ -115,6 +137,9 @@ function SubscriptionRepair() {
     }
   }
 
+  const [reconcileReport, setReconcileReport] = useState(null)
+  const [reconcileSummary, setReconcileSummary] = useState(null)
+  const [reconciling, setReconciling] = useState(false)
   const [bulkResult, setBulkResult] = useState(null)
   const [bulkLoading, setBulkLoading] = useState(false)
   const [bulkMobile, setBulkMobile] = useState("9581902639")
@@ -194,6 +219,75 @@ function SubscriptionRepair() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Reconcile ALL subscriptions */}
+      <div style={{ ...box, border: "1px solid #93c5fd", background: "#eff6ff" }}>
+        <h3 style={{ fontSize: "16px", marginBottom: "4px", color: "#1d4ed8" }}>🔍 Reconcile ALL Active Subscriptions</h3>
+        <p style={{ fontSize: "13px", color: "#888", marginBottom: "14px" }}>Checks every subscription against Razorpay's actual invoice history — finds every subscription with missing recurring charges in one scan, not just one at a time.</p>
+        <button style={{ ...btn, background: "#1d4ed8" }} onClick={reconcileAll} disabled={reconciling}>
+          {reconciling ? "Scanning all subscriptions... (may take a minute)" : "Scan All Subscriptions"}
+        </button>
+
+        {reconcileSummary && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "10px", marginTop: "16px", marginBottom: "14px" }}>
+            {[
+              { label: "Total Subscriptions", val: reconcileSummary.totalSubscriptions, color: "#1a1a2e" },
+              { label: "✅ Fully Synced", val: reconcileSummary.fullySynced, color: "#16a34a" },
+              { label: "⚠️ Missing Charges", val: reconcileSummary.withMissingCharges, color: "#d97706" },
+              { label: "Total Missing", val: reconcileSummary.totalMissingCharges, color: "#dc2626" },
+            ].map(s => (
+              <div key={s.label} style={{ background: "white", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                <div style={{ fontSize: "22px", fontWeight: "800", color: s.color }}>{s.val}</div>
+                <div style={{ fontSize: "11px", color: "#888" }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {reconcileReport && reconcileReport.filter(r => r.missingCount > 0).length > 0 && (
+          <div style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #93c5fd", borderRadius: "10px" }}>
+            <table style={{ width: "100%", fontSize: "12px", borderCollapse: "collapse" }}>
+              <thead style={{ background: "#dbeafe", position: "sticky", top: 0 }}>
+                <tr>
+                  {["Donor", "Subscription ID", "Razorpay Status", "In Razorpay", "In Our System", "Missing", ""].map(h => (
+                    <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: "#1d4ed8", fontWeight: "600" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {reconcileReport.filter(r => r.missingCount > 0).map(r => (
+                  <tr key={r.subscriptionId} style={{ borderTop: "1px solid #dbeafe" }}>
+                    <td style={{ padding: "7px 10px" }}>{r.donorName} <br /><span style={{ color: "#888" }}>{r.mobile}</span></td>
+                    <td style={{ padding: "7px 10px", fontFamily: "monospace", fontSize: "11px" }}>{r.subscriptionId}</td>
+                    <td style={{ padding: "7px 10px" }}>{r.razorpayStatus}</td>
+                    <td style={{ padding: "7px 10px", textAlign: "center" }}>{r.totalRazorpayCharges}</td>
+                    <td style={{ padding: "7px 10px", textAlign: "center" }}>{r.totalInOurSystem}</td>
+                    <td style={{ padding: "7px 10px", textAlign: "center", fontWeight: "700", color: "#dc2626" }}>{r.missingCount}</td>
+                    <td style={{ padding: "7px 10px" }}>
+                      <button
+                        style={{ background: "#7c3aed", color: "white", border: "none", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", fontWeight: "600", cursor: "pointer" }}
+                        onClick={() => loadIntoBulkSync(r.subscriptionId, r.missingPaymentIds)}
+                      >
+                        Load into Bulk Sync ↓
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {reconcileReport && reconcileReport.filter(r => r.missingCount > 0).length === 0 && reconcileSummary && (
+          <p style={{ color: "#16a34a", fontWeight: "600", marginTop: "10px" }}>✅ All subscriptions are fully synced!</p>
+        )}
+
+        {reconcileReport && reconcileReport.filter(r => r.error).length > 0 && (
+          <div style={{ marginTop: "12px", fontSize: "12px", color: "#dc2626" }}>
+            {reconcileReport.filter(r => r.error).length} subscription(s) had errors during scan — check activity log.
           </div>
         )}
       </div>
