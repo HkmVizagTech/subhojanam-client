@@ -57,6 +57,22 @@ function SubscriptionRepair() {
     }
   }
 
+  const regenerateReceipt = async (paymentId) => {
+    setRegeneratingReceipt(paymentId)
+    try {
+      const res = await adminAPI.request("/api/admin/subscription-repair/regenerate-receipt", {
+        method: "POST",
+        body: JSON.stringify({ paymentId }),
+      })
+      addLog(res.success ? `✅ ${paymentId} → Receipt: ${res.receiptNumber}` : `❌ ${paymentId} → ${res.message}`)
+      if (res.success) reconcileAll()
+    } catch (e) {
+      addLog(`❌ ${paymentId} → ${e.message}`)
+    } finally {
+      setRegeneratingReceipt("")
+    }
+  }
+
   const loadIntoBulkSync = (subscriptionId, missingPaymentIds) => {
     document.getElementById("bulkSyncSubId").value = subscriptionId
     document.getElementById("bulkSyncPayIds").value = missingPaymentIds.join("\n")
@@ -140,6 +156,7 @@ function SubscriptionRepair() {
   const [reconcileReport, setReconcileReport] = useState(null)
   const [reconcileSummary, setReconcileSummary] = useState(null)
   const [reconciling, setReconciling] = useState(false)
+  const [regeneratingReceipt, setRegeneratingReceipt] = useState("")
   const [bulkResult, setBulkResult] = useState(null)
   const [bulkLoading, setBulkLoading] = useState(false)
   const [bulkMobile, setBulkMobile] = useState("9581902639")
@@ -232,12 +249,13 @@ function SubscriptionRepair() {
         </button>
 
         {reconcileSummary && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "10px", marginTop: "16px", marginBottom: "14px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "10px", marginTop: "16px", marginBottom: "14px" }}>
             {[
               { label: "Total Subscriptions", val: reconcileSummary.totalSubscriptions, color: "#1a1a2e" },
               { label: "✅ Fully Synced", val: reconcileSummary.fullySynced, color: "#16a34a" },
-              { label: "⚠️ Missing Charges", val: reconcileSummary.withMissingCharges, color: "#d97706" },
-              { label: "Total Missing", val: reconcileSummary.totalMissingCharges, color: "#dc2626" },
+              { label: "⚠️ Need Attention", val: reconcileSummary.needsAttention, color: "#d97706" },
+              { label: "Missing Entirely", val: reconcileSummary.totalMissingEntirely, color: "#dc2626" },
+              { label: "No Receipt", val: reconcileSummary.totalNoReceipt, color: "#ea580c" },
             ].map(s => (
               <div key={s.label} style={{ background: "white", borderRadius: "10px", padding: "12px", textAlign: "center" }}>
                 <div style={{ fontSize: "22px", fontWeight: "800", color: s.color }}>{s.val}</div>
@@ -247,42 +265,61 @@ function SubscriptionRepair() {
           </div>
         )}
 
-        {reconcileReport && reconcileReport.filter(r => r.missingCount > 0).length > 0 && (
-          <div style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #93c5fd", borderRadius: "10px" }}>
-            <table style={{ width: "100%", fontSize: "12px", borderCollapse: "collapse" }}>
-              <thead style={{ background: "#dbeafe", position: "sticky", top: 0 }}>
-                <tr>
-                  {["Donor", "Subscription ID", "Razorpay Status", "In Razorpay", "In Our System", "Missing", ""].map(h => (
-                    <th key={h} style={{ padding: "8px 10px", textAlign: "left", color: "#1d4ed8", fontWeight: "600" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {reconcileReport.filter(r => r.missingCount > 0).map(r => (
-                  <tr key={r.subscriptionId} style={{ borderTop: "1px solid #dbeafe" }}>
-                    <td style={{ padding: "7px 10px" }}>{r.donorName} <br /><span style={{ color: "#888" }}>{r.mobile}</span></td>
-                    <td style={{ padding: "7px 10px", fontFamily: "monospace", fontSize: "11px" }}>{r.subscriptionId}</td>
-                    <td style={{ padding: "7px 10px" }}>{r.razorpayStatus}</td>
-                    <td style={{ padding: "7px 10px", textAlign: "center" }}>{r.totalRazorpayCharges}</td>
-                    <td style={{ padding: "7px 10px", textAlign: "center" }}>{r.totalInOurSystem}</td>
-                    <td style={{ padding: "7px 10px", textAlign: "center", fontWeight: "700", color: "#dc2626" }}>{r.missingCount}</td>
-                    <td style={{ padding: "7px 10px" }}>
-                      <button
-                        style={{ background: "#7c3aed", color: "white", border: "none", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", fontWeight: "600", cursor: "pointer" }}
-                        onClick={() => loadIntoBulkSync(r.subscriptionId, r.missingPaymentIds)}
-                      >
-                        Load into Bulk Sync ↓
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {reconcileReport && reconcileReport.filter(r => r.needsAttention > 0).length > 0 && (
+          <div style={{ maxHeight: "500px", overflowY: "auto", border: "1px solid #93c5fd", borderRadius: "10px", padding: "10px" }}>
+            {reconcileReport.filter(r => r.needsAttention > 0).map(r => (
+              <div key={r.subscriptionId} style={{ background: "white", borderRadius: "10px", padding: "12px", marginBottom: "10px", border: "1px solid #dbeafe" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                  <div>
+                    <strong>{r.donorName}</strong> <span style={{ color: "#888", fontSize: "12px" }}>({r.mobile})</span>
+                    <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#888" }}>{r.subscriptionId} · Razorpay: {r.razorpayStatus}</div>
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#888" }}>{r.totalRazorpayCharges} total charges</div>
+                </div>
+
+                {r.missingEntirelyCount > 0 && (
+                  <div style={{ background: "#fef2f2", borderRadius: "8px", padding: "10px", marginBottom: "8px" }}>
+                    <div style={{ fontSize: "12px", fontWeight: "700", color: "#dc2626", marginBottom: "6px" }}>
+                      ❌ {r.missingEntirelyCount} payment(s) missing entirely — no record in our system
+                    </div>
+                    <div style={{ fontFamily: "monospace", fontSize: "11px", color: "#991b1b", marginBottom: "8px" }}>
+                      {r.missingEntirely.join(", ")}
+                    </div>
+                    <button
+                      style={{ background: "#7c3aed", color: "white", border: "none", borderRadius: "8px", padding: "6px 12px", fontSize: "11px", fontWeight: "600", cursor: "pointer" }}
+                      onClick={() => loadIntoBulkSync(r.subscriptionId, r.missingEntirely)}
+                    >
+                      Load into Bulk Sync ↓
+                    </button>
+                  </div>
+                )}
+
+                {r.noReceiptCount > 0 && (
+                  <div style={{ background: "#fff7ed", borderRadius: "8px", padding: "10px" }}>
+                    <div style={{ fontSize: "12px", fontWeight: "700", color: "#ea580c", marginBottom: "6px" }}>
+                      ⚠️ {r.noReceiptCount} payment(s) exist in our system but receipt was never generated
+                    </div>
+                    {r.noReceiptGenerated.map(item => (
+                      <div key={item.paymentId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", padding: "4px 0", borderTop: "1px solid #fed7aa" }}>
+                        <span style={{ fontFamily: "monospace" }}>{item.paymentId} · ₹{item.amount} · DCC sent: {item.dccSent ? "yes" : "no"}</span>
+                        <button
+                          style={{ background: "#ea580c", color: "white", border: "none", borderRadius: "6px", padding: "4px 10px", fontSize: "11px", fontWeight: "600", cursor: "pointer" }}
+                          onClick={() => regenerateReceipt(item.paymentId)}
+                          disabled={regeneratingReceipt === item.paymentId}
+                        >
+                          {regeneratingReceipt === item.paymentId ? "Generating..." : "Generate Receipt"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
-        {reconcileReport && reconcileReport.filter(r => r.missingCount > 0).length === 0 && reconcileSummary && (
-          <p style={{ color: "#16a34a", fontWeight: "600", marginTop: "10px" }}>✅ All subscriptions are fully synced!</p>
+        {reconcileReport && reconcileReport.filter(r => r.needsAttention > 0).length === 0 && reconcileSummary && (
+          <p style={{ color: "#16a34a", fontWeight: "600", marginTop: "10px" }}>✅ All subscriptions are fully synced with receipts!</p>
         )}
 
         {reconcileReport && reconcileReport.filter(r => r.error).length > 0 && (
