@@ -174,11 +174,24 @@ function DonationSection() {
   const loadRazorpay = () => {
     return new Promise((resolve) => {
       if (window.Razorpay) return resolve(true);
+
+      let settled = false;
+      const settle = (val) => {
+        if (settled) return;
+        settled = true;
+        resolve(val);
+      };
+
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
+      script.onload = () => settle(true);
+      script.onerror = () => settle(false);
       document.body.appendChild(script);
+
+      // Failsafe — on slow/flaky mobile networks the script can hang
+      // forever with neither onload nor onerror firing. Don't let the
+      // donor get stuck on "Processing..." indefinitely.
+      setTimeout(() => settle(false), 10000);
     });
   };
 
@@ -297,7 +310,7 @@ function DonationSection() {
       // Load Razorpay lazily if not already loaded
       const razorpayLoaded = await loadRazorpay();
       if (!razorpayLoaded) {
-        alert("Payment gateway failed to load. Please check your connection.");
+        setErrorMessage("Payment gateway is taking too long to load — your network may be slow. Please try again, or use the PhonePe/UPI option below.");
         setLoading(false);
         return;
       }
@@ -317,11 +330,17 @@ function DonationSection() {
         pageUrl: window.location.origin,
       };
 
-      const response = await fetch(apiBaseUrl(`/api/payment/${endpoint}`),
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+      const controller = new AbortController();
+      const fetchTimeout = setTimeout(() => controller.abort(), 15000);
+
+      let response;
+      try {
+        response = await fetch(apiBaseUrl(`/api/payment/${endpoint}`),
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            body: JSON.stringify({
             ...formData,
             amount: finalAmount,
             // Resolve prasadam address correctly for all cases
@@ -341,6 +360,17 @@ function DonationSection() {
           })
         }
       );
+      } catch (fetchErr) {
+        clearTimeout(fetchTimeout);
+        if (fetchErr.name === "AbortError") {
+          setErrorMessage("The server is taking too long to respond — your network may be slow. Please try again, or use the PhonePe/UPI option below.");
+        } else {
+          setErrorMessage("Could not reach the server. Please check your connection and try again, or use the PhonePe/UPI option below.");
+        }
+        setLoading(false);
+        return;
+      }
+      clearTimeout(fetchTimeout);
 
 const data = await response.json();
 
