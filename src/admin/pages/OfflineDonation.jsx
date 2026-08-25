@@ -133,7 +133,7 @@ function OfflineDonation() {
           </div>
           <div>
             <label style={s.label}>Sevak Name</label>
-            <input style={s.input} name="sevakName" value={form.sevakName} onChange={handleChange} placeholder="Name of person being honoured" />
+            <input style={s.input} name="sevakName" value={form.sevakName} onChange={handleChange} placeholder="Name to print on receipt" />
           </div>
           {/* TEMPORARILY DISABLED — do not push/enable until instructed
           <div>

@@ -240,7 +240,9 @@ const DonationReceipt = ({ donationData }) => {
                 {donationData.donorNumber || "N/A"}
               </span>
             </p>
-            <p style={{ margin: 0, width: "40%" }}>Sevak Name :</p>
+            <p style={{ margin: 0, width: "40%" }}>
+              Sevak Name : {donationData.sevakName || ""}
+            </p>
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between" }}>

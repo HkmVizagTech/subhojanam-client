@@ -325,6 +325,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  /* keeps the two inputs bottom-aligned even if one label wraps to 2 lines */
+  align-items: end;
 }
 
 .date-field-wrapper {
@@ -361,6 +363,43 @@
 
 .checkbox-row span {
   flex: 1;
+}
+
+/* --- Step 1: dedication gate ------------------------------------------- */
+
+.dedicate-gate {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fafafa;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.dedicate-gate.is-open {
+  border-color: #bae6fd;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e8f4f8 100%);
+}
+
+.dedicate-toggle {
+  align-items: center;
+}
+
+.dedicate-toggle strong {
+  display: block;
+  color: #333;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.dedicate-hint {
+  display: block;
+  font-size: 11.5px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.dedicate-fields {
+  margin-top: 14px;
 }
 
 .prasadam-address-section {
@@ -638,6 +677,12 @@
 @media (max-width: 480px) {
   .modal {
     padding: 20px 16px;
+  }
+
+  /* stack Seva Date / Sevak Name on small phones - two-up leaves the
+     name field too narrow and wraps its label */
+  .date-row {
+    grid-template-columns: 1fr;
   }
 
   .certificate-fields {

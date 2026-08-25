@@ -88,6 +88,8 @@ function DonationSection() {
   const [minAmountLoading, setMinAmountLoading] = useState(false);
   const [minAmountTried, setMinAmountTried] = useState(false);
   const [campaignMinAmount, setCampaignMinAmount] = useState(100);
+  // Donor opts in (checkbox after Occasion) before the dedication fields show.
+  const [dedicateSeva, setDedicateSeva] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -159,6 +161,17 @@ function DonationSection() {
       ...formData,
       [name]: type === "checkbox" ? checked : value
     });
+  };
+
+  // Unticking hides the field AND clears it, so a donor who changes their
+  // mind never submits a name they can no longer see. Seva Date is not
+  // part of the gate, so it is deliberately left alone.
+  const handleDedicateToggle = (e) => {
+    const on = e.target.checked;
+    setDedicateSeva(on);
+    if (!on) {
+      setFormData((prev) => ({ ...prev, sevakName: "" }));
+    }
   };
 
   const handleTypeChange = (newType) => {
@@ -667,11 +680,66 @@ const data = await response.json();
               )}
               */}
 
+              {/* Dedication gate — sits right after Occasion. Ticking it
+                  reveals Sevak Name and pulls Seva Date up into the panel
+                  beside it; unticking drops Seva Date back to its own row
+                  below (keeping its value) and clears Sevak Name, so no
+                  stale name is submitted. */}
+              <div className={`dedicate-gate${dedicateSeva ? " is-open" : ""}`}>
+                <label className="checkbox-row dedicate-toggle">
+                  <input
+                    type="checkbox"
+                    checked={dedicateSeva}
+                    onChange={handleDedicateToggle}
+                  />
+                  <span>
+                    <strong>Dedicate this seva to someone</strong>
+                    <span className="dedicate-hint">
+                      Their name is printed on your receipt
+                    </span>
+                  </span>
+                </label>
+
+                {dedicateSeva && (
+                  <div className="date-row dedicate-fields">
+                    <div className="date-field-wrapper">
+                      <label className="date-label">Seva Date (Optional)</label>
+                      <input
+                        type="date"
+                        name="sevaDate"
+                        className="form-field"
+                        value={formData.sevaDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="date-field-wrapper">
+                      <label className="date-label">Sevak Name (Optional)</label>
+                      <input
+                        type="text"
+                        name="sevakName"
+                        placeholder="Name to print on receipt"
+                        className="form-field"
+                        value={formData.sevakName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="date-row">
-                <div className="date-field-wrapper">
-                  <label className="date-label">Seva Date (Optional)</label>
-                  <input type="date" name="sevaDate" className="form-field" onChange={handleChange} />
-                </div>
+                {!dedicateSeva && (
+                  <div className="date-field-wrapper">
+                    <label className="date-label">Seva Date (Optional)</label>
+                    <input
+                      type="date"
+                      name="sevaDate"
+                      className="form-field"
+                      value={formData.sevaDate}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
                 <div className="date-field-wrapper">
                   <label className="date-label">Date of Birth (Optional)</label>
                   <input type="date" name="dob" className="form-field" onChange={handleChange} />
