@@ -17,6 +17,7 @@ import {
   Package,
   Wrench,
   Clock,
+  Send,
   Image
 } from "lucide-react"
 import "../styles/AdminLayout.css"
@@ -43,6 +44,7 @@ function AdminLayout() {
     { path: "/admin/offline-donation", icon: PlusCircle, label: "Offline Donation" },
     { path: "/admin/prasadam", icon: Package, label: "Prasadam" },
     { path: "/admin/pending-transactions", icon: Clock, label: "Pending" },
+    { path: "/admin/donor-receipts", icon: Send, label: "Send Receipts" },
     { path: "/admin/subscription-repair", icon: Wrench, label: "Subscription Repair" },
     { path: "/admin/festival-campaigns", icon: Image, label: "Festival Banners" },
     { path: "/admin/donors", icon: Users, label: "Donors" },

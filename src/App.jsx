@@ -44,6 +44,7 @@ const OfflineDonation = lazy(() => import("./admin/pages/OfflineDonation.jsx"));
 const Prasadam = lazy(() => import("./admin/pages/Prasadam.jsx"));
 const SubscriptionRepair = lazy(() => import("./admin/pages/SubscriptionRepair.jsx"));
 const PendingTransactions = lazy(() => import("./admin/pages/PendingTransactions.jsx"));
+const DonorReceipts = lazy(() => import("./admin/pages/DonorReceipts.jsx"));
 const FestivalCampaigns = lazy(() => import("./admin/pages/FestivalCampaigns.jsx"));
 const ReceiptPreview = lazy(() => import("./pages/ReceiptPreview.js"));
 
@@ -172,6 +173,7 @@ function App() {
           <Route path="prasadam" element={<Prasadam />} />
           <Route path="subscription-repair" element={<SubscriptionRepair />} />
           <Route path="pending-transactions" element={<PendingTransactions />} />
+          <Route path="donor-receipts" element={<DonorReceipts />} />
           <Route path="festival-campaigns" element={<FestivalCampaigns />} />
         </Route>
       </Routes>
