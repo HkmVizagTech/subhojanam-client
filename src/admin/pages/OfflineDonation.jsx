@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { CheckCircle, RefreshCw } from "lucide-react"
+import { useState, useEffect } from "react"
+import { CheckCircle, RefreshCw, Search, UserCheck, X, Package } from "lucide-react"
 import adminAPI from "../../services/adminApi"
 
 const PAYMENT_MODES = [
@@ -53,6 +53,62 @@ function OfflineDonation() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
 
+  // Existing-donor lookup
+  const [donorQuery, setDonorQuery] = useState("")
+  const [donorResults, setDonorResults] = useState([])
+  const [donorSearching, setDonorSearching] = useState(false)
+  const [linkedDonor, setLinkedDonor] = useState(null)
+
+  useEffect(() => {
+    const q = donorQuery.trim()
+    if (q.length < 3) { setDonorResults([]); return }
+    const t = setTimeout(async () => {
+      try {
+        setDonorSearching(true)
+        const res = await adminAPI.request("/api/admin/transactions/offline/donor-lookup?search=" + encodeURIComponent(q))
+        setDonorResults(res.donors || [])
+      } catch {
+        setDonorResults([])
+      } finally {
+        setDonorSearching(false)
+      }
+    }, 350)
+    return () => clearTimeout(t)
+  }, [donorQuery])
+
+  const selectDonor = (d) => {
+    setForm(prev => ({
+      ...prev,
+      name: d.name, mobile: d.mobile, email: d.email || "", dob: d.dob || "",
+      certificate: !!d.panNumber,
+      panNumber: d.panNumber || "", address: d.address || "", city: d.city || "",
+      state: d.state || "", pincode: d.pincode || "",
+    }))
+    setLinkedDonor(d)
+    setDonorQuery("")
+    setDonorResults([])
+  }
+
+  const unlinkDonor = () => {
+    setLinkedDonor(null)
+    setForm(prev => ({
+      ...prev, name: "", mobile: "", email: "", dob: "",
+      certificate: false, panNumber: "", address: "", city: "", state: "", pincode: "",
+    }))
+  }
+
+  const useLastPrasadam = () => {
+    const p = linkedDonor?.prasadam
+    if (!p) return
+    setForm(prev => ({
+      ...prev, mahaprasadam: true, prasadamAddressOption: "different",
+      prasadamName: p.name, prasadamMobile: p.mobile, prasadamAddress: p.address,
+      prasadamCity: p.city, prasadamState: p.state, prasadamPincode: p.pincode,
+    }))
+  }
+
+  const fmtShort = (d) => new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }))
@@ -72,6 +128,7 @@ function OfflineDonation() {
       })
       setResult({ success: true, data: res })
       setForm(defaultForm)
+      setLinkedDonor(null)
     } catch (err) {
       setResult({ success: false, message: err.message })
     } finally {
@@ -110,6 +167,65 @@ function OfflineDonation() {
           )}
         </div>
       )}
+
+      {/* Existing donor lookup */}
+      <div style={s.section}>
+        <div style={s.sectionTitle}>Existing Donor</div>
+        {linkedDonor ? (
+          <div style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: "12px", padding: "14px 16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", color: "#0369a1" }}>
+                  <UserCheck size={16} /> Raising donation for {linkedDonor.name}
+                </div>
+                <div style={{ fontSize: "12px", color: "#475569", marginTop: "3px" }}>
+                  {linkedDonor.mobile} · {linkedDonor.donationCount} previous donation{linkedDonor.donationCount === 1 ? "" : "s"} · ₹{linkedDonor.totalGiven.toLocaleString("en-IN")} total · last ₹{linkedDonor.lastAmount} on {fmtShort(linkedDonor.lastDonationAt)}
+                </div>
+                <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>
+                  {linkedDonor.panNumber ? "80G details filled from their last certificate." : "No 80G details on file."}
+                </div>
+                {linkedDonor.prasadam && !form.mahaprasadam && (
+                  <button type="button" onClick={useLastPrasadam}
+                    style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "6px", background: "#7c3aed", color: "white", border: "none", borderRadius: "8px", padding: "6px 12px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
+                    <Package size={13} /> Use their last prasadam address
+                  </button>
+                )}
+              </div>
+              <button type="button" onClick={unlinkDonor} title="Clear donor"
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b" }}>
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ position: "relative" }}>
+            <Search size={16} style={{ position: "absolute", left: "12px", top: "12px", color: "#aaa" }} />
+            <input
+              style={{ ...s.input, paddingLeft: "36px" }}
+              placeholder="Search existing donor by name, mobile or email — or fill the form below for a new donor"
+              value={donorQuery}
+              onChange={(e) => setDonorQuery(e.target.value)}
+            />
+            {(donorSearching || donorResults.length > 0 || donorQuery.trim().length >= 3) && (
+              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, marginTop: "4px", background: "white", border: "1px solid #e5e7eb", borderRadius: "12px", boxShadow: "0 8px 24px rgba(0,0,0,0.08)", maxHeight: "300px", overflowY: "auto" }}>
+                {donorSearching && <div style={{ padding: "12px 14px", fontSize: "13px", color: "#888" }}>Searching...</div>}
+                {!donorSearching && donorResults.length === 0 && (
+                  <div style={{ padding: "12px 14px", fontSize: "13px", color: "#888" }}>No existing donor found — fill the form below to add a new one.</div>
+                )}
+                {donorResults.map((d) => (
+                  <button key={d.mobile} type="button" onClick={() => selectDonor(d)}
+                    style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderTop: "1px solid #f1f1f1", padding: "10px 14px", cursor: "pointer" }}>
+                    <div style={{ fontSize: "14px", fontWeight: 600 }}>{d.name}</div>
+                    <div style={{ fontSize: "12px", color: "#888" }}>
+                      {d.mobile}{d.email ? " · " + d.email : ""} · {d.donationCount} donation{d.donationCount === 1 ? "" : "s"} · ₹{d.totalGiven.toLocaleString("en-IN")} · last {fmtShort(d.lastDonationAt)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Donor Details */}
       <div style={s.section}>
